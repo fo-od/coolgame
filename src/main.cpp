@@ -1,3 +1,5 @@
+#include "main.hpp"
+
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
@@ -5,16 +7,6 @@
 #include "constants.hpp"
 #include "globals.hpp"
 #include "util.hpp"
-
-bool init();
-
-void handle_events(const SDL_Event *e);
-
-void update();
-
-void render();
-
-void cleanup();
 
 int main() {
     if (!init()) {
