@@ -17,3 +17,5 @@ void U_SetRenderDrawColor(SDL_Color color);
 void U_DrawRendererText(TTF_Text *text, int anchor, float x, float y);
 
 bool U_SetTextColor(TTF_Text *text, SDL_Color color);
+
+void U_AnchorFRect(int anchor, SDL_FRect *rect);

@@ -21,7 +21,7 @@ int main() {
         return 1;
     }
 
-    const Button startButton("Start", 0, 0, []() {
+    const Button startButton("Start", ANCHOR_MIDDLE_MIDDLE, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, []() {
         inMainMenu = false;
         gameIsRunning = true;
     });
@@ -57,15 +57,18 @@ bool init() {
         SDL_Log("Couldn't set app metadata: %s", SDL_GetError());
         return false;
     }
+
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
         return false;
     }
-    if (!SDL_CreateWindowAndRenderer("cool game", 640, 480, SDL_WINDOW_OPENGL | SDL_WINDOW_BORDERLESS, &window,
+
+    if (!SDL_CreateWindowAndRenderer("cool game", 640, 480, SDL_WINDOW_OPENGL, &window,
                                      &renderer)) {
         SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
         return false;
     }
+
     // enable vsync
     if (!SDL_SetRenderVSync(renderer, 1)) {
         SDL_Log("Couldn't enable VSync: %s", SDL_GetError());

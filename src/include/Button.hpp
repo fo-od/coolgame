@@ -11,7 +11,7 @@ class Button {
     SDL_FRect rect{};
 
 public:
-    Button(const std::string &text, float x, float y, const std::function<void()> &onClick);
+    Button(const std::string &text, int anchor, float x, float y, const std::function<void()> &onClick);
 
     ~Button();
 

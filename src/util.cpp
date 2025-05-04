@@ -66,3 +66,43 @@ void U_DrawRendererText(TTF_Text *text, const int anchor, float x, float y) {
 
     TTF_DrawRendererText(text, x, y);
 }
+
+void U_AnchorFRect(const int anchor, SDL_FRect *rect) {
+    switch (anchor) {
+        case ANCHOR_TOP_LEFT:
+            // pos is already top left
+            break;
+        case ANCHOR_TOP_MIDDLE:
+            rect->x -= rect->w / 2;
+            break;
+        case ANCHOR_TOP_RIGHT:
+            rect->x -= rect->w;
+            break;
+        case ANCHOR_MIDDLE_LEFT:
+            rect->y -= rect->h / 2;
+            break;
+        case ANCHOR_MIDDLE_MIDDLE:
+            rect->x -= rect->w / 2;
+            rect->y -= rect->h / 2;
+            break;
+        case ANCHOR_MIDDLE_RIGHT:
+            rect->x -= rect->w;
+            rect->y -= rect->h / 2;
+            break;
+        case ANCHOR_BOTTOM_LEFT:
+            rect->y -= rect->h;
+            break;
+        case ANCHOR_BOTTOM_MIDDLE:
+            rect->x -= rect->w / 2;
+            rect->y -= rect->h;
+            break;
+        case ANCHOR_BOTTOM_RIGHT:
+            rect->x -= rect->w;
+            rect->y -= rect->h;
+            break;
+        default:
+            SDL_Log("Invalid anchor given!");
+            break;
+    }
+}
+
