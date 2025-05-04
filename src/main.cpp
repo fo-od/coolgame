@@ -1,8 +1,8 @@
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include "lib/Button.hpp"
-#include "lib/util.cpp"
+#include "include/Button.hpp"
+#include "include/util.cpp"
 
 bool gameIsRunning = false;
 bool inMainMenu = true;

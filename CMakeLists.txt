@@ -29,6 +29,8 @@ list(APPEND LIBS SDL3_image::SDL3_image)
 CPMAddPackage("gh:libsdl-org/SDL_ttf#release-3.2.2")
 list(APPEND LIBS SDL3_ttf::SDL3_ttf)
 
+include_directories(src/include)
+
 ## Executables
 add_executable(coolgame src/main.cpp)
 target_compile_features(coolgame PRIVATE cxx_std_23)
