@@ -33,7 +33,6 @@ include_directories(src/include)
 
 ## Executables
 add_executable(coolgame src/main.cpp src/Button.cpp
-        src/include/util.hpp
-        src/include/globals.hpp)
+        src/util.cpp)
 target_compile_features(coolgame PRIVATE cxx_std_23)
 target_link_libraries(coolgame PRIVATE ${LIBS})
