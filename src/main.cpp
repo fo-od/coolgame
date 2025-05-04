@@ -1,16 +1,19 @@
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include "include/Button.hpp"
-#include "include/util.cpp"
-
-bool gameIsRunning = false;
-bool inMainMenu = true;
+#include "Button.hpp"
+#include "constants.hpp"
+#include "globals.hpp"
+#include "util.hpp"
 
 bool init();
+
 void handle_events(const SDL_Event *e);
+
 void update();
+
 void render();
+
 void cleanup();
 
 int main() {
@@ -24,11 +27,15 @@ int main() {
     });
 
     while (inMainMenu) {
-        SDL_Event *event = nullptr;
-        while (SDL_PollEvent(event)) {
-            update_mouse(event);
-            startButton.update();
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_EVENT_QUIT) {
+                inMainMenu = false;
+            }
+            update_mouse(&event);
         }
+        startButton.update();
+        SDL_RenderPresent(renderer);
     }
 
     while (gameIsRunning) {
@@ -39,6 +46,8 @@ int main() {
         update();
         render();
     }
+
+    cleanup();
     return 0;
 }
 
@@ -91,8 +100,8 @@ void handle_events(const SDL_Event *e) {
 
     update_mouse(e);
 
-    if (e->type == SDL_EVENT_KEY_DOWN) {
-    }
+    // if (e->type == SDL_EVENT_KEY_DOWN) {
+    // }
 }
 
 void update() {

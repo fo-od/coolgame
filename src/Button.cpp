@@ -2,10 +2,12 @@
 
 #include <functional>
 #include <string>
+#include <SDL3/SDL_mouse.h>
+#include <SDL3/SDL_render.h>
 
-#include "SDL3/SDL_mouse.h"
-#include "SDL3/SDL_render.h"
-#include "util.cpp"
+#include "constants.hpp"
+#include "globals.hpp"
+#include "util.hpp"
 
 Button::Button(const std::string &text, const float x, const float y, const std::function<void()> &onClick) {
     this->text = TTF_CreateText(textEngine, font, text.c_str(), 0);
@@ -16,14 +18,22 @@ Button::Button(const std::string &text, const float x, const float y, const std:
     this->rect = {x, y, static_cast<float>(textWidth) + 10, static_cast<float>(textHeight) + 10};
 }
 
+Button::~Button() {
+    TTF_DestroyText(text);
+}
+
 void Button::update() const {
-    if (SDL_PointInRectFloat(&mouse->pos, &rect)) {
-        U_SetRenderDrawColor(COLOR_WHITE);
+    U_SetRenderDrawColor(COLOR_WHITE);
+    if (SDL_PointInRectFloat(&mouse.pos, &rect)) {
         SDL_RenderFillRect(renderer, &rect);
-        if (mouse->buttons & SDL_BUTTON_LEFT) {
+        U_SetTextColor(text, COLOR_BLACK);
+        if (mouse.buttons & SDL_BUTTON_LEFT) {
             this->onClick();
         }
     } else {
         SDL_RenderRect(renderer, &rect);
+        U_SetTextColor(text, COLOR_WHITE);
     }
+    TTF_DrawRendererText(text, rect.x + 5, rect.y + 5);
+    U_SetRenderDrawColor(COLOR_BLACK);
 }

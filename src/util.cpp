@@ -1,30 +1,26 @@
+#include "util.hpp"
+
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
+
 #include "constants.hpp"
-
-SDL_Window *window = nullptr;
-SDL_Renderer *renderer = nullptr;
-TTF_TextEngine *textEngine = nullptr;
-TTF_Font *font = nullptr;
-
-typedef struct {
-    SDL_FPoint pos;
-    SDL_MouseButtonFlags buttons;
-} Mouse;
-
-Mouse *mouse;
+#include "globals.hpp"
 
 void update_mouse(const SDL_Event *e) {
     if (e->type == SDL_EVENT_MOUSE_MOTION || e->type == SDL_EVENT_MOUSE_BUTTON_DOWN ||
         e->type == SDL_EVENT_MOUSE_BUTTON_UP) {
-        mouse->buttons = e->motion.state;
-        mouse->pos.x = e->motion.x;
-        mouse->pos.y = e->motion.y;
+        mouse.buttons = e->motion.state;
+        mouse.pos.x = e->motion.x;
+        mouse.pos.y = e->motion.y;
     }
 }
 
 void U_SetRenderDrawColor(const SDL_Color color) {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+}
+
+bool U_SetTextColor(TTF_Text *text, const SDL_Color color) {
+    return TTF_SetTextColor(text, color.r, color.g, color.b, color.a);
 }
 
 void U_DrawRendererText(TTF_Text *text, const int anchor, float x, float y) {
