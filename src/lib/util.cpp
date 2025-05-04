@@ -1,0 +1,72 @@
+#include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
+#include "constants.hpp"
+
+SDL_Window *window = nullptr;
+SDL_Renderer *renderer = nullptr;
+TTF_TextEngine *textEngine = nullptr;
+TTF_Font *font = nullptr;
+
+typedef struct {
+    SDL_FPoint pos;
+    SDL_MouseButtonFlags buttons;
+} Mouse;
+
+Mouse *mouse;
+
+void update_mouse(const SDL_Event *e) {
+    if (e->type == SDL_EVENT_MOUSE_MOTION || e->type == SDL_EVENT_MOUSE_BUTTON_DOWN ||
+        e->type == SDL_EVENT_MOUSE_BUTTON_UP) {
+        mouse->buttons = e->motion.state;
+        mouse->pos.x = e->motion.x;
+        mouse->pos.y = e->motion.y;
+    }
+}
+
+void U_SetRenderDrawColor(const SDL_Color color) {
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+}
+
+void U_DrawRendererText(TTF_Text *text, const int anchor, float x, float y) {
+    int w, h = -1;
+    TTF_GetTextSize(text, &w, &h);
+
+    switch (anchor) {
+        case ANCHOR_TOP_LEFT:
+            // text anchor pos is already top left
+            break;
+        case ANCHOR_TOP_MIDDLE:
+            x -= static_cast<float>(w) / 2;
+            break;
+        case ANCHOR_TOP_RIGHT:
+            x -= w;
+            break;
+        case ANCHOR_MIDDLE_LEFT:
+            y -= h / 2;
+            break;
+        case ANCHOR_MIDDLE_MIDDLE:
+            x -= w / 2;
+            y -= h / 2;
+            break;
+        case ANCHOR_MIDDLE_RIGHT:
+            x -= w;
+            y -= h / 2;
+            break;
+        case ANCHOR_BOTTOM_LEFT:
+            y -= h;
+            break;
+        case ANCHOR_BOTTOM_MIDDLE:
+            x -= w / 2;
+            y -= h;
+            break;
+        case ANCHOR_BOTTOM_RIGHT:
+            x -= w;
+            y -= h;
+            break;
+        default:
+            SDL_Log("Invalid anchor given!");
+            break;
+    }
+
+    TTF_DrawRendererText(text, x, y);
+}

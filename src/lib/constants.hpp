@@ -1,0 +1,21 @@
+#pragma once
+#include <SDL3/SDL.h>
+
+#define WINDOW_WIDTH 640
+#define WINDOW_HEIGHT 480
+
+#define FONT_PATH "src/assets/menu.ttf"
+#define FONT_SIZE 64
+
+#define ANCHOR_TOP_LEFT 1
+#define ANCHOR_TOP_MIDDLE 2
+#define ANCHOR_TOP_RIGHT 3
+#define ANCHOR_MIDDLE_LEFT 4
+#define ANCHOR_MIDDLE_MIDDLE 5
+#define ANCHOR_MIDDLE_RIGHT 6
+#define ANCHOR_BOTTOM_LEFT 7
+#define ANCHOR_BOTTOM_MIDDLE 8
+#define ANCHOR_BOTTOM_RIGHT 9
+
+const SDL_Color COLOR_WHITE = {255, 255, 255, SDL_ALPHA_OPAQUE};
+const SDL_Color COLOR_BLACK = {0, 0, 0, SDL_ALPHA_OPAQUE};
