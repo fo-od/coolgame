@@ -3,13 +3,14 @@
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include "Button.hpp"
+#include "button.hpp"
 #include "constants.hpp"
 #include "globals.hpp"
 #include "util.hpp"
 
-int main() {
-    if (!init()) {
+int main()
+{
+    if ( !init() ) {
         return 1;
     }
 
@@ -18,10 +19,10 @@ int main() {
         gameIsRunning = true;
     });
 
-    while (inMainMenu) {
+    while ( inMainMenu ) {
         SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_EVENT_QUIT) {
+        while ( SDL_PollEvent(&event) ) {
+            if ( event.type == SDL_EVENT_QUIT ) {
                 inMainMenu = false;
             }
             update_mouse(&event);
@@ -30,9 +31,9 @@ int main() {
         SDL_RenderPresent(renderer);
     }
 
-    while (gameIsRunning) {
+    while ( gameIsRunning ) {
         SDL_Event event;
-        while (SDL_PollEvent(&event)) {
+        while ( SDL_PollEvent(&event) ) {
             handle_events(&event);
         }
         update();
@@ -43,44 +44,45 @@ int main() {
     return 0;
 }
 
-bool init() {
+bool init()
+{
     // sdl stuff
-    if (!SDL_SetAppMetadata("cool game", "1.0", "com.food.coolgame")) {
+    if ( !SDL_SetAppMetadata("cool game", "1.0", "com.food.coolgame") ) {
         SDL_Log("Couldn't set app metadata: %s", SDL_GetError());
         return false;
     }
 
-    if (!SDL_Init(SDL_INIT_VIDEO)) {
+    if ( !SDL_Init(SDL_INIT_VIDEO) ) {
         SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
         return false;
     }
 
-    if (!SDL_CreateWindowAndRenderer("cool game", 640, 480, SDL_WINDOW_OPENGL, &window,
-                                     &renderer)) {
+    if ( !SDL_CreateWindowAndRenderer("cool game", 640, 480, SDL_WINDOW_OPENGL, &window,
+                                      &renderer) ) {
         SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
         return false;
     }
 
     // enable vsync
-    if (!SDL_SetRenderVSync(renderer, 1)) {
+    if ( !SDL_SetRenderVSync(renderer, 1) ) {
         SDL_Log("Couldn't enable VSync: %s", SDL_GetError());
         return false;
     }
 
     // setup ttf things
-    if (!TTF_Init()) {
+    if ( !TTF_Init() ) {
         SDL_Log("Couldn't initialize text renderer: %s", SDL_GetError());
         return false;
     }
 
     textEngine = TTF_CreateRendererTextEngine(renderer);
-    if (!textEngine) {
+    if ( !textEngine ) {
         SDL_Log("Couldn't create text engine: %s", SDL_GetError());
         return false;
     }
 
     font = TTF_OpenFont(FONT_PATH, FONT_SIZE);
-    if (!font) {
+    if ( !font ) {
         SDL_Log("Couldn't load font: %s", SDL_GetError());
         return false;
     }
@@ -88,8 +90,9 @@ bool init() {
     return true;
 }
 
-void handle_events(const SDL_Event *e) {
-    if (e->type == SDL_EVENT_QUIT) {
+void handle_events( const SDL_Event *e )
+{
+    if ( e->type == SDL_EVENT_QUIT ) {
         gameIsRunning = false;
     }
 
@@ -99,11 +102,13 @@ void handle_events(const SDL_Event *e) {
     // }
 }
 
-void update() {
+void update()
+{
     // game logic here
 }
 
-void render() {
+void render()
+{
     U_SetRenderDrawColor(COLOR_BLACK);
     SDL_RenderClear(renderer);
 
@@ -112,7 +117,8 @@ void render() {
     SDL_RenderPresent(renderer);
 }
 
-void cleanup() {
+void cleanup()
+{
     // sdl cleanup
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);

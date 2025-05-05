@@ -6,33 +6,37 @@
 #include "constants.hpp"
 #include "globals.hpp"
 
-void update_mouse(const SDL_Event *e) {
-    if (e->type == SDL_EVENT_MOUSE_MOTION || e->type == SDL_EVENT_MOUSE_BUTTON_DOWN ||
-        e->type == SDL_EVENT_MOUSE_BUTTON_UP) {
+void update_mouse( const SDL_Event *e )
+{
+    if ( e->type == SDL_EVENT_MOUSE_MOTION || e->type == SDL_EVENT_MOUSE_BUTTON_DOWN ||
+         e->type == SDL_EVENT_MOUSE_BUTTON_UP ) {
         mouse.buttons = e->motion.state;
         mouse.pos.x = e->motion.x;
         mouse.pos.y = e->motion.y;
     }
 }
 
-void U_SetRenderDrawColor(const SDL_Color color) {
+void U_SetRenderDrawColor( const SDL_Color color )
+{
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 }
 
-bool U_SetTextColor(TTF_Text *text, const SDL_Color color) {
+bool U_SetTextColor( TTF_Text *text, const SDL_Color color )
+{
     return TTF_SetTextColor(text, color.r, color.g, color.b, color.a);
 }
 
-void U_DrawRendererText(TTF_Text *text, const int anchor, float x, float y) {
+void U_DrawRendererText( TTF_Text *text, const int anchor, float x, float y )
+{
     int w, h = -1;
     TTF_GetTextSize(text, &w, &h);
 
-    switch (anchor) {
+    switch ( anchor ) {
         case ANCHOR_TOP_LEFT:
             // text anchor pos is already top left
             break;
         case ANCHOR_TOP_MIDDLE:
-            x -= static_cast<float>(w) / 2;
+            x -= static_cast< float >(w) / 2;
             break;
         case ANCHOR_TOP_RIGHT:
             x -= w;
@@ -67,8 +71,9 @@ void U_DrawRendererText(TTF_Text *text, const int anchor, float x, float y) {
     TTF_DrawRendererText(text, x, y);
 }
 
-void U_AnchorFRect(const int anchor, SDL_FRect *rect) {
-    switch (anchor) {
+void U_AnchorFRect( const int anchor, SDL_FRect *rect )
+{
+    switch ( anchor ) {
         case ANCHOR_TOP_LEFT:
             // pos is already top left
             break;
@@ -105,4 +110,3 @@ void U_AnchorFRect(const int anchor, SDL_FRect *rect) {
             break;
     }
 }
-

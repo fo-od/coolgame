@@ -3,7 +3,7 @@
 
 bool init();
 
-void handle_events(const SDL_Event *e);
+void handle_events( const SDL_Event *e );
 
 void update();
 
