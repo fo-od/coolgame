@@ -24,7 +24,7 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: |
         choco install nasm -y
-        set PATH=C:\Program Files\NASM;%PATH%
+        $env:PATH = 'C:\Program Files\NASM;' + $env:PATH
         cmake -B ${{github.workspace}}/build/debug -DAOM_TARGET_CPU=generic -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
