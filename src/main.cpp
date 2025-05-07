@@ -6,6 +6,7 @@
 #include "button.hpp"
 #include "constants.hpp"
 #include "globals.hpp"
+#include "player.hpp"
 #include "util.hpp"
 
 int main()
@@ -31,13 +32,24 @@ int main()
         SDL_RenderPresent(renderer);
     }
 
+    SDL_Log("Game started");
+
+    Player player(0, 0, 20, 20, 0.85);
+
+    Uint32 lastTicks = SDL_GetTicks();
+
     while ( gameIsRunning ) {
+        const Uint32 nowTicks = SDL_GetTicks();
+        // Dt in seconds
+        deltaTime = ( nowTicks - lastTicks ) * 0.001f;
+        lastTicks = nowTicks;
+
         SDL_Event event;
         while ( SDL_PollEvent(&event) ) {
             handle_events(&event);
         }
-        update();
-        render();
+        update(&player);
+        render(&player);
     }
 
     cleanup();
@@ -81,7 +93,7 @@ bool init()
         return false;
     }
 
-    font = TTF_OpenFont(FONT_PATH, FONT_SIZE);
+    font = TTF_OpenFontIO(SDL_IOFromConstMem(mago_ttf, mago_ttf_len), true, FONT_SIZE);
     if ( !font ) {
         SDL_Log("Couldn't load font: %s", SDL_GetError());
         return false;
@@ -97,22 +109,23 @@ void handle_events( const SDL_Event *e )
     }
 
     update_mouse(e);
-
-    // if (e->type == SDL_EVENT_KEY_DOWN) {
-    // }
 }
 
-void update()
+
+void update( Player *player )
 {
-    // game logic here
+    update_keyboard();
+
+    player->update();
 }
 
-void render()
+void render( const Player *player )
 {
     U_SetRenderDrawColor(COLOR_BLACK);
     SDL_RenderClear(renderer);
 
     // render stuff here
+    player->draw();
 
     SDL_RenderPresent(renderer);
 }

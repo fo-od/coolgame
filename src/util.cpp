@@ -16,6 +16,12 @@ void update_mouse( const SDL_Event *e )
     }
 }
 
+void update_keyboard()
+{
+    keyboardState = SDL_GetKeyboardState(NULL);
+}
+
+
 void U_SetRenderDrawColor( const SDL_Color color )
 {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);

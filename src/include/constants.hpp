@@ -1,10 +1,10 @@
 #pragma once
 
+#include "../assets/mago.h"
+
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480
 
-// https://nimblebeastscollective.itch.io/magosfonts
-#define FONT_PATH "assets/mago.ttf"
 #define FONT_SIZE 32
 
 #define ANCHOR_TOP_LEFT 1

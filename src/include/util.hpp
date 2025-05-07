@@ -13,6 +13,8 @@ typedef struct
 
 void update_mouse( const SDL_Event *e );
 
+void update_keyboard();
+
 void U_SetRenderDrawColor( SDL_Color color );
 
 void U_DrawRendererText( TTF_Text *text, int anchor, float x, float y );
