@@ -35,6 +35,7 @@ include_directories(src/include)
 add_executable(coolgame src/main.cpp src/button.cpp
         src/util.cpp
         src/player.cpp
-        src/vector.cpp)
+        src/vector.cpp
+        src/timer.cpp)
 target_compile_features(coolgame PRIVATE cxx_std_23)
 target_link_libraries(coolgame PRIVATE ${LIBS})
