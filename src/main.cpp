@@ -34,7 +34,7 @@ int main()
 
     SDL_Log("Game started");
 
-    Player player(0, 0, 20, 20, 0.85);
+    Player player(WINDOW_WIDTH / 2, 0, 50, 20, 20, 0.8, 0.9);
 
     Uint32 lastTicks = SDL_GetTicks();
 
@@ -69,7 +69,7 @@ bool init()
         return false;
     }
 
-    if ( !SDL_CreateWindowAndRenderer("cool game", 640, 480, SDL_WINDOW_OPENGL, &window,
+    if ( !SDL_CreateWindowAndRenderer("cool game", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL, &window,
                                       &renderer) ) {
         SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
         return false;

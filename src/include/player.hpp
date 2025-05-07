@@ -4,16 +4,21 @@
 
 class Player
 {
+    bool falling = false;
+    bool dashing = false;
+
     public:
         SDL_FRect rect;
         Vector2 vel;
-        float speed, gravity, friction;
+        float speed, gravity, jumpStrength, groundFriction, airFriction;
 
         Player() = default;
 
-        Player( float x, float y, float speed, float gravity, float friction, const Vector2 &startingVelocity );
+        Player( float x, float y, float speed, float gravity, float jumpHeight, float groundFriction, float airFriction,
+                const Vector2 &startingVelocity );
 
-        Player( float x, float y, float speed, float gravity, float friction );
+        Player( float x, float y, float speed, float gravity, float jumpHeight, float groundFriction,
+                float airFriction );
 
         ~Player() = default;
 
