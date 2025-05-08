@@ -48,13 +48,12 @@ void Player::update()
         if ( keyboardState[SDL_SCANCODE_DOWN] && !dashing ) {
             vel.x += -( keyboardState[SDL_SCANCODE_LEFT] - keyboardState[SDL_SCANCODE_RIGHT] ) * speed / 2;
             // dashing = true;
+        } else if ( keyboardState[SDL_SCANCODE_UP] ) {
+            vel.y += -jumpStrength;
         }
     }
 
     vel.x += -( keyboardState[SDL_SCANCODE_LEFT] - keyboardState[SDL_SCANCODE_RIGHT] ) * speed * deltaTime;
-    if ( keyboardState[SDL_SCANCODE_UP] ) {
-        vel.y += -jumpStrength * deltaTime;
-    }
 
     rect.x += vel.x;
     rect.y += vel.y;
