@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../assets/mago.h"
+#include "../assets/mago.hpp"
 #include "SDL3/SDL_pixels.h"
 
 #define WINDOW_WIDTH 1024
