@@ -1,13 +1,14 @@
 #include "main.hpp"
 
-#include <SDL3/SDL.h>
-#include <SDL3_ttf/SDL_ttf.h>
-
 #include "button.hpp"
 #include "constants.hpp"
 #include "globals.hpp"
+#include "io.hpp"
 #include "player.hpp"
+#include "types.hpp"
 #include "util.hpp"
+#include "SDL3/SDL.h"
+#include "SDL3_ttf/SDL_ttf.h"
 
 int main()
 {
@@ -39,7 +40,7 @@ int main()
     Uint32 lastTicks = SDL_GetTicks();
 
     while ( gameIsRunning ) {
-        const Uint32 nowTicks = SDL_GetTicks();
+        const u32 nowTicks = SDL_GetTicks();
         // Dt in seconds
         deltaTime = ( nowTicks - lastTicks ) * 0.001f;
         lastTicks = nowTicks;

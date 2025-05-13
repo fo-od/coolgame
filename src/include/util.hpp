@@ -1,19 +1,13 @@
 #pragma once
 
-#include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_events.h>
+#include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_rect.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-typedef struct
-{
-    SDL_FPoint pos;
-    SDL_MouseButtonFlags buttons;
-} Mouse;
+#define ERROR_RETURN(R, ...) { fprintf(stderr, __VA_ARGS__); return R; }
 
-void update_mouse( const SDL_Event *e );
-
-void update_keyboard();
+#define ERROR_LOG(...) { fprintf(stderr, __VA_ARGS__); }
 
 void U_SetRenderDrawColor( SDL_Color color );
 
