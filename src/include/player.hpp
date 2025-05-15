@@ -1,7 +1,6 @@
 #pragma once
 
-#include "vector.hpp"
-#include "SDL3/SDL_rect.h"
+#include "body.hpp"
 
 class Player
 {
@@ -9,15 +8,12 @@ class Player
     bool dashing = false;
 
     public:
-        SDL_FRect rect{};
-        Vector2 vel{};
-        float speed{}, gravity{}, jumpStrength{}, friction{}, drag{};
+        Body body{};
+        float speed{}, jumpStrength{};
 
-        Player( float x, float y, float speed, float gravity, float jumpHeight, float friction, float drag,
-                const Vector2 &startingVelocity );
+        Player() = default;
 
-        Player( float x, float y, float speed, float gravity, float jumpHeight, float friction,
-                float drag );
+        Player( Body body, float speed, float jumpHeight );
 
         ~Player() = default;
 
