@@ -7,6 +7,7 @@
 
 #include "constants.hpp"
 #include "globals.hpp"
+#include "io.hpp"
 #include "util.hpp"
 
 Button::Button( const std::string &text, const int anchor, const float x, const float y,
