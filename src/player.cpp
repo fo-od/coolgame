@@ -1,24 +1,24 @@
-#include "include/player.hpp"
+#include "player.hpp"
 
-#include "include/constants.hpp"
-#include "include/globals.hpp"
-#include "include/util.hpp"
-#include "SDL3/SDL_events.h"
+#include "constants.hpp"
+#include "globals.hpp"
+#include "io.hpp"
+#include "util.hpp"
 
 Player::Player( const float x, const float y, const float speed, const float gravity, const float jumpHeight,
-                const float groundFriction, const float airFriction,
+                const float friction, const float drag,
                 const Vector2 &startingVelocity )
     : rect(x, y, 16, 16),
       vel(startingVelocity),
       speed(speed),
       gravity(gravity),
       jumpStrength(jumpHeight),
-      groundFriction(groundFriction),
-      airFriction(airFriction) {}
+      friction(friction),
+      drag(drag) {}
 
 Player::Player( const float x, const float y, const float speed, const float gravity, const float jumpHeight,
-                const float groundFriction, const float airFriction )
-    : Player(x, y, speed, gravity, jumpHeight, groundFriction, airFriction, Vector2(0, 0)) {}
+                const float friction, const float drag )
+    : Player(x, y, speed, gravity, jumpHeight, friction, drag, Vector2(0, 0)) {}
 
 
 void Player::update()
@@ -36,14 +36,14 @@ void Player::update()
 
     // TODO: add a dash timer
     if ( falling ) {
-        vel.x *= airFriction;
+        vel.x *= drag;
         if ( keyboardState[SDL_SCANCODE_DOWN] && !dashing ) {
             vel.y += jumpStrength;
             // dashing = true;
         }
         vel.y += gravity * deltaTime;
     } else {
-        vel.x *= groundFriction;
+        vel.x *= friction;
         vel.y = 0;
         if ( keyboardState[SDL_SCANCODE_DOWN] && !dashing ) {
             vel.x += -( keyboardState[SDL_SCANCODE_LEFT] - keyboardState[SDL_SCANCODE_RIGHT] ) * speed / 2;
