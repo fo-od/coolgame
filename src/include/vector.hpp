@@ -3,13 +3,13 @@
 class Vector2
 {
     public:
-        double x, y;
+        float x, y;
 
         Vector2() = default;
-        Vector2( double x, double y );
+        Vector2( float x, float y );
         ~Vector2() = default;
 
         Vector2( const Vector2 &other );
 
-        Vector2& operator*=( double op );
+        Vector2& operator*=( float op );
 };
