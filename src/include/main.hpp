@@ -3,12 +3,14 @@
 
 #include "player.hpp"
 
-bool init();
+bool init_sdl();
+
+bool init_game();
 
 void handle_events( const SDL_Event *e );
 
-void update( Player *player );
+void update();
 
-void render( const Player *player );
+void render();
 
 void cleanup();

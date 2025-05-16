@@ -4,6 +4,7 @@
 #include "constants.hpp"
 #include "globals.hpp"
 #include "io.hpp"
+#include "physics.hpp"
 #include "player.hpp"
 #include "types.hpp"
 #include "util.hpp"
@@ -12,7 +13,7 @@
 
 int main()
 {
-    if ( !init() ) {
+    if ( !init_sdl() ) {
         return 1;
     }
 
@@ -33,15 +34,13 @@ int main()
         SDL_RenderPresent(renderer);
     }
 
+    init_game();
     SDL_Log("Game started");
 
-    Player player(WINDOW_WIDTH / 2, 0, 50, 20, 20, 0.8, 0.9);
-
-    Uint32 lastTicks = SDL_GetTicks();
+    u32 lastTicks = SDL_GetTicks();
 
     while ( gameIsRunning ) {
         const u32 nowTicks = SDL_GetTicks();
-        // Dt in seconds
         deltaTime = ( nowTicks - lastTicks ) * 0.001f;
         lastTicks = nowTicks;
 
@@ -49,15 +48,15 @@ int main()
         while ( SDL_PollEvent(&event) ) {
             handle_events(&event);
         }
-        update(&player);
-        render(&player);
+        update();
+        render();
     }
 
     cleanup();
     return 0;
 }
 
-bool init()
+bool init_sdl()
 {
     // sdl stuff
     if ( !SDL_SetAppMetadata("cool game", "1.0", "com.food.coolgame") ) {
@@ -103,30 +102,34 @@ bool init()
     return true;
 }
 
+bool init_game()
+{
+    return true;
+}
+
 void handle_events( const SDL_Event *e )
 {
-    if ( e->type == SDL_EVENT_QUIT ) {
+    if ( e->type == SDL_EVENT_QUIT )
         gameIsRunning = false;
-    }
 
-    update_mouse(e);
+
+    if ( e->type == SDL_EVENT_MOUSE_MOTION || e->type == SDL_EVENT_MOUSE_BUTTON_DOWN || e->type ==
+         SDL_EVENT_MOUSE_BUTTON_UP )
+        update_mouse(e);
 }
 
 
-void update( Player *player )
+void update()
 {
     update_keyboard();
-
-    player->update();
 }
 
-void render( const Player *player )
+void render()
 {
     U_SetRenderDrawColor(COLOR_BLACK);
     SDL_RenderClear(renderer);
 
     // render stuff here
-    player->draw();
 
     SDL_RenderPresent(renderer);
 }
