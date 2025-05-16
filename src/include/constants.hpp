@@ -5,8 +5,6 @@
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
-// this is temporary for testing physics until i implement actual levels
-inline SDL_FRect WINDOW_RECT_BOTTOM = {0, WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT};
 
 #define FONT_SIZE 32
 
