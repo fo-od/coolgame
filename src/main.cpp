@@ -104,6 +104,7 @@ bool init_sdl()
 
 bool init_game()
 {
+    Physics::add_body(Vector2(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), Vector2(100, 100));
     return true;
 }
 
@@ -122,6 +123,7 @@ void handle_events( const SDL_Event *e )
 void update()
 {
     update_keyboard();
+    Physics::update();
 }
 
 void render()
@@ -129,7 +131,8 @@ void render()
     U_SetRenderDrawColor(COLOR_BLACK);
     SDL_RenderClear(renderer);
 
-    // render stuff here
+    // draw stuff here
+    Physics::draw();
 
     SDL_RenderPresent(renderer);
 }
