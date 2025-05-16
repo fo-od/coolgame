@@ -8,16 +8,12 @@
 
 class Physics
 {
-    std::vector<Body> bodies;
+    static std::vector< Body > bodies;
 
     public:
-        Physics() = default;
+        static void update();
 
-        ~Physics() = default;
+        static void add_body( const Vector2 &pos, const Vector2 &size );
 
-        void update();
-
-        void add_body( const Vector2 &pos, const Vector2 &size );
-
-        Body *get_body( usize index );
+        static Body *get_body( usize index );
 };
