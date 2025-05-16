@@ -4,10 +4,10 @@
 
 class AABB
 {
-    Vector2 position;
-    Vector2 half_size;
-
     public:
+        Vector2 position;
+        Vector2 half_size;
+
         AABB() = default;
 
         ~AABB() = default;
