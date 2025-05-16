@@ -20,3 +20,10 @@ Body *Physics::get_body( const usize index )
 {
     return &bodies.at(index);
 }
+
+void Physics::draw()
+{
+    for ( Body &body : bodies ) {
+        // TODO: draw the bodies
+    }
+}

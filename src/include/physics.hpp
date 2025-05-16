@@ -16,4 +16,6 @@ class Physics
         static void add_body( const Vector2 &pos, const Vector2 &size );
 
         static Body *get_body( usize index );
+
+        static void draw();
 };
