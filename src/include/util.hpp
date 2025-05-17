@@ -1,13 +1,14 @@
 #pragma once
 
 #include <SDL3/SDL_events.h>
-#include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_rect.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
 #define ERROR_RETURN(R, ...) { fprintf(stderr, __VA_ARGS__); return R; }
 
 #define ERROR_LOG(...) { fprintf(stderr, __VA_ARGS__); }
+
+#define HANDLE_SDL_ERROR(F, S) { if (!F) {SDL_Log(S, SDL_GetError()); return false;} }
 
 void U_SetRenderDrawColor( SDL_Color color );
 

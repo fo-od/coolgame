@@ -59,45 +59,24 @@ int main()
 bool init_sdl()
 {
     // sdl stuff
-    if ( !SDL_SetAppMetadata("cool game", "1.0", "com.food.coolgame") ) {
-        SDL_Log("Couldn't set app metadata: %s", SDL_GetError());
-        return false;
-    }
+    HANDLE_SDL_ERROR(SDL_SetAppMetadata("cool game", "1.0", "com.food.coolgame"), "Couldn't set app metadata: %s");
 
-    if ( !SDL_Init(SDL_INIT_VIDEO) ) {
-        SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
-        return false;
-    }
+    HANDLE_SDL_ERROR(SDL_Init(SDL_INIT_VIDEO), "Couldn't initialize SDL: %s");
 
-    if ( !SDL_CreateWindowAndRenderer("cool game", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL, &window,
-                                      &renderer) ) {
-        SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
-        return false;
-    }
+    HANDLE_SDL_ERROR(SDL_CreateWindowAndRenderer("cool game", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL, &window,
+                         &renderer), "Couldn't create window/renderer: %s");
 
     // enable vsync
-    if ( !SDL_SetRenderVSync(renderer, 1) ) {
-        SDL_Log("Couldn't enable VSync: %s", SDL_GetError());
-        return false;
-    }
+    HANDLE_SDL_ERROR(SDL_SetRenderVSync(renderer, 1), "Couldn't enable VSync: %s");
 
     // setup ttf things
-    if ( !TTF_Init() ) {
-        SDL_Log("Couldn't initialize text renderer: %s", SDL_GetError());
-        return false;
-    }
+    HANDLE_SDL_ERROR(TTF_Init(), "Couldn't initialize text renderer: %s");
 
     textEngine = TTF_CreateRendererTextEngine(renderer);
-    if ( !textEngine ) {
-        SDL_Log("Couldn't create text engine: %s", SDL_GetError());
-        return false;
-    }
+    HANDLE_SDL_ERROR(textEngine, "Couldn't create text engine: %s");
 
     font = TTF_OpenFontIO(SDL_IOFromConstMem(mago_ttf, mago_ttf_len), true, FONT_SIZE);
-    if ( !font ) {
-        SDL_Log("Couldn't load font: %s", SDL_GetError());
-        return false;
-    }
+    HANDLE_SDL_ERROR(font, "Couldn't load font: %s");
 
     return true;
 }
