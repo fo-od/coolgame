@@ -8,6 +8,7 @@
 #include "player.hpp"
 #include "types.hpp"
 #include "util.hpp"
+
 #include "SDL3/SDL.h"
 #include "SDL3_ttf/SDL_ttf.h"
 

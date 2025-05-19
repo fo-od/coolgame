@@ -1,7 +1,8 @@
 #include "aabb.hpp"
 
 #include <complex>
-#include <SDL3/SDL.h>
+
+#include "SDL3/SDL.h"
 
 AABB::AABB( const Vector2 &position, const Vector2 &half_size )
     : rect(position.x + half_size.x, position.y - half_size.y, half_size.x * 2, half_size.y * 2),

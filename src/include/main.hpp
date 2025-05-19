@@ -1,7 +1,6 @@
 #pragma once
-#include <SDL3/SDL_events.h>
 
-#include "player.hpp"
+#include "SDL3/SDL_events.h"
 
 bool init_sdl();
 

@@ -2,13 +2,14 @@
 
 #include <functional>
 #include <string>
-#include <SDL3/SDL_mouse.h>
-#include <SDL3/SDL_render.h>
 
 #include "constants.hpp"
 #include "globals.hpp"
 #include "io.hpp"
 #include "util.hpp"
+
+#include "SDL3/SDL_mouse.h"
+#include "SDL3/SDL_render.h"
 
 Button::Button( const std::string &text, const int anchor, const float x, const float y,
                 const std::function< void() > &onClick )

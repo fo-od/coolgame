@@ -1,4 +1,8 @@
-#include "include/vector.hpp"
+#include "vector.hpp"
+
+#include "globals.hpp"
+
+#include "SDL3/SDL_render.h"
 
 Vector2::Vector2( const float x, const float y )
     : x(x),
@@ -6,25 +10,44 @@ Vector2::Vector2( const float x, const float y )
 
 Vector2::Vector2( const Vector2 &other ) = default;
 
+
+void Vector2::draw( const float originX, const float originY ) const
+{
+    SDL_RenderLine(renderer, originX, originY, originX + this->x, originY + this->y);
+}
+
+
 // Multiplication
 
-Vector2 &Vector2::operator*=( const float op )
+Vector2 &Vector2::operator*=( const float o )
 {
-    x *= op;
-    y *= op;
+    x *= o;
+    y *= o;
     return *this;
 }
 
-Vector2 Vector2::operator*( const float op ) const
+Vector2 Vector2::operator*( const float o ) const
 {
-    return Vector2{x * op, y * op};
+    return Vector2{x * o, y * o};
 }
 
 // Addition
 
-Vector2 &Vector2::operator+=( const Vector2 &op )
+Vector2 &Vector2::operator+=( const Vector2 &o )
 {
-    x += op.x;
-    y += op.y;
+    x += o.x;
+    y += o.y;
     return *this;
+}
+
+Vector2 Vector2::operator+( const Vector2 &o ) const
+{
+    return Vector2{x + o.x, y + o.y};
+}
+
+// Subtraction
+
+Vector2 Vector2::operator-( const Vector2 &o ) const
+{
+    return Vector2{x - o.x, y - o.y};
 }

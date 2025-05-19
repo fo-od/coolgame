@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDL3_ttf/SDL_ttf.h>
+#include "SDL3_ttf/SDL_ttf.h"
 
 inline SDL_Window *window = nullptr;
 inline SDL_Renderer *renderer = nullptr;

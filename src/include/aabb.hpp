@@ -1,7 +1,8 @@
 #pragma once
 
-#include <SDL3/SDL_rect.h>
 #include "vector.hpp"
+
+#include "SDL3/SDL_rect.h"
 
 class AABB
 {
