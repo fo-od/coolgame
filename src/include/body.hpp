@@ -11,9 +11,9 @@ class Body
 
         Body() = default;
 
-        Body( const AABB& aabb, const Vector2& velocity, const Vector2 &acceleration );
+        Body( const AABB &aabb, const Vector2 &velocity, const Vector2 &acceleration );
 
-        explicit Body( const AABB& aabb );
+        explicit Body( const AABB &aabb );
 
         explicit Body( const Body *other );
 };
