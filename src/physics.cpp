@@ -3,27 +3,19 @@
 #include "body.hpp"
 #include "globals.hpp"
 
+std::vector< Body > Physics::bodies;
+
 void Physics::update()
 {
     for ( Body &body : bodies ) {
         body.velocity += body.acceleration * deltaTime;
         body.aabb.position += body.velocity * deltaTime;
+        body.aabb.update_rect();
     }
 }
 
-void Physics::add_body( const Vector2 &pos, const Vector2 &size )
+void Physics::add_body( const Vector2 &position, const Vector2 &size, const Vector2 &velocity,
+                        const Vector2 &acceleration )
 {
-    bodies.push_back(Body(AABB(pos, size * 0.5), Vector2(0, 0), Vector2(0, 0)));
-}
-
-Body *Physics::get_body( const usize index )
-{
-    return &bodies.at(index);
-}
-
-void Physics::draw()
-{
-    for ( Body &body : bodies ) {
-        // TODO: draw the bodies
-    }
+    bodies.emplace_back(AABB(position, size * 0.5), velocity, acceleration);
 }
