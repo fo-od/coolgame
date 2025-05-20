@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../assets/mago.hpp"
+#include "../assets/cozette.hpp"
 
 #include "SDL3/SDL_pixels.h"
 

@@ -76,7 +76,7 @@ bool init_sdl()
     textEngine = TTF_CreateRendererTextEngine(renderer);
     HANDLE_SDL_ERROR(textEngine, "Couldn't create text engine: %s");
 
-    font = TTF_OpenFontIO(SDL_IOFromConstMem(mago_ttf, mago_ttf_len), true, FONT_SIZE);
+    font = TTF_OpenFontIO(SDL_IOFromConstMem(cozette, cozette_len), true, FONT_SIZE);
     HANDLE_SDL_ERROR(font, "Couldn't load font: %s");
 
     return true;
@@ -112,7 +112,6 @@ void render()
     SDL_RenderClear(renderer);
 
     // draw stuff here
-    Physics::draw();
 
     SDL_RenderPresent(renderer);
 }
