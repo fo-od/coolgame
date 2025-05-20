@@ -29,10 +29,7 @@ bool AABB::intersects( const AABB &other ) const
     const AABB diff = minkowski_difference(other);
     const Vector2 min = diff.min(), max = diff.max();
 
-    return ( min.x <= 0
-             && max.x >= 0
-             && min.y <= 0
-             && max.y >= 0 );
+    return min.x <= 0 && max.x >= 0 && min.y <= 0 && max.y >= 0;
 }
 
 Vector2 AABB::penetration_vector( const AABB &other ) const
