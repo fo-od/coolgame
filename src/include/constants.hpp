@@ -7,7 +7,7 @@
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
 
-#define FONT_SIZE 32
+#define FONT_SIZE 13
 
 #define ANCHOR_TOP_LEFT 1
 #define ANCHOR_TOP_MIDDLE 2
