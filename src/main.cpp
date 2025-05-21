@@ -112,6 +112,8 @@ void render()
     SDL_RenderClear(renderer);
 
     // draw stuff here
+    U_SetRenderDrawColor(COLOR_WHITE);
+    AABB::draw_rects();
 
     SDL_RenderPresent(renderer);
 }

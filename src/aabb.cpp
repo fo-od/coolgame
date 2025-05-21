@@ -2,18 +2,29 @@
 
 #include <complex>
 
+#include "globals.hpp"
 #include "SDL3/SDL.h"
+
+std::vector< SDL_FRect * > AABB::rects;
 
 AABB::AABB( const Vector2 &position, const Vector2 &half_size )
     : rect(position.x + half_size.x, position.y - half_size.y, half_size.x * 2, half_size.y * 2),
       position(position),
-      half_size(half_size) {}
+      half_size(half_size)
+{
+    rects.push_back(&rect);
+}
 
 
 void AABB::update_rect()
 {
     rect.x = position.x;
     rect.y = position.y;
+}
+
+void AABB::draw_rects()
+{
+    SDL_RenderRects(renderer, *rects.data(), rects.size());
 }
 
 Vector2 AABB::min() const { return position - half_size; }
@@ -31,6 +42,8 @@ bool AABB::intersects( const AABB &other ) const
 
     return min.x <= 0 && max.x >= 0 && min.y <= 0 && max.y >= 0;
 }
+
+bool AABB::intersects( float x1, float y1, float x2, float y2 ) const {}
 
 Vector2 AABB::penetration_vector( const AABB &other ) const
 {
