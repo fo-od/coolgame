@@ -7,13 +7,13 @@ class Vector2
 
         Vector2() = default;
 
-        Vector2( float originX, float originY );
+        Vector2( float x, float y );
 
         Vector2( const Vector2 &other );
 
         ~Vector2() = default;
 
-        void draw( float x1 = {}, float y1 = {} ) const;
+        void draw( float originX = {}, float originY = {} ) const;
 
         Vector2 &operator*=( float o );
 
