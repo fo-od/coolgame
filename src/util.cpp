@@ -8,7 +8,7 @@
 
 void U_SetRenderDrawColor( const SDL_Color color )
 {
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    HANDLE_SDL_ERROR(SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a), "Could not set the draw color: %s");
 }
 
 bool U_SetTextColor( TTF_Text *text, const SDL_Color color )
