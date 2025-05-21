@@ -8,8 +8,6 @@
 
 class AABB
 {
-    static std::vector< SDL_FRect * > rects;
-
     public:
         SDL_FRect rect{};
         Vector2 position{};
@@ -18,6 +16,8 @@ class AABB
         AABB() = default;
 
         AABB( const Vector2 &position, const Vector2 &half_size );
+
+        AABB( float x, float y, float half_width, float half_height );
 
         ~AABB() = default;
 
