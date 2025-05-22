@@ -113,7 +113,7 @@ void render()
 
     // draw stuff here
     U_SetRenderDrawColor(COLOR_WHITE);
-    AABB::draw_rects();
+    Physics::draw();
 
     HANDLE_SDL_ERROR(SDL_RenderPresent(renderer), "Could not update the screen: %s");
 }
