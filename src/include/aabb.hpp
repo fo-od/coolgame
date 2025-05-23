@@ -10,8 +10,8 @@ class AABB
 {
     static std::vector< SDL_FRect * > rects;
     static std::vector< SDL_FRect * > filled_rects;
-    bool visible{false};
-    bool filled{false};
+    bool visible{};
+    bool filled{};
 
     public:
         SDL_FRect rect{};
