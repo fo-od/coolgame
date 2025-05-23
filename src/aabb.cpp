@@ -7,21 +7,28 @@
 std::vector< SDL_FRect * > AABB::rects;
 std::vector< SDL_FRect * > AABB::filled_rects;
 
-AABB::AABB( const Vector2 &position, const Vector2 &half_size, const bool filled )
-    : rect(position.x + half_size.x, position.y - half_size.y, half_size.x * 2, half_size.y * 2),
+AABB::AABB( const Vector2 &position, const Vector2 &half_size, const bool filled, const bool visible )
+    : visible(visible),
+      filled(filled),
+      rect(position.x + half_size.x,
+           position.y - half_size.y,
+           half_size.x * 2,
+           half_size.y * 2),
       position(position),
       half_size(half_size)
 {
-    if ( filled ) {
-        filled_rects.push_back(&rect);
-    } else {
-        rects.push_back(&rect);
-    }
+    if ( visible )
+        show();
 }
 
 AABB::AABB( const float x, const float y, const float half_width, const float half_height )
     : AABB(Vector2{x, y}, Vector2{half_width, half_height}) {}
 
+AABB::~AABB()
+{
+    SDL_Log("AABB destroyed");
+    hide();
+}
 
 void AABB::update_rect()
 {
@@ -29,11 +36,39 @@ void AABB::update_rect()
     rect.y = position.y;
 }
 
+void AABB::show()
+{
+    if ( !visible ) {
+        if ( filled ) {
+            filled_rects.push_back(&rect);
+        } else {
+            rects.push_back(&rect);
+        }
+        visible = true;
+    }
+}
+
+void AABB::hide()
+{
+    if ( visible ) {
+        auto removeRect = [this]( std::vector< SDL_FRect * > &vec ) {
+            if ( const auto it = std::find(vec.begin(), vec.end(), &rect); it != vec.end() ) {
+                vec.erase(it);
+            }
+        };
+
+        removeRect(rects);
+        removeRect(filled_rects);
+
+        visible = false;
+    }
+}
+
 void AABB::draw()
 {
-    if ( filled_rects.size() > 0 )
+    if ( !filled_rects.empty() )
         SDL_RenderFillRects(renderer, *filled_rects.data(), filled_rects.size());
-    if ( rects.size() > 0 )
+    if ( !rects.empty() )
         SDL_RenderRects(renderer, *rects.data(), rects.size());
 }
 

@@ -10,6 +10,8 @@ class AABB
 {
     static std::vector< SDL_FRect * > rects;
     static std::vector< SDL_FRect * > filled_rects;
+    bool visible{false};
+    bool filled{false};
 
     public:
         SDL_FRect rect{};
@@ -18,13 +20,17 @@ class AABB
 
         AABB() = default;
 
-        AABB( const Vector2 &position, const Vector2 &half_size, bool filled = false );
+        AABB( const Vector2 &position, const Vector2 &half_size, bool filled = false, bool visible = true );
 
         AABB( float x, float y, float half_width, float half_height );
 
-        ~AABB() = default;
+        ~AABB();
 
         void update_rect();
+
+        void show();
+
+        void hide();
 
         static void draw();
 
