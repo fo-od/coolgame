@@ -46,11 +46,7 @@ AABB::AABB( const AABB &other )
     }
 }
 
-AABB::~AABB()
-{
-    SDL_Log("AABB destroyed");
-    hide();
-}
+AABB::~AABB() { hide(); }
 
 void AABB::update_rect()
 {
