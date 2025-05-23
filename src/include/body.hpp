@@ -5,7 +5,7 @@
 class Body
 {
     public:
-        AABB aabb{};
+        std::unique_ptr< AABB > aabb{};
         Vector2 velocity{};
         Vector2 acceleration{};
 
@@ -14,6 +14,4 @@ class Body
         Body( const AABB &aabb, const Vector2 &velocity, const Vector2 &acceleration );
 
         explicit Body( const AABB &aabb );
-
-        explicit Body( const Body *other );
 };
