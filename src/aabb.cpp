@@ -1,11 +1,23 @@
 #include "aabb.hpp"
 
+#include "globals.hpp"
+
 #include "SDL3/SDL.h"
 
-AABB::AABB( const Vector2 &position, const Vector2 &half_size )
+std::vector< SDL_FRect * > AABB::rects;
+std::vector< SDL_FRect * > AABB::filled_rects;
+
+AABB::AABB( const Vector2 &position, const Vector2 &half_size, const bool filled )
     : rect(position.x + half_size.x, position.y - half_size.y, half_size.x * 2, half_size.y * 2),
       position(position),
-      half_size(half_size) {}
+      half_size(half_size)
+{
+    if ( filled ) {
+        filled_rects.push_back(&rect);
+    } else {
+        rects.push_back(&rect);
+    }
+}
 
 AABB::AABB( const float x, const float y, const float half_width, const float half_height )
     : AABB(Vector2{x, y}, Vector2{half_width, half_height}) {}
@@ -15,6 +27,14 @@ void AABB::update_rect()
 {
     rect.x = position.x;
     rect.y = position.y;
+}
+
+void AABB::draw()
+{
+    if ( filled_rects.size() > 0 )
+        SDL_RenderFillRects(renderer, *filled_rects.data(), filled_rects.size());
+    if ( rects.size() > 0 )
+        SDL_RenderRects(renderer, *rects.data(), rects.size());
 }
 
 Vector2 AABB::min() const { return position - half_size; }

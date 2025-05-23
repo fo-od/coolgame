@@ -8,6 +8,9 @@
 
 class AABB
 {
+    static std::vector< SDL_FRect * > rects;
+    static std::vector< SDL_FRect * > filled_rects;
+
     public:
         SDL_FRect rect{};
         Vector2 position{};
@@ -15,7 +18,7 @@ class AABB
 
         AABB() = default;
 
-        AABB( const Vector2 &position, const Vector2 &half_size );
+        AABB( const Vector2 &position, const Vector2 &half_size, bool filled = false );
 
         AABB( float x, float y, float half_width, float half_height );
 
@@ -23,7 +26,7 @@ class AABB
 
         void update_rect();
 
-        static void draw_rects();
+        static void draw();
 
         [[nodiscard]] Vector2 min() const;
 

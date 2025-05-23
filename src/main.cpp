@@ -60,12 +60,14 @@ int main()
 bool init_sdl()
 {
     // sdl stuff
-    HANDLE_SDL_ERROR_RETURN(SDL_SetAppMetadata("cool game", "1.0", "com.food.coolgame"), "Couldn't set app metadata: %s");
+    HANDLE_SDL_ERROR_RETURN(SDL_SetAppMetadata("cool game", "1.0", "com.food.coolgame"),
+                            "Couldn't set app metadata: %s");
 
     HANDLE_SDL_ERROR_RETURN(SDL_Init(SDL_INIT_VIDEO), "Couldn't initialize SDL: %s");
 
-    HANDLE_SDL_ERROR_RETURN(SDL_CreateWindowAndRenderer("cool game", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL, &window,
-                         &renderer), "Couldn't create window/renderer: %s");
+    HANDLE_SDL_ERROR_RETURN(SDL_CreateWindowAndRenderer("cool game", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL, &
+                                window,
+                                &renderer), "Couldn't create window/renderer: %s");
 
     // enable vsync
     HANDLE_SDL_ERROR_RETURN(SDL_SetRenderVSync(renderer, 1), "Couldn't enable VSync: %s");
@@ -113,7 +115,7 @@ void render()
 
     // draw stuff here
     U_SetRenderDrawColor(COLOR_WHITE);
-    Physics::draw();
+    AABB::draw();
 
     HANDLE_SDL_ERROR(SDL_RenderPresent(renderer), "Could not update the screen: %s");
 }
