@@ -9,8 +9,8 @@ void Physics::update()
 {
     for ( Body &body : bodies ) {
         body.velocity += body.acceleration * deltaTime;
-        body.aabb->position += body.velocity * deltaTime;
-        body.aabb->update_rect();
+        body.aabb.position += body.velocity * deltaTime;
+        body.aabb.update_rect();
     }
 }
 
