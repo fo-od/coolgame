@@ -10,14 +10,13 @@ std::vector< SDL_FRect * > AABB::filled_rects;
 AABB::AABB( const Vector2 &position, const Vector2 &half_size, const bool filled, const bool visible )
     : visible(visible),
       filled(filled),
-      rect(position.x + half_size.x,
+      rect(position.x - half_size.x,
            position.y - half_size.y,
            half_size.x * 2,
            half_size.y * 2),
       position(position),
       half_size(half_size)
 {
-    update_rect();
     if ( visible ) {
         if ( filled ) {
             filled_rects.push_back(&rect);
@@ -37,7 +36,6 @@ AABB::AABB( const AABB &other )
       position(other.position),
       half_size(other.half_size)
 {
-    update_rect();
     if ( visible ) {
         if ( filled )
             filled_rects.push_back(&rect);
@@ -50,8 +48,8 @@ AABB::~AABB() { hide(); }
 
 void AABB::update_rect()
 {
-    rect.x = position.x;
-    rect.y = position.y;
+    rect.x = position.x - half_size.x;
+    rect.y = position.y - half_size.y;
 }
 
 void AABB::show()
