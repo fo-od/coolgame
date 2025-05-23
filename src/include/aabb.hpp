@@ -24,6 +24,8 @@ class AABB
 
         AABB( float x, float y, float half_width, float half_height );
 
+        AABB( const AABB &other );
+
         ~AABB();
 
         void update_rect();
