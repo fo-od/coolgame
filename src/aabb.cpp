@@ -17,8 +17,13 @@ AABB::AABB( const Vector2 &position, const Vector2 &half_size, const bool filled
       position(position),
       half_size(half_size)
 {
-    if ( visible )
-        show();
+    if ( visible ) {
+        if ( filled ) {
+            filled_rects.push_back(&rect);
+        } else {
+            rects.push_back(&rect);
+        }
+    }
 }
 
 AABB::AABB( const float x, const float y, const float half_width, const float half_height )
@@ -54,11 +59,13 @@ void AABB::hide()
         auto removeRect = [this]( std::vector< SDL_FRect * > &vec ) {
             if ( const auto it = std::find(vec.begin(), vec.end(), &rect); it != vec.end() ) {
                 vec.erase(it);
+                return true;
             }
+            return false;
         };
 
-        removeRect(rects);
-        removeRect(filled_rects);
+        if ( !removeRect(rects) )
+            removeRect(filled_rects);
 
         visible = false;
     }
