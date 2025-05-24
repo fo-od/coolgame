@@ -64,25 +64,25 @@ bool init_sdl()
 {
     // sdl stuff
     HANDLE_SDL_ERROR_RETURN(SDL_SetAppMetadata("cool game", "1.0", "com.food.coolgame"),
-                            "Couldn't set app metadata: {}");
+                            "Couldn't set app metadata: %s");
 
-    HANDLE_SDL_ERROR_RETURN(SDL_Init(SDL_INIT_VIDEO), "Couldn't initialize SDL: {}");
+    HANDLE_SDL_ERROR_RETURN(SDL_Init(SDL_INIT_VIDEO), "Couldn't initialize SDL: %s");
 
     HANDLE_SDL_ERROR_RETURN(SDL_CreateWindowAndRenderer("cool game", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL, &
                                 window,
-                                &renderer), "Couldn't create window/renderer: {}");
+                                &renderer), "Couldn't create window/renderer: %s");
 
     // enable vsync
-    HANDLE_SDL_ERROR_RETURN(SDL_SetRenderVSync(renderer, 1), "Couldn't enable VSync: {}");
+    HANDLE_SDL_ERROR_RETURN(SDL_SetRenderVSync(renderer, 1), "Couldn't enable VSync: %s");
 
     // setup ttf things
-    HANDLE_SDL_ERROR_RETURN(TTF_Init(), "Couldn't initialize text renderer: {}");
+    HANDLE_SDL_ERROR_RETURN(TTF_Init(), "Couldn't initialize text renderer: %s");
 
     textEngine = TTF_CreateRendererTextEngine(renderer);
-    HANDLE_SDL_ERROR_RETURN(textEngine, "Couldn't create text engine: {}");
+    HANDLE_SDL_ERROR_RETURN(textEngine, "Couldn't create text engine: %s");
 
     font = TTF_OpenFontIO(SDL_IOFromConstMem(cozette, cozette_len), true, FONT_SIZE);
-    HANDLE_SDL_ERROR_RETURN(font, "Couldn't load font: {}");
+    HANDLE_SDL_ERROR_RETURN(font, "Couldn't load font: %s");
 
     return true;
 }
@@ -112,7 +112,7 @@ void update()
     Physics::update();
 
     b->aabb.pos = mouse.pos;
-    if (b->aabb.intersects(a->aabb)) {
+    if ( b->aabb.intersects(a->aabb) ) {
         SDL_Log("hi");
     }
 }
@@ -120,13 +120,13 @@ void update()
 void render()
 {
     U_SetRenderDrawColor(COLOR_BLACK);
-    HANDLE_SDL_ERROR(SDL_RenderClear(renderer), "Could not clear screen: {}");
+    HANDLE_SDL_ERROR(SDL_RenderClear(renderer), "Could not clear screen: %s");
 
     // draw stuff here
     U_SetRenderDrawColor(COLOR_WHITE);
     AABB::draw();
 
-    HANDLE_SDL_ERROR(SDL_RenderPresent(renderer), "Could not update the screen: {}");
+    HANDLE_SDL_ERROR(SDL_RenderPresent(renderer), "Could not update the screen: %s");
 }
 
 void cleanup()
