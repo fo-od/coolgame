@@ -1,9 +1,11 @@
 #pragma once
 
+#include "SDL3/SDL_rect.h"
+
 class Vector2
 {
     public:
-        float x{}, y{};
+        float x = 0, y = 0;
 
         Vector2() = default;
 
@@ -13,7 +15,11 @@ class Vector2
 
         ~Vector2() = default;
 
-        void draw( float originX = {}, float originY = {} ) const;
+        void draw( float originX = 0, float originY = 0 ) const;
+
+        [[nodiscard]] float get( bool val ) const;
+
+        Vector2 &operator=( SDL_FPoint o );
 
         Vector2 &operator*=( float o );
 

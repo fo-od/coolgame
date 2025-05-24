@@ -4,6 +4,7 @@
 
 #include "SDL3/SDL_render.h"
 
+
 Vector2::Vector2( const float x, const float y )
     : x(x),
       y(y) {}
@@ -14,6 +15,21 @@ Vector2::Vector2( const Vector2 &other ) = default;
 void Vector2::draw( const float originX, const float originY ) const
 {
     SDL_RenderLine(renderer, originX, originY, originX + this->x, originY + this->y);
+}
+
+float Vector2::get( const bool val ) const
+{
+    if ( val ) {
+        return y;
+    }
+    return x;
+}
+
+Vector2 &Vector2::operator=( const SDL_FPoint o )
+{
+    x = o.x;
+    y = o.y;
+    return *this;
 }
 
 
