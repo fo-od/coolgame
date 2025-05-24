@@ -12,7 +12,7 @@ class Physics
 
         static void update();
 
-        static void add_body( const Vector2 &position, const Vector2 &size,
-                              const Vector2 &velocity = Vector2{},
-                              const Vector2 &acceleration = Vector2{} );
+        static Body *add_body( const Vector2 &position, const Vector2 &size,
+                               const Vector2 &velocity = Vector2{},
+                               const Vector2 &acceleration = Vector2{} );
 };
