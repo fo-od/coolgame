@@ -18,13 +18,16 @@ class AABB
 {
     static std::vector< SDL_FRect * > rects;
     static std::vector< SDL_FRect * > filled_rects;
+
     bool visible = false;
     bool filled = false;
 
+    void removeRect() const;
+
     public:
-        SDL_FRect rect{};
         Vector2 pos{};
         Vector2 half_size{};
+        SDL_FRect rect{};
 
         AABB() = default;
 
@@ -36,13 +39,15 @@ class AABB
 
         ~AABB();
 
+        AABB &operator=( const AABB &other );
+
+        static void draw();
+
         void update_rect();
 
         void show();
 
         void hide();
-
-        static void draw();
 
         [[nodiscard]] Vector2 min() const;
 
@@ -52,7 +57,7 @@ class AABB
 
         [[nodiscard]] bool intersects( const AABB &other ) const;
 
-        [[nodiscard]] Hit intersects( const Vector2& pos, const Vector2 &magnitude ) const;
+        [[nodiscard]] Hit intersects( const Vector2 &pos, const Vector2 &magnitude ) const;
 
         [[nodiscard]] Vector2 penetration_vector( const AABB &other ) const;
 };

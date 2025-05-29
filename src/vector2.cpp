@@ -17,6 +17,11 @@ void Vector2::draw( const float originX, const float originY ) const
     SDL_RenderLine(renderer, originX, originY, originX + this->x, originY + this->y);
 }
 
+void Vector2::draw( const Vector2 &origin ) const
+{
+    draw(origin.x, origin.y);
+}
+
 float Vector2::get( const bool val ) const
 {
     if ( val ) {

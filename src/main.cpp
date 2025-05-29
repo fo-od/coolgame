@@ -12,8 +12,8 @@
 #include "SDL3/SDL.h"
 #include "SDL3_ttf/SDL_ttf.h"
 
-Body *a;
-Body *b;
+Body a;
+Body b;
 
 int main()
 {
@@ -78,19 +78,19 @@ bool init_sdl()
     // setup ttf things
     HANDLE_SDL_ERROR_RETURN(TTF_Init(), "Couldn't initialize text renderer: %s");
 
-    textEngine = TTF_CreateRendererTextEngine(renderer);
-    HANDLE_SDL_ERROR_RETURN(textEngine, "Couldn't create text engine: %s");
+    HANDLE_SDL_ERROR_RETURN(textEngine = TTF_CreateRendererTextEngine(renderer), "Couldn't create text engine: %s");
 
-    font = TTF_OpenFontIO(SDL_IOFromConstMem(cozette, cozette_len), true, FONT_SIZE);
-    HANDLE_SDL_ERROR_RETURN(font, "Couldn't load font: %s");
+    HANDLE_SDL_ERROR_RETURN(font = TTF_OpenFontIO(SDL_IOFromConstMem(cozette, cozette_len), true, FONT_SIZE),
+                            "Couldn't load font: %s");
 
     return true;
 }
 
 bool init_game()
 {
-    a = Physics::add_body(Vector2{WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2}, Vector2{50, 50});
-    b = Physics::add_body(Vector2{0, 0}, Vector2{100, 100});
+    Physics::add_body(&( a = Body{Vector2{WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2}, Vector2{100, 100}} ));
+    Physics::add_body(&( b = Body{Vector2{0, 0}, Vector2{50, 50}} ));
+
     return true;
 }
 
@@ -111,10 +111,7 @@ void update()
     update_keyboard();
     Physics::update();
 
-    b->aabb.pos = mouse.pos;
-    if ( b->aabb.intersects(a->aabb) ) {
-        SDL_Log("hi");
-    }
+    b.aabb.pos = mouse.pos;
 }
 
 void render()
@@ -125,18 +122,25 @@ void render()
     // draw stuff here
     U_SetRenderDrawColor(COLOR_WHITE);
     AABB::draw();
+    if ( b.aabb.intersects(a.aabb) ) {
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_RenderRect(renderer, &b.aabb.rect);
+        const Vector2 pen{b.aabb.penetration_vector(a.aabb)};
+        pen.draw(b.aabb.pos);
+        const AABB res{pen+b.aabb.pos, b.aabb.half_size};
+        SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
+        SDL_RenderRect(renderer, &res.rect);
+    }
 
     HANDLE_SDL_ERROR(SDL_RenderPresent(renderer), "Could not update the screen: %s");
 }
 
 void cleanup()
 {
-    // sdl cleanup
+    TTF_CloseFont(font);
+    TTF_Quit();
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
-
-    // ttf cleanup
-    TTF_CloseFont(font);
-    TTF_Quit();
 }

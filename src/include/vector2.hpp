@@ -17,6 +17,8 @@ class Vector2
 
         void draw( float originX = 0, float originY = 0 ) const;
 
+        void draw( const Vector2 &origin ) const;
+
         [[nodiscard]] float get( bool val ) const;
 
         Vector2 &operator=( SDL_FPoint o );

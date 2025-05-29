@@ -12,12 +12,12 @@ std::vector< SDL_FRect * > AABB::filled_rects;
 AABB::AABB( const Vector2 &position, const Vector2 &half_size, const bool visible, const bool filled )
     : visible(visible),
       filled(filled),
+      pos(position),
+      half_size(half_size),
       rect(position.x - half_size.x,
            position.y - half_size.y,
            half_size.x * 2,
-           half_size.y * 2),
-      pos(position),
-      half_size(half_size)
+           half_size.y * 2)
 {
     if ( visible ) {
         if ( filled ) {
@@ -34,9 +34,9 @@ AABB::AABB( const float x, const float y, const float half_width, const float ha
 AABB::AABB( const AABB &other )
     : visible(other.visible),
       filled(other.filled),
-      rect(other.rect),
       pos(other.pos),
-      half_size(other.half_size)
+      half_size(other.half_size),
+      rect(other.rect)
 {
     if ( visible ) {
         if ( filled )
@@ -46,7 +46,38 @@ AABB::AABB( const AABB &other )
     }
 }
 
-AABB::~AABB() { hide(); }
+AABB::~AABB()
+{
+    hide();
+}
+
+AABB &AABB::operator=( const AABB &other )
+{
+    rect = other.rect;
+    visible = other.visible;
+    filled = other.filled;
+    pos = other.pos;
+    half_size = other.half_size;
+
+    if ( visible ) {
+        if ( filled ) {
+            filled_rects.push_back(&rect);
+        } else {
+            rects.push_back(&rect);
+        }
+    }
+    return *this;
+}
+
+void AABB::removeRect() const
+{
+    if ( const auto r = std::find(rects.begin(), rects.end(), &rect); r != rects.end() ) {
+        rects.erase(r);
+    }
+    if ( const auto d = std::find(filled_rects.begin(), filled_rects.end(), &rect); d != filled_rects.end() ) {
+        filled_rects.erase(d);
+    }
+}
 
 void AABB::update_rect()
 {
@@ -68,32 +99,34 @@ void AABB::show()
 
 void AABB::hide()
 {
-    if ( visible ) {
-        auto removeRect = [this]( std::vector< SDL_FRect * > &vec ) {
-            if ( const auto it = std::find(vec.begin(), vec.end(), &rect); it != vec.end() ) {
-                vec.erase(it);
-                return true;
-            }
-            return false;
-        };
-
-        if ( !removeRect(rects) )
-            removeRect(filled_rects);
-
-        visible = false;
+    if ( !visible ) {
+        return;
     }
+
+    removeRect();
+
+    visible = false;
 }
 
 void AABB::draw()
 {
-    if ( !filled_rects.empty() )
-        SDL_RenderFillRects(renderer, *filled_rects.data(), filled_rects.size());
-    if ( !rects.empty() )
-        SDL_RenderRects(renderer, *rects.data(), rects.size());
+    for ( const SDL_FRect *rect : rects ) {
+        SDL_RenderRect(renderer, rect);
+    }
+    for ( const SDL_FRect *rect : filled_rects ) {
+        SDL_RenderRect(renderer, rect);
+    }
 }
 
-Vector2 AABB::min() const { return pos - half_size; }
-Vector2 AABB::max() const { return pos + half_size; }
+Vector2 AABB::min() const
+{
+    return pos - half_size;
+}
+
+Vector2 AABB::max() const
+{
+    return pos + half_size;
+}
 
 AABB AABB::minkowski_difference( const AABB &other ) const
 {
@@ -104,8 +137,6 @@ bool AABB::intersects( const AABB &other ) const
 {
     const AABB diff = minkowski_difference(other);
     const Vector2 min = diff.min(), max = diff.max();
-
-    std::print(stdout, "{}\n", min.x);
 
     return min.x <= 0 && max.x >= 0 && min.y <= 0 && max.y >= 0;
 }
