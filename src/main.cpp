@@ -127,7 +127,7 @@ void render()
         SDL_RenderRect(renderer, &b.aabb.rect);
         const Vector2 pen{b.aabb.penetration_vector(a.aabb)};
         pen.draw(b.aabb.pos);
-        const AABB res{pen+b.aabb.pos, b.aabb.half_size};
+        const AABB res{pen + b.aabb.pos, b.aabb.half_size};
         SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
         SDL_RenderRect(renderer, &res.rect);
     }
