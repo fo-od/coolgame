@@ -13,13 +13,11 @@
 
 Button::Button( const std::string &text, const int anchor, const float x, const float y,
                 const std::function< void() > &onClick )
+    : text(TTF_CreateText(textEngine, font, text.c_str(), 0)),
+      onClick(onClick)
 {
-    this->text = TTF_CreateText(textEngine, font, text.c_str(), 0);
-    this->onClick = onClick;
-
-    int textWidth, textHeight;
-    TTF_GetTextSize(this->text, &textWidth, &textHeight);
-    this->rect = {x, y, static_cast< float >(textWidth) + 10, static_cast< float >(textHeight) + 10};
+    const Vector2 textSize = U_GetTextSize(this->text);
+    this->rect = {x, y, textSize.x + 10, textSize.y + 10};
 
     U_AnchorFRect(anchor, &this->rect);
 }
@@ -33,14 +31,18 @@ void Button::update() const
 {
     U_SetRenderDrawColor(COLOR_WHITE);
 
+    // if hovered
     if ( SDL_PointInRectFloat(&mouse.pos, &rect) ) {
+        // fill the button
         SDL_RenderFillRect(renderer, &rect);
         U_SetTextColor(text, COLOR_BLACK);
 
+        // if button is clicked
         if ( mouse.buttons & SDL_BUTTON_LEFT ) {
             this->onClick();
         }
     } else {
+        // if the button is not hovered
         SDL_RenderRect(renderer, &rect);
         U_SetTextColor(text, COLOR_WHITE);
     }
