@@ -6,14 +6,12 @@
 #include "io.hpp"
 #include "physics.hpp"
 #include "player.hpp"
+#include "ray.hpp"
 #include "types.hpp"
 #include "util.hpp"
 
 #include "SDL3/SDL.h"
 #include "SDL3_ttf/SDL_ttf.h"
-
-Body a;
-Body b;
 
 int main()
 {
@@ -75,6 +73,9 @@ bool init_sdl()
     // enable vsync
     HANDLE_SDL_ERROR_RETURN(SDL_SetRenderVSync(renderer, 1), "Couldn't enable VSync: %s");
 
+    // use alpha channel for transparency
+    HANDLE_SDL_ERROR_RETURN(SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND), "Couldn't set blend mode: %s");
+
     // setup ttf things
     HANDLE_SDL_ERROR_RETURN(TTF_Init(), "Couldn't initialize text renderer: %s");
 
@@ -86,10 +87,15 @@ bool init_sdl()
     return true;
 }
 
+Body a;
+Body b;
+Body c;
+
 bool init_game()
 {
-    Physics::add_body(&( a = Body{Vector2{WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2}, Vector2{100, 100}} ));
-    Physics::add_body(&( b = Body{Vector2{0, 0}, Vector2{50, 50}} ));
+    Physics::add_body(&( a = Body{Vector2{WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2}, Vector2{50, 50}} ));
+    Physics::add_body(&( b = Body{Vector2{0, 0}, Vector2{75, 75}} ));
+    Physics::add_body(&( c = Body{b} ));
 
     return true;
 }
@@ -111,25 +117,27 @@ void update()
     update_keyboard();
     Physics::update();
 
+    if ( mouse.buttons & SDL_BUTTON_LEFT ) {
+        c.aabb.pos = mouse.pos;
+    }
     b.aabb.pos = mouse.pos;
 }
 
 void render()
 {
-    U_SetRenderDrawColor(COLOR_BLACK);
+    U_SetRenderDrawColor(31, 31, 30);
     HANDLE_SDL_ERROR(SDL_RenderClear(renderer), "Could not clear screen: %s");
 
-    // draw stuff here
-    U_SetRenderDrawColor(COLOR_WHITE);
-    AABB::draw();
+    U_RenderRect(&a.aabb.rect, 255, 255, 255);
+    U_RenderRect(&c.aabb.rect, 255, 255, 255);
+    U_RenderRect(&b.aabb.rect, 255, 255, 255, 175);
+
+    const Ray v{c.aabb.pos, b.aabb.pos};
+    v.draw();
+
     if ( b.aabb.intersects(a.aabb) ) {
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_RenderRect(renderer, &b.aabb.rect);
-        const Vector2 pen{b.aabb.penetration_vector(a.aabb)};
-        pen.draw(b.aabb.pos);
-        const AABB res{pen + b.aabb.pos, b.aabb.half_size};
-        SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);
-        SDL_RenderRect(renderer, &res.rect);
+        const AABB res{b.aabb.penetration_vector(a.aabb) + b.aabb.pos, b.aabb.half_size};
+        U_RenderRect(&res.rect, 0, 255, 255);
     }
 
     HANDLE_SDL_ERROR(SDL_RenderPresent(renderer), "Could not update the screen: %s");
