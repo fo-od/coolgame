@@ -149,7 +149,9 @@ Hit AABB::intersects( const Vector2 &pos, const Vector2 &magnitude ) const
     float last_entry = -INFINITY;
     float first_exit = INFINITY;
 
+    // repeat for 2 dimensions
     for ( int i = 0; i < 2; i++ ) {
+        // avoid divide by 0
         if ( magnitude.get(i) != 0 ) {
             const float t1 = ( min.get(i) + pos.get(i) ) / magnitude.get(i);
             const float t2 = ( max.get(i) + pos.get(i) ) / magnitude.get(i);
@@ -167,6 +169,11 @@ Hit AABB::intersects( const Vector2 &pos, const Vector2 &magnitude ) const
         hit.time = last_entry;
     }
     return hit;
+}
+
+Hit AABB::intersects( const Ray &ray ) const
+{
+    return intersects(ray.position, ray.magnitude);
 }
 
 Vector2 AABB::penetration_vector( const AABB &other ) const

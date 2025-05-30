@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "ray.hpp"
 #include "vector2.hpp"
 
 #include "SDL3/SDL_rect.h"
@@ -58,6 +59,8 @@ class AABB
         [[nodiscard]] bool intersects( const AABB &other ) const;
 
         [[nodiscard]] Hit intersects( const Vector2 &pos, const Vector2 &magnitude ) const;
+
+        [[nodiscard]] Hit intersects( const Ray &ray ) const;
 
         [[nodiscard]] Vector2 penetration_vector( const AABB &other ) const;
 };
