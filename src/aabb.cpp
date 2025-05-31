@@ -153,8 +153,8 @@ Hit AABB::intersects( const Vector2 &pos, const Vector2 &magnitude ) const
     for ( int i = 0; i < 2; i++ ) {
         // avoid divide by 0
         if ( magnitude.get(i) != 0 ) {
-            const float t1 = ( min.get(i) + pos.get(i) ) / magnitude.get(i);
-            const float t2 = ( max.get(i) + pos.get(i) ) / magnitude.get(i);
+            const float t1 = ( min.get(i) - pos.get(i) ) / magnitude.get(i);
+            const float t2 = ( max.get(i) - pos.get(i) ) / magnitude.get(i);
 
             last_entry = std::max(last_entry, std::min(t1, t2));
             first_exit = std::min(first_exit, std::max(t1, t2));
@@ -168,6 +168,7 @@ Hit AABB::intersects( const Vector2 &pos, const Vector2 &magnitude ) const
         hit.is_hit = true;
         hit.time = last_entry;
     }
+
     return hit;
 }
 
