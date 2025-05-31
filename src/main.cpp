@@ -137,7 +137,9 @@ void render()
 
     U_RenderLine(start_body.aabb.pos, mouse_body.aabb.pos);
 
-    if ( const Hit hit{sum_aabb.intersects(start_body.aabb.pos, mouse_body.aabb.pos - start_body.aabb.pos)}; hit.is_hit ) {
+    if ( const Hit hit{
+        sum_aabb.intersects(start_body.aabb.pos, mouse_body.aabb.pos - start_body.aabb.pos)
+    }; hit.is_hit ) {
         const AABB res{hit.position, mouse_body.aabb.half_size};
         U_RenderRect(&res.rect, 0, 255, 255);
     }
