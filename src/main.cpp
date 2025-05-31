@@ -87,15 +87,15 @@ bool init_sdl()
     return true;
 }
 
-Body a;
-Body b;
-Body c;
+Body test_body;
+Body mouse_body;
+Body start_body;
 
 bool init_game()
 {
-    Physics::add_body(&( a = Body{Vector2{WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2}, Vector2{50, 50}} ));
-    Physics::add_body(&( b = Body{Vector2{0, 0}, Vector2{75, 75}} ));
-    Physics::add_body(&( c = Body{b} ));
+    Physics::add_body(&( test_body = Body{Vector2{WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2}, Vector2{50, 50}} ));
+    Physics::add_body(&( mouse_body = Body{Vector2{0, 0}, Vector2{75, 75}} ));
+    Physics::add_body(&( start_body = Body{mouse_body} ));
 
     return true;
 }
@@ -118,9 +118,9 @@ void update()
     Physics::update();
 
     if ( mouse.buttons & SDL_BUTTON_LEFT ) {
-        c.aabb.pos = mouse.pos;
+        start_body.aabb.pos = mouse.pos;
     }
-    b.aabb.pos = mouse.pos;
+    mouse_body.aabb.pos = mouse.pos;
 }
 
 void render()
@@ -128,15 +128,17 @@ void render()
     U_SetRenderDrawColor(31, 31, 30);
     HANDLE_SDL_ERROR(SDL_RenderClear(renderer), "Could not clear screen: %s");
 
-    U_RenderRect(&a.aabb.rect, 255, 255, 255);
-    U_RenderRect(&c.aabb.rect, 255, 255, 255);
-    U_RenderRect(&b.aabb.rect, 255, 255, 255, 175);
+    const AABB sum_aabb{test_body.aabb.pos, test_body.aabb.half_size + mouse_body.aabb.half_size};
 
-    const Ray v{c.aabb.pos, b.aabb.pos};
-    v.draw();
+    U_RenderRect(&test_body.aabb.rect, 255, 255, 255);
+    U_RenderRect(&start_body.aabb.rect, 255, 255, 255);
+    U_RenderRect(&mouse_body.aabb.rect, 255, 255, 255, 175);
+    U_RenderRect(&sum_aabb.rect, 255, 255, 255, 175);
 
-    if ( b.aabb.intersects(a.aabb) ) {
-        const AABB res{b.aabb.penetration_vector(a.aabb) + b.aabb.pos, b.aabb.half_size};
+    U_RenderLine(start_body.aabb.pos, mouse_body.aabb.pos);
+
+    if ( const Hit hit{sum_aabb.intersects(start_body.aabb.pos, mouse_body.aabb.pos - start_body.aabb.pos)}; hit.is_hit ) {
+        const AABB res{hit.position, mouse_body.aabb.half_size};
         U_RenderRect(&res.rect, 0, 255, 255);
     }
 
