@@ -33,5 +33,9 @@ class Vector2
 
         Vector2 operator+( const Vector2 &o ) const;
 
+        Vector2 operator+( float o ) const;
+
         Vector2 operator-( const Vector2 &o ) const;
+
+        Vector2 operator-( float o ) const;
 };

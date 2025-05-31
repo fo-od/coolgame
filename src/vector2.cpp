@@ -70,9 +70,19 @@ Vector2 Vector2::operator+( const Vector2 &o ) const
     return Vector2{x + o.x, y + o.y};
 }
 
+Vector2 Vector2::operator+( const float o ) const
+{
+    return Vector2{x + o, y + o};
+}
+
 // Subtraction
 
 Vector2 Vector2::operator-( const Vector2 &o ) const
 {
     return Vector2{x - o.x, y - o.y};
+}
+
+Vector2 Vector2::operator-( const float o ) const
+{
+    return Vector2{x - o, y - o};
 }
