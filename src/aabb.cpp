@@ -29,7 +29,8 @@ AABB::AABB( const Vector2 &position, const Vector2 &half_size, const bool visibl
 }
 
 AABB::AABB( const float x, const float y, const float half_width, const float half_height )
-    : AABB(Vector2{x, y}, Vector2{half_width, half_height}) {}
+    : pos(x, y),
+      half_size(half_width, half_height) {}
 
 AABB::AABB( const AABB &other )
     : visible(other.visible),
@@ -87,14 +88,17 @@ void AABB::update_rect()
 
 void AABB::show()
 {
-    if ( !visible ) {
-        if ( filled ) {
-            filled_rects.push_back(&rect);
-        } else {
-            rects.push_back(&rect);
-        }
-        visible = true;
+    if ( visible ) {
+        return;
     }
+
+    if ( filled ) {
+        filled_rects.push_back(&rect);
+    } else {
+        rects.push_back(&rect);
+    }
+
+    visible = true;
 }
 
 void AABB::hide()
@@ -128,14 +132,14 @@ Vector2 AABB::max() const
     return pos + half_size;
 }
 
-AABB AABB::minkowski_difference( const AABB &other ) const
+AABB AABB::minkowski_difference( const AABB &a, const AABB &b )
 {
-    return AABB{other.pos - this->pos, other.half_size + this->half_size};
+    return AABB{a.pos - b.pos, a.half_size + b.half_size};
 }
 
 bool AABB::intersects( const AABB &other ) const
 {
-    const AABB diff = minkowski_difference(other);
+    const AABB diff = minkowski_difference(*this, other);
     const Vector2 min = diff.min(), max = diff.max();
 
     return min.x <= 0 && max.x >= 0 && min.y <= 0 && max.y >= 0;
@@ -167,6 +171,17 @@ Hit AABB::intersects( const Vector2 &pos, const Vector2 &magnitude ) const
         hit.position = pos + magnitude * last_entry;
         hit.is_hit = true;
         hit.time = last_entry;
+
+        const float dx = hit.position.x - pos.x,
+                    dy = hit.position.y - pos.y;
+        const float px = half_size.x - std::abs(dx),
+                    py = half_size.y - std::abs(dy);
+
+        if ( px > py ) {
+            hit.normal.x = ( dx > 0 ) - ( dx < 0 );
+        } else {
+            hit.normal.y = ( dy > 0 ) - ( dy < 0 );
+        }
     }
 
     return hit;
@@ -177,12 +192,12 @@ Hit AABB::intersects( const Ray &ray ) const
     return intersects(ray.position, ray.magnitude);
 }
 
-Vector2 AABB::penetration_vector( const AABB &other ) const
+Vector2 AABB::penetration_vector( const AABB &aabb )
 {
     Vector2 result;
 
-    const AABB diff = minkowski_difference(other);
-    const Vector2 min = diff.min(), max = diff.max();
+    const Vector2 min = aabb.min(),
+                  max = aabb.max();
 
     float min_dist = std::abs(min.x);
     result.x = min.x;

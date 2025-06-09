@@ -13,6 +13,7 @@ class Hit
         bool is_hit = false;
         float time = -1;
         Vector2 position;
+        Vector2 normal;
 };
 
 class AABB
@@ -54,7 +55,7 @@ class AABB
 
         [[nodiscard]] Vector2 max() const;
 
-        [[nodiscard]] AABB minkowski_difference( const AABB &other ) const;
+        static AABB minkowski_difference( const AABB &a, const AABB &b );
 
         [[nodiscard]] bool intersects( const AABB &other ) const;
 
@@ -62,5 +63,5 @@ class AABB
 
         [[nodiscard]] Hit intersects( const Ray &ray ) const;
 
-        [[nodiscard]] Vector2 penetration_vector( const AABB &other ) const;
+        static Vector2 penetration_vector( const AABB &aabb );
 };

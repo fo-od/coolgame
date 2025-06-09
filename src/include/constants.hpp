@@ -4,8 +4,8 @@
 
 #include "SDL3/SDL_pixels.h"
 
-#define WINDOW_WIDTH 1024
-#define WINDOW_HEIGHT 768
+#define RENDER_WIDTH 640
+#define RENDER_HEIGHT 480
 
 #define FONT_SIZE 13
 
