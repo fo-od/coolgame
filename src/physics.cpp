@@ -23,15 +23,17 @@ Hit Physics::sweep_static_bodies( const AABB &aabb, const Vector2 &velocity )
         sum_aabb.half_size += aabb.half_size;
 
         const Hit hit = sum_aabb.intersects(aabb.pos, velocity);
-        if ( hit.is_hit ) {
-            if ( hit.time < result.time ) {
+        if ( !hit.is_hit ) {
+            continue;
+        }
+
+        if ( hit.time < result.time ) {
+            result = hit;
+        } else if ( hit.time == result.time ) {
+            if ( std::abs(velocity.x) > std::abs(velocity.y) && hit.normal.x != 0 ) {
                 result = hit;
-            } else if ( hit.time == result.time ) {
-                if ( std::abs(velocity.x) > std::abs(velocity.y) && hit.normal.x != 0 ) {
-                    result = hit;
-                } else if ( std::abs(velocity.y) > std::abs(velocity.x) && hit.normal.y != 0 ) {
-                    result = hit;
-                }
+            } else if ( std::abs(velocity.y) > std::abs(velocity.x) && hit.normal.y != 0 ) {
+                result = hit;
             }
         }
     }
@@ -61,9 +63,8 @@ void Physics::stationary_response( Body *body )
     for ( const StaticBody &static_body : static_bodies ) {
         AABB aabb = AABB::minkowski_difference(static_body.aabb, body->aabb);
 
-        if ( Vector2 min = aabb.min(), max = aabb.max();
-            min.x <= 0 && max.x >= 0 && min.y <= 0 && max.y >= 0 ) {
-            const Vector2 penetration_vector = AABB::penetration_vector(body->aabb);
+        if ( Vector2 min = aabb.min(), max = aabb.max(); min.x <= 0 && max.x >= 0 && min.y <= 0 && max.y >= 0 ) {
+            const Vector2 penetration_vector = AABB::penetration_vector(aabb);
             body->aabb.pos += penetration_vector;
         }
     }
