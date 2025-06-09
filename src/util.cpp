@@ -33,7 +33,7 @@ void U_DrawRendererText( TTF_Text *text, const int anchor, float x, float y )
             // text anchor pos is already top left
             break;
         case ANCHOR_TOP_MIDDLE:
-            x -= static_cast< float >(w) / 2;
+            x -= w / 2;
             break;
         case ANCHOR_TOP_RIGHT:
             x -= w;
