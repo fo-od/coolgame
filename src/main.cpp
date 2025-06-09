@@ -36,7 +36,7 @@ int main()
 
     SDL_Log("Game started");
 
-    const u32 player_id = Physics::add_body(Vector2{RENDER_WIDTH / 2, RENDER_HEIGHT / 2}, Vector2{25, 25});
+    const u32 player_id = Physics::add_body(Vector2{RENDER_WIDTH / 2, RENDER_HEIGHT / 2}, Vector2{10, 10}, true);
 
     const u32 floor = Physics::add_static_body(Vector2{RENDER_WIDTH / 2, RENDER_HEIGHT - 25},
                                                Vector2{RENDER_WIDTH / 2, 25});
@@ -74,7 +74,8 @@ bool init_sdl()
 
     HANDLE_SDL_ERROR_RETURN(SDL_Init(SDL_INIT_VIDEO), "Couldn't initialize SDL: %s")
 
-    HANDLE_SDL_ERROR_RETURN(SDL_CreateWindowAndRenderer("cool game", 0, 0, SDL_WINDOW_FULLSCREEN,
+    HANDLE_SDL_ERROR_RETURN(SDL_CreateWindowAndRenderer("cool game", 1024, 768, SDL_WINDOW_RESIZABLE |
+                                SDL_WINDOW_MAXIMIZED,
                                 &window,
                                 &renderer), "Couldn't create window/renderer: %s")
     // enable vsync
@@ -82,7 +83,7 @@ bool init_sdl()
 
     // do things in 640 x 480 but scale it as needed
     HANDLE_SDL_ERROR_RETURN(SDL_SetRenderLogicalPresentation(renderer, 640, 480,
-                                SDL_LOGICAL_PRESENTATION_LETTERBOX),
+                                SDL_LOGICAL_PRESENTATION_DISABLED),
                             "Couldn't set the logical presentation: %s")
 
     // use the alpha channel for transparency
@@ -105,11 +106,8 @@ void handle_events( SDL_Event *e )
         gameIsRunning = false;
 
 
-    if ( e->type == SDL_EVENT_MOUSE_MOTION || e->type == SDL_EVENT_MOUSE_BUTTON_DOWN || e->type ==
-         SDL_EVENT_MOUSE_BUTTON_UP )
-        update_mouse(e);
+    update_mouse(e);
 }
-
 
 void update( Body *player )
 {
@@ -118,16 +116,16 @@ void update( Body *player )
     Vector2 velocity{0.0, player->velocity.y};
 
     if ( keyboardState[SDL_SCANCODE_LEFT] ) {
-        velocity.x -= 40;
+        velocity.x -= 1000;
     }
     if ( keyboardState[SDL_SCANCODE_RIGHT] ) {
-        velocity.x += 40;
+        velocity.x += 1000;
     }
     if ( keyboardState[SDL_SCANCODE_UP] ) {
-        velocity.y = 100;
+        velocity.y = -4000;
     }
     if ( keyboardState[SDL_SCANCODE_DOWN] ) {
-        velocity.y -= 10;
+        velocity.y += 800;
     }
 
     player->velocity = velocity;
