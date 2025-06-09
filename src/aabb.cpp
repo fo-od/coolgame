@@ -118,7 +118,7 @@ void AABB::draw()
         SDL_RenderRect(renderer, rect);
     }
     for ( const SDL_FRect *rect : filled_rects ) {
-        SDL_RenderRect(renderer, rect);
+        SDL_RenderFillRect(renderer, rect);
     }
 }
 
@@ -177,7 +177,7 @@ Hit AABB::intersects( const Vector2 &pos, const Vector2 &magnitude ) const
         const float px = half_size.x - std::abs(dx),
                     py = half_size.y - std::abs(dy);
 
-        if ( px > py ) {
+        if ( px < py ) {
             hit.normal.x = ( dx > 0 ) - ( dx < 0 );
         } else {
             hit.normal.y = ( dy > 0 ) - ( dy < 0 );

@@ -2,7 +2,6 @@
 
 #include <vector>
 
-#include "ray.hpp"
 #include "vector2.hpp"
 
 #include "SDL3/SDL_rect.h"
