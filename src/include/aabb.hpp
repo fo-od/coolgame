@@ -61,7 +61,5 @@ class AABB
 
         [[nodiscard]] Hit intersects( const Vector2 &pos, const Vector2 &magnitude ) const;
 
-        [[nodiscard]] Hit intersects( const Ray &ray ) const;
-
         static Vector2 penetration_vector( const AABB &aabb );
 };

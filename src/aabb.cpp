@@ -187,11 +187,6 @@ Hit AABB::intersects( const Vector2 &pos, const Vector2 &magnitude ) const
     return hit;
 }
 
-Hit AABB::intersects( const Ray &ray ) const
-{
-    return intersects(ray.position, ray.magnitude);
-}
-
 Vector2 AABB::penetration_vector( const AABB &aabb )
 {
     Vector2 result;
