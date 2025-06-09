@@ -12,6 +12,6 @@ typedef struct
 inline Mouse mouse;
 inline const bool *keyboardState;
 
-void update_mouse( const SDL_Event *e );
+void update_mouse( SDL_Event *e );
 
 void update_keyboard();
