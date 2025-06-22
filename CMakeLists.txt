@@ -18,7 +18,7 @@ set(SDL_TEST OFF)
 
 ## Dependencies
 # SDL
-CPMAddPackage("gh:libsdl-org/SDL#release-3.2.14")
+CPMAddPackage("gh:libsdl-org/SDL#release-3.2.16")
 list(APPEND LIBS SDL3::SDL3)
 
 # SDL_image
