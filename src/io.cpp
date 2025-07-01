@@ -5,12 +5,11 @@
 
 void update_mouse( SDL_Event *e )
 {
-    if ( e->type == SDL_EVENT_MOUSE_MOTION ) {
+    if ( e->type == SDL_EVENT_MOUSE_MOTION || e->type == SDL_EVENT_MOUSE_BUTTON_DOWN || e->type ==
+         SDL_EVENT_MOUSE_BUTTON_UP ) {
         SDL_ConvertEventToRenderCoordinates(renderer, e);
         mouse.pos.x = e->motion.x;
         mouse.pos.y = e->motion.y;
-    }
-    if ( e->type == SDL_EVENT_MOUSE_BUTTON_DOWN || e->type == SDL_EVENT_MOUSE_BUTTON_UP ) {
         mouse.buttons = e->motion.state;
     }
 }
