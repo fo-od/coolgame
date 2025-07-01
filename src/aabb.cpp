@@ -172,8 +172,8 @@ Hit AABB::intersects( const Vector2 &pos, const Vector2 &magnitude ) const
         hit.is_hit = true;
         hit.time = last_entry;
 
-        const float dx = hit.position.x - pos.x,
-                    dy = hit.position.y - pos.y;
+        const float dx = hit.position.x - this->pos.x,
+                    dy = hit.position.y - this->pos.y;
         const float px = half_size.x - std::abs(dx),
                     py = half_size.y - std::abs(dy);
 
