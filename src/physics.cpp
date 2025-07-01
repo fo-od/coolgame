@@ -7,10 +7,10 @@
 std::vector< Body > Physics::bodies;
 std::vector< StaticBody > Physics::static_bodies;
 
-u32 Physics::iterations = 4;
-float Physics::tick_rate = 1.0f / iterations;
+u32 Physics::iterations = 2;
+float Physics::tick_rate = 1.f / iterations;
 
-float Physics::gravity = 10;
+float Physics::gravity = 100;
 float Physics::terminal_velocity = 10000;
 
 
@@ -63,9 +63,10 @@ void Physics::stationary_response( Body *body )
     for ( const StaticBody &static_body : static_bodies ) {
         AABB aabb = AABB::minkowski_difference(static_body.aabb, body->aabb);
 
-        if ( Vector2 min = aabb.min(), max = aabb.max(); min.x <= 0 && max.x >= 0 && min.y <= 0 && max.y >= 0 ) {
-            const Vector2 penetration_vector = AABB::penetration_vector(aabb);
-            body->aabb.pos += penetration_vector;
+        Vector2 min = aabb.min(), max = aabb.max();
+
+        if ( min.x <= 0 && max.x >= 0 && min.y <= 0 && max.y >= 0 ) {
+            body->aabb.pos += AABB::penetration_vector(aabb);
         }
     }
 }
@@ -80,9 +81,9 @@ void Physics::update()
 
         body.velocity += body.acceleration;
 
-        Vector2 scaled_velocity = body.velocity * deltaTime * tick_rate;
+        Vector2 scaled_velocity = body.velocity * ( deltaTime * tick_rate );
 
-        for ( int i = 0; i < iterations; ++i ) {
+        for ( u32 i = 0; i < iterations; ++i ) {
             sweep_response(&body, scaled_velocity);
             stationary_response(&body);
         }

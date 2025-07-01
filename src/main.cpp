@@ -83,7 +83,7 @@ bool init_sdl()
 
     // do things in 640 x 480 but scale it as needed
     HANDLE_SDL_ERROR_RETURN(SDL_SetRenderLogicalPresentation(renderer, 640, 480,
-                                SDL_LOGICAL_PRESENTATION_DISABLED),
+                                SDL_LOGICAL_PRESENTATION_LETTERBOX),
                             "Couldn't set the logical presentation: %s")
 
     // use the alpha channel for transparency
@@ -122,7 +122,7 @@ void update( Body *player )
         velocity.x += 1000;
     }
     if ( keyboardState[SDL_SCANCODE_UP] ) {
-        velocity.y = -4000;
+        velocity.y = -2000;
     }
     if ( keyboardState[SDL_SCANCODE_DOWN] ) {
         velocity.y += 800;
