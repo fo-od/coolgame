@@ -47,6 +47,6 @@ void Button::update() const
         U_SetTextColor(text, COLOR_WHITE);
     }
 
-    TTF_DrawRendererText(text, rect.x + 5, rect.y + 5);
+    U_DrawRendererText(text, rect.x + 5, rect.y + 5);
     U_SetRenderDrawColor(COLOR_BLACK);
 }
