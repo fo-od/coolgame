@@ -1,9 +1,6 @@
-#include "main.hpp"
-
 #include "button.hpp"
-#include "constants.hpp"
-#include "globals.hpp"
-#include "io.hpp"
+#include "menu.hpp"
+#include "assets/cozette.hpp"
 #include "physics.hpp"
 #include "types.hpp"
 #include "util.hpp"
@@ -11,145 +8,188 @@
 #include "SDL3/SDL.h"
 #include "SDL3_ttf/SDL_ttf.h"
 
-int main()
+struct SDLApplication
 {
-    if ( !init_sdl() ) {
-        return 1;
+    SDL_Window *mWindow{};
+    SDL_Renderer *mRenderer{};
+
+    int mWidth = 640;
+    int mHeight = 480;
+
+    TTF_Font *mFont;
+    TTF_TextEngine *mTextEngine;
+
+    bool mRunning = false;
+    bool mInMenu = false;
+    std::string mCurrentMenu;
+
+    float deltaTime = 0.0f;
+    const bool *keyboardState{};
+
+    SDLApplication()
+    {
+        // sdl setup stuff
+        HANDLE_SDL_ERROR(SDL_SetAppMetadata("cool game", "0.1", "com.food.coolgame"),
+                         "Couldn't set app metadata: %s")
+
+        HANDLE_SDL_ERROR(SDL_Init(SDL_INIT_VIDEO), "Couldn't initialize SDL: %s")
+
+        HANDLE_SDL_ERROR(
+            (mWindow = SDL_CreateWindow("cool game", mWidth, mHeight, SDL_WINDOW_RESIZABLE | SDL_WINDOW_BORDERLESS)),
+            "Couldn't create window: %s")
+        HANDLE_SDL_ERROR((mRenderer = SDL_CreateRenderer(mWindow, nullptr)), "Couldn't create renderer: %s")
+
+        // enable vsync
+        HANDLE_SDL_ERROR(SDL_SetRenderVSync(mRenderer, 1), "Couldn't enable VSync: %s")
+
+        // blend alpha channel
+        HANDLE_SDL_ERROR(SDL_SetRenderDrawBlendMode(mRenderer, SDL_BLENDMODE_BLEND), "Couldn't set blend mode: %s")
+
+        // setup ttf things
+        HANDLE_SDL_ERROR(TTF_Init(), "Couldn't initialize text renderer: %s")
+
+        HANDLE_SDL_ERROR((mTextEngine = TTF_CreateRendererTextEngine(mRenderer)), "Couldn't create text engine: %s")
+
+        HANDLE_SDL_ERROR((mFont = TTF_OpenFontIO(SDL_IOFromConstMem(cozette, cozette_len), true, 13)),
+                         "Couldn't load font: %s")
+
+        //menus
+        Menu::create("pauseMenu", {
+                         std::make_shared<Button>(mTextEngine, mFont, 320, 200, ANCHOR_MIDDLE_MIDDLE, "Resume",
+                                                  [this]() {
+                                                      CLOSE_MENU(mCurrentMenu)
+                                                  }),
+                         std::make_shared<Button>(mTextEngine, mFont, 320, 280, ANCHOR_MIDDLE_MIDDLE, "Exit",
+                                                  [this]() {
+                                                      CLOSE_MENU(mCurrentMenu)
+                                                      mRunning = false;
+                                                  })
+                     });
+
+        Menu::create("mainMenu", {
+                         std::make_shared<Button>(mTextEngine, mFont, mWidth / 2, mHeight / 2, ANCHOR_MIDDLE_MIDDLE,
+                                                  "Start",
+                                                  [this]() {
+                                                      CLOSE_MENU(mCurrentMenu)
+                                                  })
+                     });
     }
 
-    const Button startButton("Start", ANCHOR_MIDDLE_MIDDLE, RENDER_WIDTH / 2, RENDER_HEIGHT / 2, []() {
-        inMainMenu = false;
-        gameIsRunning = true;
-    });
+    ~SDLApplication()
+    {
+        TTF_CloseFont(mFont);
+        TTF_Quit();
 
-    while ( inMainMenu ) {
-        SDL_Event event;
-        while ( SDL_PollEvent(&event) ) {
-            if ( event.type == SDL_EVENT_QUIT ) {
-                inMainMenu = false;
+        SDL_DestroyRenderer(mRenderer);
+        SDL_DestroyWindow(mWindow);
+        SDL_Quit();
+    }
+
+    void mainLoop()
+    {
+        mRunning = true;
+
+        OPEN_MENU("mainMenu")
+
+        const u32 player = Physics::add_body(Vector2{mWidth / 2, mHeight / 2}, Vector2{10, 10}, true);
+
+        const u32 floor = Physics::add_static_body(Vector2{mWidth / 2, mHeight - 25},
+                                                   Vector2{mWidth / 2, 25});
+        const u32 left_wall = Physics::add_static_body(Vector2{25, mHeight / 2},
+                                                       Vector2{25, mHeight / 2});
+        const u32 right_wall = Physics::add_static_body(Vector2{mWidth - 25, mHeight / 2},
+                                                        Vector2{25, mHeight / 2});
+        const u32 ceiling = Physics::add_static_body(Vector2{mWidth / 2, 25}, Vector2{mWidth / 2, 25});
+
+        while (mRunning) {
+            const u64 currentTick = SDL_GetTicks();
+
+            SDL_Event event;
+            while (SDL_PollEvent(&event)) {
+                input(&event);
             }
-            update_mouse(&event);
+
+            if (!mInMenu)
+                update(Physics::get_body(player));
+
+            render();
+
+            deltaTime = (SDL_GetTicks() - currentTick) / 1000.0f;
         }
-        startButton.update();
-        SDL_RenderPresent(renderer);
     }
 
-    SDL_Log("Game started");
+    void input( SDL_Event *e )
+    {
+        if (e->type == SDL_EVENT_QUIT)
+            mRunning = false;
 
-    const u32 player_id = Physics::add_body(Vector2{RENDER_WIDTH / 2, RENDER_HEIGHT / 2}, Vector2{10, 10}, true);
+        keyboardState = SDL_GetKeyboardState(nullptr);
 
-    const u32 floor = Physics::add_static_body(Vector2{RENDER_WIDTH / 2, RENDER_HEIGHT - 25},
-                                               Vector2{RENDER_WIDTH / 2, 25});
-    const u32 left_wall = Physics::add_static_body(Vector2{25, RENDER_HEIGHT / 2},
-                                                   Vector2{25, RENDER_HEIGHT / 2});
-    const u32 right_wall = Physics::add_static_body(Vector2{RENDER_WIDTH - 25, RENDER_HEIGHT / 2},
-                                                    Vector2{25, RENDER_HEIGHT / 2});
-    const u32 ceiling = Physics::add_static_body(Vector2{RENDER_WIDTH / 2, 25}, Vector2{RENDER_WIDTH / 2, 25});
-
-    u32 lastTicks = SDL_GetTicks();
-
-    while ( gameIsRunning ) {
-        // calculate delta time
-        const u32 nowTicks = SDL_GetTicks();
-        deltaTime = ( nowTicks - lastTicks ) * 0.001f;
-        lastTicks = nowTicks;
-
-        SDL_Event event;
-        while ( SDL_PollEvent(&event) ) {
-            handle_events(&event);
+        if (e->type == SDL_EVENT_KEY_DOWN) {
+            if (e->key.scancode == SDL_SCANCODE_ESCAPE) {
+                if (!mInMenu) {
+                    OPEN_MENU("pauseMenu")
+                } else {
+                    CLOSE_MENU(mCurrentMenu)
+                }
+            }
         }
-        update(Physics::get_body(player_id));
-        render();
+
+        if (e->type == SDL_EVENT_MOUSE_MOTION ||
+            e->type == SDL_EVENT_MOUSE_BUTTON_DOWN ||
+            e->type == SDL_EVENT_MOUSE_BUTTON_UP) {
+            SDL_ConvertEventToRenderCoordinates(mRenderer, e);
+            //handle ui stuff
+            if (mInMenu)
+                Menu::update(e->motion, e->button);
+        }
     }
 
-    cleanup();
+    void update( Body *player ) const
+    {
+        Vector2 velocity{0.0, player->mVelocity.y};
+
+        if (keyboardState[SDL_SCANCODE_LEFT]) {
+            velocity.x -= 1000;
+        }
+        if (keyboardState[SDL_SCANCODE_RIGHT]) {
+            velocity.x += 1000;
+        }
+        if (keyboardState[SDL_SCANCODE_UP]) {
+            velocity.y = -2000;
+        }
+        if (keyboardState[SDL_SCANCODE_DOWN]) {
+            velocity.y += 800;
+        }
+
+        player->mVelocity = velocity;
+
+        Physics::update(deltaTime);
+    }
+
+    void render() const
+    {
+        SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+        SDL_RenderClear(mRenderer);
+
+        if (mInMenu) {
+            SDL_SetRenderDrawColor(mRenderer, 127, 127, 127, SDL_ALPHA_OPAQUE);
+            AABB::draw(mRenderer);
+
+            SDL_SetRenderDrawColor(mRenderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+            Menu::draw(mRenderer);
+        } else {
+            SDL_SetRenderDrawColor(mRenderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+            AABB::draw(mRenderer);
+        }
+
+        SDL_RenderPresent(mRenderer);
+    }
+};
+
+int main( int argc, char *argv[] )
+{
+    SDLApplication app;
+    app.mainLoop();
     return 0;
-}
-
-bool init_sdl()
-{
-    // sdl stuff
-    HANDLE_SDL_ERROR_RETURN(SDL_SetAppMetadata("cool game", "1.0", "com.food.coolgame"),
-                            "Couldn't set app metadata: %s")
-
-    HANDLE_SDL_ERROR_RETURN(SDL_Init(SDL_INIT_VIDEO), "Couldn't initialize SDL: %s")
-
-    HANDLE_SDL_ERROR_RETURN(SDL_CreateWindowAndRenderer("cool game", 1024, 768, SDL_WINDOW_RESIZABLE |
-                                SDL_WINDOW_MAXIMIZED,
-                                &window,
-                                &renderer), "Couldn't create window/renderer: %s")
-    // enable vsync
-    HANDLE_SDL_ERROR_RETURN(SDL_SetRenderVSync(renderer, 1), "Couldn't enable VSync: %s")
-
-    // do things in 640 x 480 but scale it as needed
-    HANDLE_SDL_ERROR_RETURN(SDL_SetRenderLogicalPresentation(renderer, 640, 480,
-                                SDL_LOGICAL_PRESENTATION_LETTERBOX),
-                            "Couldn't set the logical presentation: %s")
-
-    // use the alpha channel for transparency
-    HANDLE_SDL_ERROR_RETURN(SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND), "Couldn't set blend mode: %s")
-
-    // setup ttf things
-    HANDLE_SDL_ERROR_RETURN(TTF_Init(), "Couldn't initialize text renderer: %s")
-
-    HANDLE_SDL_ERROR_RETURN(textEngine = TTF_CreateRendererTextEngine(renderer), "Couldn't create text engine: %s")
-
-    HANDLE_SDL_ERROR_RETURN(font = TTF_OpenFontIO(SDL_IOFromConstMem(cozette, cozette_len), true, FONT_SIZE),
-                            "Couldn't load font: %s")
-
-    return true;
-}
-
-void handle_events( SDL_Event *e )
-{
-    if ( e->type == SDL_EVENT_QUIT )
-        gameIsRunning = false;
-
-
-    update_mouse(e);
-}
-
-void update( Body *player )
-{
-    update_keyboard();
-
-    Vector2 velocity{0.0, player->velocity.y};
-
-    if ( keyboardState[SDL_SCANCODE_LEFT] ) {
-        velocity.x -= 1000;
-    }
-    if ( keyboardState[SDL_SCANCODE_RIGHT] ) {
-        velocity.x += 1000;
-    }
-    if ( keyboardState[SDL_SCANCODE_UP] ) {
-        velocity.y = -2000;
-    }
-    if ( keyboardState[SDL_SCANCODE_DOWN] ) {
-        velocity.y += 800;
-    }
-
-    player->velocity = velocity;
-
-    Physics::update();
-}
-
-void render()
-{
-    U_SetRenderDrawColor(COLOR_BLACK);
-    HANDLE_SDL_ERROR(SDL_RenderClear(renderer), "Couldn't clear screen: %s")
-
-    U_SetRenderDrawColor(COLOR_WHITE);
-    AABB::draw();
-
-    HANDLE_SDL_ERROR(SDL_RenderPresent(renderer), "Couldn't update screen: %s")
-}
-
-void cleanup()
-{
-    TTF_CloseFont(font);
-    TTF_Quit();
-
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
 }

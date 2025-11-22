@@ -1,21 +1,23 @@
 #pragma once
 
 #include <functional>
-#include <string>
 
-#include "SDL3/SDL_rect.h"
+#include "element.hpp"
 #include "SDL3_ttf/SDL_ttf.h"
 
-class Button
+class Button final : public Element
 {
-    TTF_Text *text;
-    std::function< void() > onClick;
-    SDL_FRect rect{};
+    TTF_Text *mText;
+    std::function<void()> mOnClick;
+    bool mHovered = false;
 
     public:
-        Button( const std::string &text, int anchor, float x, float y, const std::function< void() > &onClick );
+        Button( TTF_TextEngine *textEngine, TTF_Font *font, float x, float y, int anchor, const char *text,
+                const std::function<void()> &onClick );
 
-        ~Button();
+        ~Button() override;
 
-        void update() const;
+        void draw( SDL_Renderer *renderer ) const override;
+
+        void update( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button ) override;
 };

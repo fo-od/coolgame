@@ -11,7 +11,10 @@
 
 #define HANDLE_SDL_ERROR_RETURN(F, S) { if (!(F)) {SDL_Log(S, SDL_GetError()); return false;} }
 
-#define HANDLE_SDL_ERROR(F, S) { if (!F) {SDL_Log(S, SDL_GetError());} }
+#define HANDLE_SDL_ERROR(F, S) { if (!(F)) {SDL_Log(S, SDL_GetError());} }
+
+#define OPEN_MENU(menu) Menu::open(menu); mInMenu=true; mCurrentMenu=menu;
+#define CLOSE_MENU(menu) Menu::close(menu); mInMenu=false; mCurrentMenu="";
 
 #define ANCHOR_TOP_LEFT 1
 #define ANCHOR_TOP_MIDDLE 2
@@ -23,20 +26,10 @@
 #define ANCHOR_BOTTOM_MIDDLE 8
 #define ANCHOR_BOTTOM_RIGHT 9
 
-void U_SetRenderDrawColor( SDL_Color color );
-
-void U_SetRenderDrawColor( u8 r = 0, u8 g = 0, u8 b = 0, u8 a = 255 );
-
 void U_DrawRendererText( TTF_Text *text, float x, float y, int anchor = ANCHOR_TOP_LEFT );
 
-Vector2 U_GetTextSize( TTF_Text *text );
-
-bool U_SetTextColor( TTF_Text *text, SDL_Color color );
+Vector2 U_GetTextSize(TTF_Text * text);
 
 void U_AnchorFRect( int anchor, SDL_FRect *rect );
 
-void U_RenderRect( const SDL_FRect *rect, u8 r = 0, u8 g = 0, u8 b = 0, u8 a = 255 );
-
-void U_RenderRect( const SDL_FRect *rect, SDL_Color color );
-
-void U_RenderLine( const Vector2 &a, const Vector2 &b );
+bool U_PointInRectFloat( float x, float y, const SDL_FRect *r );

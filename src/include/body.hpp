@@ -5,9 +5,9 @@
 class Body
 {
     public:
-        AABB aabb{};
-        Vector2 velocity{};
-        Vector2 acceleration{};
+        AABB mAABB{};
+        Vector2 mVelocity{};
+        Vector2 mAcceleration{};
 
         Body() = default;
 
@@ -24,7 +24,7 @@ class Body
 class StaticBody
 {
     public:
-        AABB aabb{};
+        AABB mAABB{};
 
         StaticBody() = default;
 

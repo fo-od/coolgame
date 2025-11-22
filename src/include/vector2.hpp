@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SDL3/SDL_rect.h"
+#include "SDL3/SDL_render.h"
 
 class Vector2
 {
@@ -17,9 +18,9 @@ class Vector2
 
         ~Vector2() = default;
 
-        void draw( float originX = 0, float originY = 0 ) const;
+        void draw( SDL_Renderer *renderer, float originX = 0, float originY = 0 ) const;
 
-        void draw( const Vector2 &origin ) const;
+        void draw( SDL_Renderer *renderer, const Vector2 &origin ) const;
 
         [[nodiscard]] float get( bool val ) const;
 

@@ -1,9 +1,6 @@
 #include "vector2.hpp"
 
-#include "globals.hpp"
-
 #include "SDL3/SDL_render.h"
-
 
 Vector2::Vector2( const float x, const float y )
     : x(x),
@@ -16,19 +13,19 @@ Vector2::Vector2( const int x, const int y )
 Vector2::Vector2( const Vector2 &other ) = default;
 
 
-void Vector2::draw( const float originX, const float originY ) const
+void Vector2::draw( SDL_Renderer *renderer, const float originX, const float originY ) const
 {
     SDL_RenderLine(renderer, originX, originY, originX + this->x, originY + this->y);
 }
 
-void Vector2::draw( const Vector2 &origin ) const
+void Vector2::draw( SDL_Renderer *renderer, const Vector2 &origin ) const
 {
-    draw(origin.x, origin.y);
+    draw(renderer, origin.x, origin.y);
 }
 
 float Vector2::get( const bool val ) const
 {
-    if ( val ) {
+    if (val) {
         return y;
     }
     return x;

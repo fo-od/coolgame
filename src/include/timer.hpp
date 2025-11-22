@@ -3,11 +3,11 @@
 
 class Timer
 {
-    u64 startTicks{};
-    u64 pausedTicks{};
+    u64 mStartTicks{};
+    u64 mPausedTicks{};
 
-    bool started = false;
-    bool paused = false;
+    bool mStarted = false;
+    bool mPaused = false;
 
     public:
         Timer() = default;
@@ -23,9 +23,9 @@ class Timer
         void resume();
 
         /**
-         * @returns time since start in milliseconds
-         * @returns the time when it was paused if paused
-         * @returns 0 if not started
+         * @returns time since start in milliseconds,
+         * @returns the time when it was paused if paused,
+         * @returns or 0 if not started
          */
         [[nodiscard]] u64 get_ticks() const;
 

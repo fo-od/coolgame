@@ -5,30 +5,31 @@
 #include "vector2.hpp"
 
 #include "SDL3/SDL_rect.h"
+#include "SDL3/SDL_render.h"
 
 class Hit
 {
     public:
-        bool is_hit = false;
-        float time = -1;
+        bool mIsHit = false;
+        float mTime = -1;
         Vector2 position;
         Vector2 normal;
 };
 
 class AABB
 {
-    static std::vector< SDL_FRect * > rects;
-    static std::vector< SDL_FRect * > filled_rects;
+    static std::vector<SDL_FRect *> rects;
+    static std::vector<SDL_FRect *> filledRects;
 
-    bool visible = false;
-    bool filled = false;
+    bool mVisible = false;
+    bool mFilled = false;
 
     void removeRect() const;
 
     public:
-        Vector2 pos{};
-        Vector2 half_size{};
-        SDL_FRect rect{};
+        Vector2 mPos{};
+        Vector2 mHalfSize{};
+        SDL_FRect mRect{};
 
         AABB() = default;
 
@@ -42,7 +43,7 @@ class AABB
 
         AABB &operator=( const AABB &other );
 
-        static void draw();
+        static void draw( SDL_Renderer *renderer );
 
         void update_rect();
 

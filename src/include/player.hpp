@@ -4,12 +4,12 @@
 
 class Player
 {
-    bool falling = false;
-    bool dashing = false;
+    bool mFalling = false;
+    bool mDashing = false;
 
     public:
-        Body body{};
-        float speed{}, jumpStrength{};
+        Body mBody{};
+        float mSpeed{}, mJumpStrength{};
 
         Player() = default;
 

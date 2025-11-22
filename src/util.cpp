@@ -1,35 +1,15 @@
 #include "util.hpp"
 
-#include "constants.hpp"
-#include "globals.hpp"
-
 #include "SDL3/SDL.h"
 #include "SDL3_ttf/SDL_ttf.h"
 
-void U_SetRenderDrawColor( const SDL_Color color )
-{
-    HANDLE_SDL_ERROR(SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a),
-                     "Could not set the draw color: %s");
-}
-
-void U_SetRenderDrawColor( const u8 r, const u8 g, const u8 b, const u8 a )
-{
-    HANDLE_SDL_ERROR(SDL_SetRenderDrawColor(renderer, r, g, b, a),
-                     "Could not set the draw color: %s");
-}
-
-bool U_SetTextColor( TTF_Text *text, const SDL_Color color )
-{
-    return TTF_SetTextColor(text, color.r, color.g, color.b, color.a);
-}
-
 void U_DrawRendererText( TTF_Text *text, float x, float y, const int anchor )
 {
-    if ( anchor != ANCHOR_TOP_LEFT ) {
+    if (anchor != ANCHOR_TOP_LEFT) {
         int w, h = -1;
-        if ( !TTF_GetTextSize(text, &w, &h) ) {}
+        HANDLE_SDL_ERROR(TTF_GetTextSize(text, &w, &h), "Failed to render text: %s");
 
-        switch ( anchor ) {
+        switch (anchor) {
             case ANCHOR_TOP_MIDDLE:
                 x -= w / 2;
                 break;
@@ -75,8 +55,8 @@ Vector2 U_GetTextSize( TTF_Text *text )
 
 void U_AnchorFRect( const int anchor, SDL_FRect *rect )
 {
-    if ( anchor != ANCHOR_TOP_LEFT ) {
-        switch ( anchor ) {
+    if (anchor != ANCHOR_TOP_LEFT) {
+        switch (anchor) {
             case ANCHOR_TOP_MIDDLE:
                 rect->x -= rect->w / 2;
                 break;
@@ -112,19 +92,8 @@ void U_AnchorFRect( const int anchor, SDL_FRect *rect )
     }
 }
 
-void U_RenderRect( const SDL_FRect *rect, const u8 r, const u8 g, const u8 b, const u8 a )
+bool U_PointInRectFloat( const float x, const float y, const SDL_FRect *r )
 {
-    SDL_SetRenderDrawColor(renderer, r, g, b, a);
-    SDL_RenderRect(renderer, rect);
-}
-
-void U_RenderRect( const SDL_FRect *rect, const SDL_Color color )
-{
-    U_SetRenderDrawColor(color);
-    SDL_RenderRect(renderer, rect);
-}
-
-void U_RenderLine( const Vector2 &a, const Vector2 &b )
-{
-    SDL_RenderLine(renderer, a.x, a.y, b.x, b.y);
+    return ((x >= r->x) && (x <= (r->x + r->w)) &&
+            (y >= r->y) && (y <= (r->y + r->h)));
 }
