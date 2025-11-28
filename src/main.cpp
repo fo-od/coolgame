@@ -67,8 +67,13 @@ struct SDLApplication
                      });
 
         Menu::create("mainMenu", {
-                         std::make_shared<Button>(mTextEngine, mFont, mWidth / 2, mHeight / 2, ANCHOR_MIDDLE_MIDDLE,
-                                                  "Start",
+                         std::make_shared<Button>(mTextEngine, mFont, mWidth / 2, mHeight / 2, ANCHOR_CENTER_CENTER,
+                                                  "Levels",
+                                                  [this]() {
+                                                      CLOSE_MENU(mCurrentMenu)
+                                                  }),
+                         std::make_shared<Button>(mTextEngine, mFont, mWidth / 2, mHeight / 2, ANCHOR_CENTER_CENTER,
+                                                  "Create",
                                                   [this]() {
                                                       CLOSE_MENU(mCurrentMenu)
                                                   })
