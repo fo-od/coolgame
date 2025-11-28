@@ -3,7 +3,7 @@
 #include "SDL3/SDL.h"
 #include "SDL3_ttf/SDL_ttf.h"
 
-void U_DrawRendererText( TTF_Text *text, float x, float y, const int anchor )
+void U_DrawRendererText( TTF_Text *text, float x, float y, const PositionAnchor anchor )
 {
     if (anchor != ANCHOR_TOP_LEFT) {
         int w, h = -1;
@@ -53,7 +53,7 @@ Vector2 U_GetTextSize( TTF_Text *text )
     return Vector2{w, h};
 }
 
-void U_AnchorFRect( const int anchor, SDL_FRect *rect )
+void U_AnchorFRect( const PositionAnchor anchor, SDL_FRect *rect )
 {
     if (anchor != ANCHOR_TOP_LEFT) {
         switch (anchor) {
