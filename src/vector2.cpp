@@ -13,16 +13,6 @@ Vector2::Vector2( const int x, const int y )
 Vector2::Vector2( const Vector2 &other ) = default;
 
 
-void Vector2::draw( SDL_Renderer *renderer, const float originX, const float originY ) const
-{
-    SDL_RenderLine(renderer, originX, originY, originX + this->x, originY + this->y);
-}
-
-void Vector2::draw( SDL_Renderer *renderer, const Vector2 &origin ) const
-{
-    draw(renderer, origin.x, origin.y);
-}
-
 float Vector2::get( const bool val ) const
 {
     if (val) {
@@ -53,6 +43,7 @@ Vector2 Vector2::operator*( const float o ) const
     return Vector2{x * o, y * o};
 }
 
+
 // Addition
 
 Vector2 &Vector2::operator+=( const Vector2 &o )
@@ -72,12 +63,6 @@ Vector2 Vector2::operator+( const float o ) const
     return Vector2{x + o, y + o};
 }
 
-Vector2 &Vector2::operator-=( const Vector2 &o )
-{
-    x -= o.x;
-    y -= o.y;
-    return *this;
-}
 
 // Subtraction
 
@@ -89,4 +74,12 @@ Vector2 Vector2::operator-( const Vector2 &o ) const
 Vector2 Vector2::operator-( const float o ) const
 {
     return Vector2{x - o, y - o};
+}
+
+
+Vector2 &Vector2::operator-=( const Vector2 &o )
+{
+    x -= o.x;
+    y -= o.y;
+    return *this;
 }

@@ -18,9 +18,6 @@ class Vector2
 
         ~Vector2() = default;
 
-        void draw( SDL_Renderer *renderer, float originX = 0, float originY = 0 ) const;
-
-        void draw( SDL_Renderer *renderer, const Vector2 &origin ) const;
 
         [[nodiscard]] float get( bool val ) const;
 
