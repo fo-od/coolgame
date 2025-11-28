@@ -26,6 +26,9 @@ struct SDLApplication
     float deltaTime = 0.0f;
     const bool *keyboardState{};
 
+    float camX = 0.0f;
+    float camY = 0.0f;
+
     SDLApplication()
     {
         // sdl setup stuff
@@ -135,7 +138,7 @@ struct SDLApplication
         keyboardState = SDL_GetKeyboardState(nullptr);
 
         if (e->type == SDL_EVENT_KEY_DOWN) {
-            if (e->key.scancode == SDL_SCANCODE_ESCAPE) {
+            if (e->key.key == SDLK_ESCAPE) {
                 if (!mInMenu) {
                     OPEN_MENU("pauseMenu")
                 } else {

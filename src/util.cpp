@@ -10,27 +10,27 @@ void U_DrawRendererText( TTF_Text *text, float x, float y, const int anchor )
         HANDLE_SDL_ERROR(TTF_GetTextSize(text, &w, &h), "Failed to render text: %s");
 
         switch (anchor) {
-            case ANCHOR_TOP_MIDDLE:
+            case ANCHOR_TOP_CENTER:
                 x -= w / 2;
                 break;
             case ANCHOR_TOP_RIGHT:
                 x -= w;
                 break;
-            case ANCHOR_MIDDLE_LEFT:
+            case ANCHOR_CENTER_LEFT:
                 y -= h / 2;
                 break;
-            case ANCHOR_MIDDLE_MIDDLE:
+            case ANCHOR_CENTER_CENTER:
                 x -= w / 2;
                 y -= h / 2;
                 break;
-            case ANCHOR_MIDDLE_RIGHT:
+            case ANCHOR_CENTER_RIGHT:
                 x -= w;
                 y -= h / 2;
                 break;
             case ANCHOR_BOTTOM_LEFT:
                 y -= h;
                 break;
-            case ANCHOR_BOTTOM_MIDDLE:
+            case ANCHOR_BOTTOM_CENTER:
                 x -= w / 2;
                 y -= h;
                 break;
@@ -57,27 +57,27 @@ void U_AnchorFRect( const int anchor, SDL_FRect *rect )
 {
     if (anchor != ANCHOR_TOP_LEFT) {
         switch (anchor) {
-            case ANCHOR_TOP_MIDDLE:
+            case ANCHOR_TOP_CENTER:
                 rect->x -= rect->w / 2;
                 break;
             case ANCHOR_TOP_RIGHT:
                 rect->x -= rect->w;
                 break;
-            case ANCHOR_MIDDLE_LEFT:
+            case ANCHOR_CENTER_LEFT:
                 rect->y -= rect->h / 2;
                 break;
-            case ANCHOR_MIDDLE_MIDDLE:
+            case ANCHOR_CENTER_CENTER:
                 rect->x -= rect->w / 2;
                 rect->y -= rect->h / 2;
                 break;
-            case ANCHOR_MIDDLE_RIGHT:
+            case ANCHOR_CENTER_RIGHT:
                 rect->x -= rect->w;
                 rect->y -= rect->h / 2;
                 break;
             case ANCHOR_BOTTOM_LEFT:
                 rect->y -= rect->h;
                 break;
-            case ANCHOR_BOTTOM_MIDDLE:
+            case ANCHOR_BOTTOM_CENTER:
                 rect->x -= rect->w / 2;
                 rect->y -= rect->h;
                 break;
