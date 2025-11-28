@@ -2,9 +2,10 @@
 
 #include "util.hpp"
 
-Element::Element( const SDL_FRect rect ) : mRect(rect) {}
+Element::Element( const SDL_FRect rect, const int anchor ) : mRect(rect), mAnchor(anchor) {}
 
-Element::Element( const float x, const float y, const float w, const float h ) : Element(SDL_FRect{x, y, w, h}) {}
+Element::Element( const float x, const float y, const float w, const float h, const int anchor ) : Element(
+    SDL_FRect{x, y, w, h}, anchor) {}
 
 
 void Element::draw( SDL_Renderer *renderer ) const

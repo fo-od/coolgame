@@ -3,44 +3,24 @@
 #include "SDL3/SDL.h"
 #include "SDL3_ttf/SDL_ttf.h"
 
-void U_DrawRendererText( TTF_Text *text, float x, float y, const PositionAnchor anchor )
+void U_DrawRendererText( TTF_Text *text, float x, float y, const int anchor )
 {
-    if (anchor != ANCHOR_TOP_LEFT) {
-        int w, h = -1;
-        HANDLE_SDL_ERROR(TTF_GetTextSize(text, &w, &h), "Failed to render text: %s");
+    int w, h = -1;
+    HANDLE_SDL_ERROR(TTF_GetTextSize(text, &w, &h), "Failed to render text: %s");
 
-        switch (anchor) {
-            case ANCHOR_TOP_CENTER:
-                x -= w / 2;
-                break;
-            case ANCHOR_TOP_RIGHT:
-                x -= w;
-                break;
-            case ANCHOR_CENTER_LEFT:
-                y -= h / 2;
-                break;
-            case ANCHOR_CENTER_CENTER:
-                x -= w / 2;
-                y -= h / 2;
-                break;
-            case ANCHOR_CENTER_RIGHT:
-                x -= w;
-                y -= h / 2;
-                break;
-            case ANCHOR_BOTTOM_LEFT:
-                y -= h;
-                break;
-            case ANCHOR_BOTTOM_CENTER:
-                x -= w / 2;
-                y -= h;
-                break;
-            case ANCHOR_BOTTOM_RIGHT:
-                x -= w;
-                y -= h;
-                break;
-            default:
-                SDL_Log("Invalid anchor given!");
-                break;
+    // if the anchor is only center (so that we can also have bottom and top center)
+    if (anchor == ANCHOR_CENTER) {
+        x -= w / 2;
+        y -= h / 2;
+    } else {
+        if (anchor & ANCHOR_CENTER) {
+            y -= h / 2;
+        }
+        if (anchor & ANCHOR_RIGHT) {
+            x -= w;
+        }
+        if (anchor & ANCHOR_BOTTOM) {
+            y -= h;
         }
     }
     TTF_DrawRendererText(text, x, y);
@@ -53,41 +33,21 @@ Vector2 U_GetTextSize( TTF_Text *text )
     return Vector2{w, h};
 }
 
-void U_AnchorFRect( const PositionAnchor anchor, SDL_FRect *rect )
+void U_AnchorFRect( SDL_FRect *rect, const int anchor )
 {
-    if (anchor != ANCHOR_TOP_LEFT) {
-        switch (anchor) {
-            case ANCHOR_TOP_CENTER:
-                rect->x -= rect->w / 2;
-                break;
-            case ANCHOR_TOP_RIGHT:
-                rect->x -= rect->w;
-                break;
-            case ANCHOR_CENTER_LEFT:
-                rect->y -= rect->h / 2;
-                break;
-            case ANCHOR_CENTER_CENTER:
-                rect->x -= rect->w / 2;
-                rect->y -= rect->h / 2;
-                break;
-            case ANCHOR_CENTER_RIGHT:
-                rect->x -= rect->w;
-                rect->y -= rect->h / 2;
-                break;
-            case ANCHOR_BOTTOM_LEFT:
-                rect->y -= rect->h;
-                break;
-            case ANCHOR_BOTTOM_CENTER:
-                rect->x -= rect->w / 2;
-                rect->y -= rect->h;
-                break;
-            case ANCHOR_BOTTOM_RIGHT:
-                rect->x -= rect->w;
-                rect->y -= rect->h;
-                break;
-            default:
-                SDL_Log("Invalid anchor given!");
-                break;
+    // if the anchor is only center (so that we can also have bottom and top center)
+    if (anchor == ANCHOR_CENTER) {
+        rect->x -= rect->w / 2;
+        rect->y -= rect->h / 2;
+    } else {
+        if (anchor & ANCHOR_CENTER) {
+            rect->y -= rect->h / 2;
+        }
+        if (anchor & ANCHOR_RIGHT) {
+            rect->x -= rect->w;
+        }
+        if (anchor & ANCHOR_BOTTOM) {
+            rect->y -= rect->h;
         }
     }
 }

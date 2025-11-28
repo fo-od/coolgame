@@ -7,14 +7,14 @@
 #include "SDL3/SDL_mouse.h"
 #include "SDL3/SDL_render.h"
 
-Button::Button( TTF_TextEngine *textEngine, TTF_Font *font, const float x, const float y, const PositionAnchor anchor,
+Button::Button( TTF_TextEngine *textEngine, TTF_Font *font, const float x, const float y, const int anchor,
                 const char *text, const std::function<void()> &onClick )
     : Element(x, y, 0, 0), mText(TTF_CreateText(textEngine, font, text, 0)),
       mOnClick(onClick)
 {
     const Vector2 textSize = U_GetTextSize(this->mText);
     mRect = {x, y, textSize.x + 10, textSize.y + 10};
-    U_AnchorFRect(anchor, &mRect);
+    U_AnchorFRect(&mRect, anchor);
 }
 
 Button::~Button()

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "util.hpp"
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3_ttf/SDL_ttf.h"
@@ -8,11 +9,12 @@ class Element
 {
     protected:
         SDL_FRect mRect{};
+        int mAnchor;
 
     public:
-        explicit Element( SDL_FRect rect );
+        explicit Element( SDL_FRect rect, int anchor = ANCHOR_NONE );
 
-        Element( float x, float y, float w, float h );
+        Element( float x, float y, float w, float h, int anchor = ANCHOR_NONE );
 
         Element( const Element &other ) = default;
 
