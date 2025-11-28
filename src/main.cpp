@@ -123,6 +123,10 @@ struct SDLApplication
         if (e->type == SDL_EVENT_QUIT)
             mRunning = false;
 
+        if (e->type == SDL_EVENT_WINDOW_RESIZED) {
+            SDL_GetWindowSizeInPixels(mWindow, &mWidth, &mHeight);
+        }
+
         keyboardState = SDL_GetKeyboardState(nullptr);
 
         if (e->type == SDL_EVENT_KEY_DOWN) {
