@@ -1,38 +1,17 @@
 cmake_minimum_required(VERSION 3.31)
 project(coolgame)
+set(EXECUTABLE_NAME ${PROJECT_NAME})
 
 set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-# CPM
-file(
-        DOWNLOAD
-        https://github.com/cpm-cmake/CPM.cmake/releases/download/v0.41.0/CPM.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake
-        EXPECTED_HASH SHA256=e570f03806b9aae2082ca5b950a9e6b3b41ad56972a78a876aedcaad16653116
-)
-include(${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake)
-
-set(LIBS)
-set(SDL_TEST OFF)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 ## Dependencies
-# SDL
-CPMAddPackage("gh:libsdl-org/SDL#release-3.2.16")
-list(APPEND LIBS SDL3::SDL3)
-
-# SDL_image
-CPMAddPackage("gh:libsdl-org/SDL_image#release-3.2.4")
-list(APPEND LIBS SDL3_image::SDL3_image)
-
-# SDL_ttf
-CPMAddPackage("gh:libsdl-org/SDL_ttf#release-3.2.2")
-list(APPEND LIBS SDL3_ttf::SDL3_ttf)
+find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3-shared)
+find_package(SDL3_ttf REQUIRED)
 
 include_directories(src/include)
 file(GLOB PROJECT_SOURCES "src/*.cpp")
 
-## Executables
-add_executable(coolgame ${PROJECT_SOURCES})
-target_compile_features(coolgame PRIVATE cxx_std_23)
-target_link_libraries(coolgame PRIVATE ${LIBS})
+add_executable(${EXECUTABLE_NAME} ${PROJECT_SOURCES})
+target_compile_features(${EXECUTABLE_NAME} PRIVATE cxx_std_23)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE SDL3_ttf::SDL3_ttf SDL3::SDL3)
