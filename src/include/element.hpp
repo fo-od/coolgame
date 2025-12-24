@@ -13,9 +13,7 @@ class Element
         float mYOffset = 0;
 
     public:
-        explicit Element( SDL_FRect rect, int anchor );
-
-        Element( float x, float y, float w, float h, int anchor );
+        Element( float xOffset, float yOffset, float w, float h, int anchor );
 
         Element( const Element &other ) = default;
 

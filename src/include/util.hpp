@@ -21,7 +21,7 @@
 #define ANCHOR_BOTTOM 16
 
 #define OPEN_MENU(menu) {Menu::open(menu); mInMenu=true; mCurrentMenu=menu;}
-#define CLOSE_MENU(menu) if (mCurrentMenu!="") {Menu::close(menu); mInMenu=false; mCurrentMenu="";}
+#define CLOSE_MENU(menu) {if (mCurrentMenu!="") {Menu::close(menu); mInMenu=false; mCurrentMenu="";}}
 
 void U_DrawRendererText( TTF_Text *text, float x, float y, int anchor = ANCHOR_TOP | ANCHOR_LEFT );
 

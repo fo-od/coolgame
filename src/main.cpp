@@ -75,7 +75,7 @@ struct SDLApplication
                                                   [this]() {
                                                       CLOSE_MENU(mCurrentMenu)
                                                   }),
-                         std::make_shared<Button>(mTextEngine, mFont, 0, -500, ANCHOR_CENTER,
+                         std::make_shared<Button>(mTextEngine, mFont, 0, -20, ANCHOR_CENTER,
                                                   "Create",
                                                   [this]() {
                                                       CLOSE_MENU(mCurrentMenu)
