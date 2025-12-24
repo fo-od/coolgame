@@ -19,12 +19,20 @@ void Menu::create( const std::string &name, const std::vector<std::shared_ptr<El
 
 void Menu::open( const std::string &name )
 {
-    menus.at(name).mVisible = true;
+    try {
+        menus.at(name).mVisible = true;
+    } catch (std::out_of_range &e) {
+        std::cout << "Menu '" << name << "' does not exist: " << e.what() << std::endl;
+    }
 }
 
 void Menu::close( const std::string &name )
 {
-    menus.at(name).mVisible = false;
+    try {
+        menus.at(name).mVisible = false;
+    } catch (std::out_of_range &e) {
+        std::cout << "Menu '" << name << "' does not exist: "<< e.what() << std::endl;
+    }
 }
 
 void Menu::update( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button )
