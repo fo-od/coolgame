@@ -3,7 +3,7 @@
 #include <functional>
 
 #include "element.hpp"
-#include "SDL3_ttf/SDL_ttf.h"
+#include <SDL3_ttf/SDL_ttf.h>
 
 class Button final : public Element
 {

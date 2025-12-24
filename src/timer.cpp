@@ -1,6 +1,6 @@
 #include "timer.hpp"
 
-#include "SDL3/SDL_timer.h"
+#include <SDL3/SDL_timer.h>
 
 void Timer::start()
 {

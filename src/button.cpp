@@ -4,8 +4,8 @@
 
 #include "util.hpp"
 
-#include "SDL3/SDL_mouse.h"
-#include "SDL3/SDL_render.h"
+#include <SDL3/SDL_mouse.h>
+#include <SDL3/SDL_render.h>
 
 Button::Button( TTF_TextEngine *textEngine, TTF_Font *font, const float x, const float y, const int anchor,
                 const char *text, const std::function<void()> &onClick )

@@ -1,7 +1,7 @@
 #include "util.hpp"
 
-#include "SDL3/SDL.h"
-#include "SDL3_ttf/SDL_ttf.h"
+#include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 void U_DrawRendererText( TTF_Text *text, float x, float y, const int anchor )
 {

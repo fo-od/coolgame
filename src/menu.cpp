@@ -1,11 +1,13 @@
 #include "menu.hpp"
 
 #include <functional>
+#include <iostream>
+#include <ostream>
 #include <ranges>
 #include <string>
 
 #include "util.hpp"
-#include "SDL3_ttf/SDL_ttf.h"
+#include <SDL3_ttf/SDL_ttf.h>
 
 std::unordered_map<std::string, Menu> Menu::menus = {};
 
@@ -31,7 +33,7 @@ void Menu::close( const std::string &name )
     try {
         menus.at(name).mVisible = false;
     } catch (std::out_of_range &e) {
-        std::cout << "Menu '" << name << "' does not exist: "<< e.what() << std::endl;
+        std::cout << "Menu '" << name << "' does not exist: " << e.what() << std::endl;
     }
 }
 

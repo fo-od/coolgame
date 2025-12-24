@@ -1,12 +1,12 @@
 #include "button.hpp"
-#include "menu.hpp"
 #include "assets/cozette.hpp"
+#include "menu.hpp"
 #include "physics.hpp"
 #include "types.hpp"
 #include "util.hpp"
 
-#include "SDL3/SDL.h"
-#include "SDL3_ttf/SDL_ttf.h"
+#include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 struct SDLApplication
 {

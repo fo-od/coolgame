@@ -2,8 +2,8 @@
 
 #include "types.hpp"
 #include "vector2.hpp"
-#include "SDL3/SDL_rect.h"
-#include "SDL3_ttf/SDL_ttf.h"
+#include <SDL3/SDL_rect.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 #define ERROR_RETURN(R, ...) { std::print(stderr, __VA_ARGS__); return R; }
 

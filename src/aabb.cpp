@@ -2,8 +2,6 @@
 
 #include <ostream>
 
-#include "SDL3/SDL.h"
-
 std::vector<SDL_FRect *> AABB::rects;
 std::vector<SDL_FRect *> AABB::filledRects;
 
