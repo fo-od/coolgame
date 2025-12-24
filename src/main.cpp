@@ -58,11 +58,11 @@ struct SDLApplication
 
         //menus
         Menu::create("pauseMenu", {
-                         std::make_shared<Button>(mTextEngine, mFont, 320, 200, ANCHOR_MIDDLE_MIDDLE, "Resume",
+                         std::make_shared<Button>(mTextEngine, mFont, 0, 20, ANCHOR_CENTER, "Resume",
                                                   [this]() {
                                                       CLOSE_MENU(mCurrentMenu)
                                                   }),
-                         std::make_shared<Button>(mTextEngine, mFont, 320, 280, ANCHOR_MIDDLE_MIDDLE, "Exit",
+                         std::make_shared<Button>(mTextEngine, mFont, 0, -20, ANCHOR_CENTER, "Exit",
                                                   [this]() {
                                                       CLOSE_MENU(mCurrentMenu)
                                                       mRunning = false;
@@ -70,12 +70,12 @@ struct SDLApplication
                      });
 
         Menu::create("mainMenu", {
-                         std::make_shared<Button>(mTextEngine, mFont, mWidth / 2, mHeight / 2, ANCHOR_CENTER_CENTER,
+                         std::make_shared<Button>(mTextEngine, mFont, 0, 20, ANCHOR_CENTER,
                                                   "Levels",
                                                   [this]() {
                                                       CLOSE_MENU(mCurrentMenu)
                                                   }),
-                         std::make_shared<Button>(mTextEngine, mFont, mWidth / 2, mHeight / 2, ANCHOR_CENTER_CENTER,
+                         std::make_shared<Button>(mTextEngine, mFont, 0, -500, ANCHOR_CENTER,
                                                   "Create",
                                                   [this]() {
                                                       CLOSE_MENU(mCurrentMenu)
@@ -153,7 +153,7 @@ struct SDLApplication
             SDL_ConvertEventToRenderCoordinates(mRenderer, e);
             //handle ui stuff
             if (mInMenu)
-                Menu::update(e->motion, e->button);
+                Menu::update(e->motion, e->button, mWidth, mHeight);
         }
     }
 

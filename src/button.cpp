@@ -9,7 +9,7 @@
 
 Button::Button( TTF_TextEngine *textEngine, TTF_Font *font, const float x, const float y, const int anchor,
                 const char *text, const std::function<void()> &onClick )
-    : Element(x, y, 0, 0), mText(TTF_CreateText(textEngine, font, text, 0)),
+    : Element(x, y, 0, 0, anchor), mText(TTF_CreateText(textEngine, font, text, 0)),
       mOnClick(onClick)
 {
     const Vector2 textSize = U_GetTextSize(this->mText);
@@ -22,8 +22,10 @@ Button::~Button()
     TTF_DestroyText(mText);
 }
 
-void Button::update( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button )
+void Button::update( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button, const int canvasWidth,
+                     const int canvasHeight )
 {
+    _update(canvasWidth, canvasHeight);
     if (U_PointInRectFloat(motion.x, motion.y, &mRect)) {
         mHovered = true;
 

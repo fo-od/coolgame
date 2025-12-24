@@ -9,11 +9,15 @@ class Element
     protected:
         SDL_FRect mRect{};
         int mAnchor;
+        float mXOffset = 0;
+        float mYOffset = 0;
+
+        void _update( int canvasWidth, int canvasHeight );
 
     public:
-        explicit Element( SDL_FRect rect, int anchor = ANCHOR_NONE );
+        explicit Element( SDL_FRect rect, int anchor );
 
-        Element( float x, float y, float w, float h, int anchor = ANCHOR_NONE );
+        Element( float x, float y, float w, float h, int anchor );
 
         Element( const Element &other ) = default;
 
@@ -21,5 +25,6 @@ class Element
 
         virtual void draw( SDL_Renderer *renderer ) const;
 
-        virtual void update( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button );
+        virtual void update( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button, int canvasWidth,
+                             int canvasHeight );
 };

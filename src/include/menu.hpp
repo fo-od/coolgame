@@ -18,7 +18,8 @@ class Menu
 
         static void close( const std::string &name );
 
-        static void update( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button );
+        static void update( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button, int width,
+                            int height );
 
         static void draw( SDL_Renderer *renderer );
 };

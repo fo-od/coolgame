@@ -136,7 +136,8 @@ AABB AABB::minkowski_difference( const AABB &a, const AABB &b )
 bool AABB::intersects( const AABB &other ) const
 {
     const AABB diff = minkowski_difference(*this, other);
-    const Vector2 min = diff.min(), max = diff.max();
+    const Vector2 min = diff.min();
+    const Vector2 max = diff.max();
 
     return min.x <= 0 && max.x >= 0 && min.y <= 0 && max.y >= 0;
 }
@@ -144,7 +145,8 @@ bool AABB::intersects( const AABB &other ) const
 Hit AABB::intersects( const Vector2 &pos, const Vector2 &magnitude ) const
 {
     Hit hit;
-    const Vector2 min = this->min(), max = this->max();
+    const Vector2 min = this->min();
+    const Vector2 max = this->max();
 
     float last_entry = -INFINITY;
     float first_exit = INFINITY;

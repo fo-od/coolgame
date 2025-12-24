@@ -19,5 +19,6 @@ class Button final : public Element
 
         void draw( SDL_Renderer *renderer ) const override;
 
-        void update( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button ) override;
+        void update( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button, int canvasWidth,
+                     int canvasHeight ) override;
 };
