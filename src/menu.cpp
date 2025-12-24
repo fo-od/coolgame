@@ -37,20 +37,23 @@ void Menu::close( const std::string &name )
     }
 }
 
-/**
- * Handles mouse input for all the elements in the currently visible Menu.
- * @param motion A SDL_MouseMotionEvent
- * @param button A SDL_MouseButtonEvent
- * @param width The width of the canvas
- * @param height The height of the canvas
- */
-void Menu::update( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button, const int width,
-                   const int height )
+void Menu::handle_input( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button )
 {
     for (const Menu &menu: menus | std::views::values) {
         if (menu.mVisible) {
-            for (auto &element: menu.mElements) {
-                element->update(motion, button, width, height);
+            for (const auto &element: menu.mElements) {
+                element->handle_input(motion, button);
+            }
+        }
+    }
+}
+
+void Menu::update( const int canvasWidth, const int canvasHeight )
+{
+    for (const Menu &menu: menus | std::views::values) {
+        if (menu.mVisible) {
+            for (const auto &element: menu.mElements) {
+                element->update_position(canvasWidth, canvasHeight);
             }
         }
     }

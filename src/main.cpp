@@ -151,9 +151,9 @@ struct SDLApplication
             e->type == SDL_EVENT_MOUSE_BUTTON_DOWN ||
             e->type == SDL_EVENT_MOUSE_BUTTON_UP) {
             SDL_ConvertEventToRenderCoordinates(mRenderer, e);
-            //handle ui stuff
+
             if (mInMenu)
-                Menu::update(e->motion, e->button, mWidth, mHeight);
+                Menu::handle_input(e->motion, e->button);
         }
     }
 
@@ -189,6 +189,7 @@ struct SDLApplication
             AABB::draw(mRenderer);
 
             SDL_SetRenderDrawColor(mRenderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+            Menu::update(mWidth, mHeight);
             Menu::draw(mRenderer);
         } else {
             SDL_SetRenderDrawColor(mRenderer, 255, 255, 255, SDL_ALPHA_OPAQUE);

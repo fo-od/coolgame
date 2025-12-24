@@ -12,8 +12,6 @@ class Element
         float mXOffset = 0;
         float mYOffset = 0;
 
-        void _update( int canvasWidth, int canvasHeight );
-
     public:
         explicit Element( SDL_FRect rect, int anchor );
 
@@ -25,6 +23,7 @@ class Element
 
         virtual void draw( SDL_Renderer *renderer ) const;
 
-        virtual void update( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button, int canvasWidth,
-                             int canvasHeight );
+        virtual void handle_input( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button ) = 0;
+
+        void update_position( int canvasWidth, int canvasHeight );
 };

@@ -12,7 +12,7 @@ void Element::draw( SDL_Renderer *renderer ) const
     HANDLE_SDL_ERROR(SDL_RenderFillRect(renderer, &mRect), "Failed to draw Element: %s")
 }
 
-void Element::_update( const int canvasWidth, const int canvasHeight )
+void Element::update_position( const int canvasWidth, const int canvasHeight )
 {
     if (mAnchor != ANCHOR_NONE) {
         if (mAnchor == ANCHOR_CENTER) {
@@ -27,10 +27,4 @@ void Element::_update( const int canvasWidth, const int canvasHeight )
             }
         }
     }
-}
-
-void Element::update( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button, const int canvasWidth,
-                      const int canvasHeight )
-{
-    _update(canvasWidth, canvasHeight);
 }

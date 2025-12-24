@@ -22,10 +22,8 @@ Button::~Button()
     TTF_DestroyText(mText);
 }
 
-void Button::update( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button, const int canvasWidth,
-                     const int canvasHeight )
+void Button::handle_input( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button )
 {
-    _update(canvasWidth, canvasHeight);
     if (U_PointInRectFloat(motion.x, motion.y, &mRect)) {
         mHovered = true;
 
