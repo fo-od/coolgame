@@ -1,5 +1,6 @@
+#include <filesystem>
+
 #include "button.hpp"
-#include "assets/cozette.hpp"
 #include "menu.hpp"
 #include "physics.hpp"
 #include "types.hpp"
@@ -53,7 +54,9 @@ struct SDLApplication
 
         HANDLE_SDL_ERROR((mTextEngine = TTF_CreateRendererTextEngine(mRenderer)), "Couldn't create text engine: %s")
 
-        HANDLE_SDL_ERROR((mFont = TTF_OpenFontIO(SDL_IOFromConstMem(cozette, cozette_len), true, 13)),
+        const std::filesystem::path basePath = SDL_GetBasePath();
+        const auto fontPath = basePath / "assets/cozette.fnt";
+        HANDLE_SDL_ERROR((mFont = TTF_OpenFont(fontPath.string().c_str(), 13)),
                          "Couldn't load font: %s")
 
         //menus
