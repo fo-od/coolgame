@@ -25,5 +25,29 @@ i will try my best to make it feel smooth though.
 i dont plan on properly releasing this game, since this is a personal project to learn c++.
 but if i end up liking it, ill try to put it on itch or something.
 
-i wont be making build instructions, but it shouldnt be hard to figure out
-f you already know cmake. (btw this was developed on macos so idk what itll do for windows&linux)
+***
+
+### building
+
+ive only built this on linux & macOS (26) and i dont care enough to set up a vm to build it on windows.
+but if there any issues for building on windows, feel free to make a pr.
+
+required libraries (need to have installed on your system):
+
+```
+SDL3
+SDL3_ttf
+```
+
+i use cmake for building, so youll also need to have that installed
+
+and then you can just do
+
+```bash
+git clone https://github.com/fo-od/coolgame.git
+cd coolgame
+cmake -S . -B build
+cmake --build build
+```
+
+and the executable will be somewhere in `build/` along with assets
