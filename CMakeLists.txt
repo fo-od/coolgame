@@ -27,12 +27,12 @@ target_link_libraries(${PROJECT_NAME} PRIVATE SDL3_ttf::SDL3_ttf SDL3::SDL3)
 if (APPLE)
     # on Apple targets, the application bundle has a "resources" subfolder where we can place our assets.
     # SDL_GetBasePath() gives us easy access to that location.
-    macro(add_resource FILE)
+    macro(add_resource FILE DIR)
         target_sources(${PROJECT_NAME} PRIVATE ${FILE})
-        set_property(SOURCE ${FILE} PROPERTY MACOSX_PACKAGE_LOCATION "Resources/assets")
+        set_property(SOURCE ${FILE} PROPERTY MACOSX_PACKAGE_LOCATION "Resources/${DIR}")
     endmacro()
-    add_resource("${CMAKE_CURRENT_LIST_DIR}/src/assets/cozette.fnt")
-    add_resource("${CMAKE_CURRENT_LIST_DIR}/src/assets/cool.icon")
+    add_resource("${CMAKE_CURRENT_LIST_DIR}/src/assets/cozette.fnt" "assets")
+    add_resource("${CMAKE_CURRENT_LIST_DIR}/src/assets/icon.icns" "")
 else ()
     macro(copy_helper filename)
         # for platforms that do not have a good packaging format, all we can do is copy the assets to the process working directory.
@@ -43,19 +43,20 @@ else ()
         )
     endmacro()
     copy_helper("cozette.fnt")
-    copy_helper("cool.ico")
+    copy_helper("icon.ico")
 endif ()
 
 # App icon
 if (MSVC)
-    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/cool.rc.in" "IDI_ICON1        ICON        DISCARDABLE    \"cool.ico\"\n")
+    # i honestly dont know if this works because i dont have a windows machine and dont care enough to set up an environment to build this game for windwos
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/cool.rc.in" "IDI_ICON1        ICON        DISCARDABLE    \"icon.ico\"\n")
     add_custom_command(
             OUTPUT "cool.rc"
             COMMAND ${CMAKE_COMMAND}
             ARGS -E copy "cool.rc.in" "cool.rc"
-            DEPENDS "cool.ico"
+            DEPENDS "icon.ico"
             WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
     target_sources(${PROJECT_NAME} PRIVATE "cool.rc")
 elseif (APPLE)
-    set(MACOSX_BUNDLE_ICON_FILE "assets/cool")
+    set(MACOSX_BUNDLE_ICON_FILE "icon")
 endif ()
