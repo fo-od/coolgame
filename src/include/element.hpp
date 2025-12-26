@@ -9,11 +9,12 @@ class Element
     protected:
         SDL_FRect mRect{};
         int mAnchor;
-        float mXOffset = 0;
-        float mYOffset = 0;
+        int mOrigin;
+        float mXOffset;
+        float mYOffset;
 
     public:
-        Element( float xOffset, float yOffset, float w, float h, int anchor );
+        Element( float xOffset, float yOffset, float w, float h, int anchor, int origin );
 
         Element( const Element &other ) = default;
 

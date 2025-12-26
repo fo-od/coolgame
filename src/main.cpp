@@ -61,11 +61,11 @@ struct SDLApplication
 
         //menus
         Menu::create("pauseMenu", {
-                         std::make_shared<Button>(mTextEngine, mFont, 0, 20, ANCHOR_CENTER, "Resume",
+                         std::make_shared<Button>(mTextEngine, mFont, 0, 20, ANCHOR_CENTER, ANCHOR_CENTER, "Resume",
                                                   [this]() {
                                                       CLOSE_MENU(mCurrentMenu)
                                                   }),
-                         std::make_shared<Button>(mTextEngine, mFont, 0, -20, ANCHOR_CENTER, "Exit",
+                         std::make_shared<Button>(mTextEngine, mFont, 0, -20, ANCHOR_CENTER, ANCHOR_CENTER, "Exit",
                                                   [this]() {
                                                       CLOSE_MENU(mCurrentMenu)
                                                       mRunning = false;
@@ -73,12 +73,12 @@ struct SDLApplication
                      });
 
         Menu::create("mainMenu", {
-                         std::make_shared<Button>(mTextEngine, mFont, 0, 20, ANCHOR_CENTER,
+                         std::make_shared<Button>(mTextEngine, mFont, 0, 20, ANCHOR_CENTER, ANCHOR_CENTER,
                                                   "Levels",
                                                   [this]() {
                                                       CLOSE_MENU(mCurrentMenu)
                                                   }),
-                         std::make_shared<Button>(mTextEngine, mFont, 0, -20, ANCHOR_CENTER,
+                         std::make_shared<Button>(mTextEngine, mFont, 0, -20, ANCHOR_CENTER, ANCHOR_CENTER,
                                                   "Create",
                                                   [this]() {
                                                       CLOSE_MENU(mCurrentMenu)

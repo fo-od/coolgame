@@ -12,7 +12,8 @@ class Button final : public Element
     bool mHovered = false;
 
     public:
-        Button( TTF_TextEngine *textEngine, TTF_Font *font, float xOffset, float yOffset, int anchor, const char *text,
+        Button( TTF_TextEngine *textEngine, TTF_Font *font, float xOffset, float yOffset, int anchor, int origin,
+                const char *text,
                 const std::function<void()> &onClick );
 
         ~Button() override;

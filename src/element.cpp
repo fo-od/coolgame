@@ -3,8 +3,8 @@
 #include "util.hpp"
 
 Element::Element( const float xOffset, const float yOffset, const float w, const float h,
-                  const int anchor ) : mRect(SDL_FRect(0, 0, w, h)), mAnchor(anchor), mXOffset(xOffset),
-                                       mYOffset(yOffset) {}
+                  const int anchor, const int origin ) : mRect(SDL_FRect(0, 0, w, h)), mAnchor(anchor), mOrigin(origin),
+                                                         mXOffset(xOffset), mYOffset(yOffset) {}
 
 void Element::draw( SDL_Renderer *renderer ) const
 {
