@@ -29,15 +29,11 @@ but if i end up liking it, ill try to put it on itch or something.
 
 ### building
 
-ive only built this on linux & macOS (26) and i dont care enough to set up a vm to build it on windows.
-but if there any issues for building on windows, feel free to make a pr.
-
-required libraries (need to have installed on your system):
+required things (need to have installed on your system):
 
 - [SDL3](https://github.com/libsdl-org/SDL)
 - [SDL3_ttf](https://github.com/libsdl-org/SDL_ttf)
-
-i use cmake for building, so youll also need to have that installed
+- [CMake](https://cmake.org)
 
 and then you can just do
 
@@ -49,3 +45,5 @@ cmake --build build
 ```
 
 and the executable will be somewhere in `build/` along with assets
+
+(if youre on windows you can use mingw ([msys2](https://msys2.org)) and that should work)
