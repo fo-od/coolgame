@@ -4,10 +4,6 @@ project(coolgame)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
-## Dependencies
-find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3-shared)
-find_package(SDL3_ttf REQUIRED)
-
 include_directories("src/include")
 file(GLOB SOURCE_FILES "src/*.cpp")
 
@@ -19,6 +15,13 @@ elseif (APPLE)
 else ()
   add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 endif ()
+
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
+
+## Dependencies
+find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3-shared)
+find_package(SDL3_ttf REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3_ttf::SDL3_ttf SDL3::SDL3)
 
 # Assets
 if (APPLE)
@@ -54,8 +57,5 @@ if (MSVC)
             WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
     target_sources(${PROJECT_NAME} PRIVATE "cool.rc")
 elseif (APPLE)
-    set(MACOSX_BUNDLE_ICON_FILE "assets/cool.icon")
+    set(MACOSX_BUNDLE_ICON_FILE "assets/cool")
 endif ()
-
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23)
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3_ttf::SDL3_ttf SDL3::SDL3)
