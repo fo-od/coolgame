@@ -2,6 +2,8 @@
 #include <functional>
 
 #include "element.hpp"
+#include <string>
+#include <memory>
 #include <SDL3_ttf/SDL_ttf.h>
 
 class Menu

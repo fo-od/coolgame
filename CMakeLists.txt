@@ -10,14 +10,15 @@ find_package(SDL3_ttf REQUIRED)
 
 include_directories("src/include")
 file(GLOB SOURCE_FILES "src/*.cpp")
+file(GLOB HEADER_FILES "src/include/*.hpp")
 
 # Executable
 if (MSVC)
-    add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILES})
+  add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILES} ${HEADER_FILES})
 elseif (APPLE)
-    add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${SOURCE_FILES})
+  add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${SOURCE_FILES} ${HEADER_FILES})
 else ()
-    add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+  add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
 endif ()
 
 # Assets

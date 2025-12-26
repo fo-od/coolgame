@@ -2,6 +2,7 @@
 
 #include "body.hpp"
 #include "types.hpp"
+#include <cmath>
 
 std::vector<Body> Physics::bodies;
 std::vector<StaticBody> Physics::staticBodies;
