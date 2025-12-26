@@ -34,10 +34,8 @@ but if there any issues for building on windows, feel free to make a pr.
 
 required libraries (need to have installed on your system):
 
-```
-SDL3
-SDL3_ttf
-```
+- [SDL3](https://github.com/libsdl-org/SDL)
+- [SDL3_ttf](https://github.com/libsdl-org/SDL_ttf)
 
 i use cmake for building, so youll also need to have that installed
 
