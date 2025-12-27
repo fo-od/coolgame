@@ -22,11 +22,6 @@ i will try my best to make it feel smooth though.
 
 ***
 
-i dont plan on properly releasing this game, since this is a personal project to learn c++.
-but if i end up liking it, ill try to put it on itch or something.
-
-***
-
 ### building
 
 required things (need to have installed on your system):
