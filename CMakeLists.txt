@@ -27,6 +27,20 @@ find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3-shared)
 find_package(SDL3_ttf REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC SDL3_ttf::SDL3_ttf SDL3::SDL3)
 
+# On Windows, copy SDL3.dll to the build directory
+if(WIN32)
+    add_custom_command(
+            TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E copy $<TARGET_FILE:SDL3::SDL3-shared> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            VERBATIM
+    )
+    add_custom_command(
+            TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND "${CMAKE_COMMAND}" -E copy $<TARGET_FILE:SDL3_ttf::SDL3_ttf> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            VERBATIM
+    )
+endif()
+
 # Assets (thanks https://github.com/Ravbug/sdl3-sample)
 if (APPLE)
     # on Apple targets, the application bundle has a "resources" subfolder where we can place our assets.
