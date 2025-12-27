@@ -45,3 +45,6 @@ cmake --build build
 ```
 
 and the executable will be somewhere in `build/` along with the assets
+***
+if youre on windows you should use mingw to build it but im not making a guide for that here because its honestly
+annoying
