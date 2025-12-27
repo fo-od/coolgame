@@ -44,6 +44,4 @@ cmake -S . -B build
 cmake --build build
 ```
 
-and the executable will be somewhere in `build/` along with assets
-
-(if youre on windows youre on your own because this is so annoying)
+and the executable will be somewhere in `build/` along with the assets
