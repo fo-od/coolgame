@@ -46,4 +46,4 @@ cmake --build build
 
 and the executable will be somewhere in `build/` along with assets
 
-(if youre on windows you can use mingw ([msys2](https://msys2.org)) and that should work)
+(if youre on windows youre on your own because this is so annoying)
