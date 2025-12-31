@@ -3,9 +3,12 @@
 #include "body.hpp"
 #include "types.hpp"
 #include <cmath>
+#include <ranges>
+#include <unordered_map>
 
-std::vector<Body> Physics::bodies;
-std::vector<StaticBody> Physics::staticBodies;
+std::unordered_map<u32, Body> Physics::bodies;
+std::unordered_map<u32, StaticBody> Physics::staticBodies;
+u32 Physics::bodyCount = 0;
 
 u32 Physics::iterations = 2;
 float Physics::tickRate = 1.f / iterations;
@@ -16,9 +19,9 @@ float Physics::terminalVelocity = 10000;
 
 Hit Physics::sweep_static_bodies( const AABB &aabb, const Vector2 &velocity )
 {
-    Hit result{.mTime = 0xBEEF};
+    Hit result{.mTime = INFINITY};
 
-    for (const StaticBody &static_body: staticBodies) {
+    for (const StaticBody &static_body: staticBodies | std::views::values) {
         AABB sum_aabb = static_body.mAABB;
         sum_aabb.mHalfSize += aabb.mHalfSize;
 
@@ -60,10 +63,11 @@ void Physics::sweep_response( Body *body, const Vector2 &velocity )
 
 void Physics::stationary_response( Body *body )
 {
-    for (const StaticBody &static_body: staticBodies) {
-        AABB aabb = AABB::minkowski_difference(static_body.mAABB, body->mAABB);
+    for (const StaticBody &static_body: staticBodies | std::views::values) {
+        AABB const aabb = AABB::minkowski_difference(static_body.mAABB, body->mAABB);
 
-        Vector2 min = aabb.min(), max = aabb.max();
+        Vector2 const min = aabb.min();
+        Vector2 const max = aabb.max();
 
         if (min.x <= 0 && max.x >= 0 && min.y <= 0 && max.y >= 0) {
             body->mAABB.mPos += AABB::penetration_vector(aabb);
@@ -73,7 +77,7 @@ void Physics::stationary_response( Body *body )
 
 void Physics::update( const float deltaTime )
 {
-    for (Body &body: bodies) {
+    for (Body &body: bodies | std::views::values) {
         body.mVelocity.y += gravity;
         if (body.mVelocity.y > terminalVelocity) {
             body.mVelocity.y = terminalVelocity;
@@ -81,7 +85,7 @@ void Physics::update( const float deltaTime )
 
         body.mVelocity += body.mAcceleration;
 
-        Vector2 scaled_velocity = body.mVelocity * (deltaTime * tickRate);
+        Vector2 const scaled_velocity = body.mVelocity * (deltaTime * tickRate);
 
         for (u32 i = 0; i < iterations; ++i) {
             sweep_response(&body, scaled_velocity);
@@ -91,24 +95,26 @@ void Physics::update( const float deltaTime )
     }
 }
 
-Body *Physics::get_body( const usize index )
+Body *Physics::get_body( const u32 id )
 {
-    return &bodies.at(index);
+    return &bodies.at(id);
 }
 
-StaticBody *Physics::get_static_body( const usize index )
+StaticBody *Physics::get_static_body( const u32 id )
 {
-    return &staticBodies.at(index);
+    return &staticBodies.at(id);
 }
 
 u32 Physics::add_body( const Vector2 &pos, const Vector2 &half_size, const bool filled )
 {
-    bodies.emplace_back(pos, half_size, filled);
-    return bodies.size() - 1;
+    bodyCount++;
+    bodies.try_emplace(bodyCount, pos, half_size, filled);
+    return bodyCount;
 }
 
 u32 Physics::add_static_body( const Vector2 &pos, const Vector2 &half_size, const bool filled )
 {
-    staticBodies.emplace_back(pos, half_size, filled);
-    return staticBodies.size() - 1;
+    bodyCount++;
+    staticBodies.try_emplace(bodyCount, pos, half_size, filled);
+    return bodyCount;
 }

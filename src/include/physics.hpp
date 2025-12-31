@@ -1,20 +1,22 @@
 #pragma once
 
-#include <vector>
+#include <unordered_map>
 
 #include "body.hpp"
 #include "types.hpp"
 
 class Physics
 {
-    static std::vector<Body> bodies;
-    static std::vector<StaticBody> staticBodies;
+    static std::unordered_map<u32, Body> bodies;
+    static std::unordered_map<u32, StaticBody> staticBodies;
 
     static u32 iterations;
     static float tickRate;
 
     static float gravity;
     static float terminalVelocity;
+
+    static u32 bodyCount;
 
     static Hit sweep_static_bodies( const AABB &aabb, const Vector2 &velocity );
 
@@ -25,9 +27,9 @@ class Physics
     public:
         static void update( float deltaTime );
 
-        static Body *get_body( usize index );
+        static Body *get_body( u32 id );
 
-        static StaticBody *get_static_body( usize index );
+        static StaticBody *get_static_body( u32 id );
 
         static u32 add_body( const Vector2 &pos, const Vector2 &half_size, bool filled = false );
 
