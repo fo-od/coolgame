@@ -48,7 +48,7 @@ void Menu::handle_input( const SDL_MouseMotionEvent &motion, const SDL_MouseButt
     }
 }
 
-void Menu::update( const int canvasWidth, const int canvasHeight )
+void Menu::update( const float canvasWidth, const float canvasHeight )
 {
     for (const Menu &menu: menus | std::views::values) {
         if (menu.mVisible) {

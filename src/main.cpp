@@ -61,11 +61,11 @@ struct SDLApplication
 
         //menus
         Menu::create("pauseMenu", {
-                         std::make_shared<Button>(mTextEngine, mFont, 0, 20, ANCHOR_CENTER, ANCHOR_CENTER, "Resume",
+                         std::make_shared<Button>(mTextEngine, mFont, 0, 20, Anchor::Center, Anchor::Center, "Resume",
                                                   [this]() {
                                                       CLOSE_MENU(mCurrentMenu)
                                                   }),
-                         std::make_shared<Button>(mTextEngine, mFont, 0, -20, ANCHOR_CENTER, ANCHOR_CENTER, "Exit",
+                         std::make_shared<Button>(mTextEngine, mFont, 0, -20, Anchor::Center, Anchor::Center, "Exit",
                                                   [this]() {
                                                       CLOSE_MENU(mCurrentMenu)
                                                       mRunning = false;
@@ -73,12 +73,12 @@ struct SDLApplication
                      });
 
         Menu::create("mainMenu", {
-                         std::make_shared<Button>(mTextEngine, mFont, 0, 20, ANCHOR_CENTER, ANCHOR_CENTER,
+                         std::make_shared<Button>(mTextEngine, mFont, 0, 20, Anchor::Center, Anchor::Center,
                                                   "Levels",
                                                   [this]() {
                                                       CLOSE_MENU(mCurrentMenu)
                                                   }),
-                         std::make_shared<Button>(mTextEngine, mFont, 0, -20, ANCHOR_CENTER, ANCHOR_CENTER,
+                         std::make_shared<Button>(mTextEngine, mFont, 0, -20, Anchor::Center, Anchor::Center,
                                                   "Create",
                                                   [this]() {
                                                       CLOSE_MENU(mCurrentMenu)
@@ -120,22 +120,25 @@ struct SDLApplication
                 input(&event);
             }
 
-            if (!mInMenu)
+            if (!mInMenu) {
                 update(Physics::get_body(player));
+            }
 
             render();
 
-            deltaTime = (SDL_GetTicks() - currentTick) / 1000.0f;
+            deltaTime = static_cast<float>(SDL_GetTicks() - currentTick) / 1000.0f;
         }
     }
 
     void input( SDL_Event *e )
     {
-        if (e->type == SDL_EVENT_QUIT)
+        if (e->type == SDL_EVENT_QUIT) {
             mRunning = false;
+        }
 
         if (e->type == SDL_EVENT_WINDOW_RESIZED) {
             SDL_GetWindowSizeInPixels(mWindow, &mWidth, &mHeight);
+            Menu::update(mWidth, mHeight);
         }
 
         keyboardState = SDL_GetKeyboardState(nullptr);
@@ -155,8 +158,9 @@ struct SDLApplication
             e->type == SDL_EVENT_MOUSE_BUTTON_UP) {
             SDL_ConvertEventToRenderCoordinates(mRenderer, e);
 
-            if (mInMenu)
+            if (mInMenu) {
                 Menu::handle_input(e->motion, e->button);
+            }
         }
     }
 
@@ -188,11 +192,11 @@ struct SDLApplication
         SDL_RenderClear(mRenderer);
 
         if (mInMenu) {
+            // draw the world in a darker color for better menu visibility
             SDL_SetRenderDrawColor(mRenderer, 127, 127, 127, SDL_ALPHA_OPAQUE);
             AABB::draw(mRenderer);
 
             SDL_SetRenderDrawColor(mRenderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-            Menu::update(mWidth, mHeight);
             Menu::draw(mRenderer);
         } else {
             SDL_SetRenderDrawColor(mRenderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
@@ -203,7 +207,7 @@ struct SDLApplication
     }
 };
 
-int main( int argc, char *argv[] )
+int main()
 {
     SDLApplication app;
     app.mainLoop();

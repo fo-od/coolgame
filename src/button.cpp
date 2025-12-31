@@ -7,8 +7,9 @@
 #include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_render.h>
 
-Button::Button( TTF_TextEngine *textEngine, TTF_Font *font, const float xOffset, const float yOffset, const int anchor,
-                const int origin, const char *text, const std::function<void()> &onClick )
+Button::Button( TTF_TextEngine *textEngine, TTF_Font *font, const float xOffset, const float yOffset,
+                const Anchor anchor,
+                const Anchor origin, const char *text, const std::function<void()> &onClick )
     : Element(xOffset, yOffset, 0, 0, anchor, origin), mText(TTF_CreateText(textEngine, font, text, 0)),
       mOnClick(onClick)
 {

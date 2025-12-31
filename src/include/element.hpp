@@ -8,13 +8,13 @@ class Element
 {
     protected:
         SDL_FRect mRect{};
-        int mAnchor;
-        int mOrigin;
+        Anchor mAnchor;
+        Anchor mOrigin;
         float mXOffset;
         float mYOffset;
 
     public:
-        Element( float xOffset, float yOffset, float w, float h, int anchor, int origin );
+        Element( float xOffset, float yOffset, float w, float h, Anchor anchor, Anchor origin );
 
         Element( const Element &other ) = default;
 
@@ -24,5 +24,5 @@ class Element
 
         virtual void handle_input( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button ) = 0;
 
-        void update_position( int canvasWidth, int canvasHeight );
+        void update_position( float canvasWidth, float canvasHeight );
 };

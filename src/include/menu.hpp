@@ -22,7 +22,7 @@ class Menu
 
         static void handle_input( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button );
 
-        static void update( int canvasWidth, int canvasHeight );
+        static void update( float canvasWidth, float canvasHeight );
 
         static void draw( SDL_Renderer *renderer );
 };
