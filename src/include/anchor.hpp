@@ -1,6 +1,6 @@
 #pragma once
 
-enum class Anchor : uint16_t
+enum class Anchor : u8
 {
     None = 0,
     Left = 1 << 0,
@@ -12,10 +12,10 @@ enum class Anchor : uint16_t
 
 constexpr Anchor operator |( const Anchor lhs, const Anchor rhs )
 {
-    return static_cast<Anchor>(static_cast<uint16_t>(lhs) | static_cast<uint16_t>(rhs));
+    return static_cast<Anchor>(static_cast<u8>(lhs) | static_cast<u8>(rhs));
 }
 
 constexpr bool operator &( const Anchor lhs, const Anchor rhs )
 {
-    return static_cast<bool>(static_cast<uint16_t>(lhs) & static_cast<uint16_t>(rhs));
+    return static_cast<bool>(static_cast<u8>(lhs) & static_cast<u8>(rhs));
 }
