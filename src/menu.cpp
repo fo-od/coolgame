@@ -1,13 +1,11 @@
-#include "menu.hpp"
+#include "engine/ui/menu.hpp"
 
+#include <SDL3_ttf/SDL_ttf.h>
 #include <functional>
 #include <iostream>
 #include <ostream>
 #include <ranges>
 #include <string>
-
-#include "util.hpp"
-#include <SDL3_ttf/SDL_ttf.h>
 
 std::unordered_map<std::string, Menu> Menu::menus = {};
 

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "aabb.hpp"
+#include "engine/aabb.hpp"
 
 class Body
 {
     public:
-        AABB mAABB{};
-        Vector2 mVelocity{};
-        Vector2 mAcceleration{};
+        AABB mAABB;
+        Vector2 mVelocity;
+        Vector2 mAcceleration;
 
         Body() = default;
 
@@ -24,7 +24,7 @@ class Body
 class StaticBody
 {
     public:
-        AABB mAABB{};
+        AABB mAABB;
 
         StaticBody() = default;
 

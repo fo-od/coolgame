@@ -1,5 +1,7 @@
 #pragma once
 
+#include "util/types.hpp"
+
 enum class Anchor : u8
 {
     None = 0,

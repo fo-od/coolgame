@@ -1,4 +1,4 @@
-#include "util.hpp"
+#include "include/util/util.hpp"
 
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "types.hpp"
-#include "anchor.hpp"
-#include "vector2.hpp"
+#include "util/types.hpp"
+#include "engine/ui/anchor.hpp"
+#include "util/vector2.hpp"
 #include <SDL3/SDL_rect.h>
 #include <SDL3_ttf/SDL_ttf.h>
 

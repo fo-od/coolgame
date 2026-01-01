@@ -1,11 +1,9 @@
 #pragma once
 
-#include <vector>
-
-#include "vector2.hpp"
-
+#include "util/vector2.hpp"
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
+#include <vector>
 
 class Hit
 {
@@ -27,8 +25,8 @@ class AABB
     void removeRect() const;
 
     public:
-        Vector2 mPos{};
-        Vector2 mHalfSize{};
+        Vector2 mPos;
+        Vector2 mHalfSize;
         SDL_FRect mRect{};
 
         AABB() = default;

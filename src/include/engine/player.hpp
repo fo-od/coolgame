@@ -1,6 +1,6 @@
 #pragma once
 
-#include "body.hpp"
+#include "engine/body.hpp"
 
 class Player
 {
@@ -8,8 +8,9 @@ class Player
     bool mDashing = false;
 
     public:
-        Body mBody{};
-        float mSpeed{}, mJumpStrength{};
+        Body mBody;
+        float mSpeed;
+        float mJumpStrength;
 
         Player() = default;
 

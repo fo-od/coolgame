@@ -1,7 +1,7 @@
-#include "physics.hpp"
+#include "engine/physics.hpp"
 
-#include "body.hpp"
-#include "types.hpp"
+#include "engine/body.hpp"
+#include "util/types.hpp"
 #include <cmath>
 #include <ranges>
 #include <unordered_map>

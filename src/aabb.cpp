@@ -1,7 +1,7 @@
-#include "aabb.hpp"
+#include "engine/aabb.hpp"
 
-#include <ostream>
 #include <cmath>
+#include <ostream>
 
 std::vector<SDL_FRect *> AABB::rects;
 std::vector<SDL_FRect *> AABB::filledRects;

@@ -1,11 +1,9 @@
-#include "button.hpp"
+#include "engine/ui/button.hpp"
 
-#include <functional>
-
-#include "util.hpp"
-
+#include "util/util.hpp"
 #include <SDL3/SDL_mouse.h>
 #include <SDL3/SDL_render.h>
+#include <functional>
 
 Button::Button( TTF_TextEngine *textEngine, TTF_Font *font, const float xOffset, const float yOffset,
                 const Anchor anchor,

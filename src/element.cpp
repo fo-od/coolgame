@@ -1,8 +1,7 @@
-#include "element.hpp"
+#include "engine/ui/element.hpp"
 
+#include "util/util.hpp"
 #include <stdexcept>
-
-#include "util.hpp"
 
 Element::Element( const float xOffset, const float yOffset, const float w, const float h,
                   const Anchor anchor, const Anchor origin ) : mRect(SDL_FRect(-w, -h, w, h)), mAnchor(anchor),
@@ -28,7 +27,8 @@ void Element::update_position( const float canvasWidth, const float canvasHeight
             mRect.y = (canvasHeight / 2) - mYOffset;
         } else {
             if (mAnchor &Anchor::Center) {
-                if (mAnchor &Anchor::Top 
+                if (mAnchor &Anchor::Top
+                
                 ||
                 mAnchor &Anchor::Bottom
                 ) {
@@ -53,7 +53,8 @@ void Element::update_position( const float canvasWidth, const float canvasHeight
         mRect.y -= mRect.h / 2;
     } else {
         if (mOrigin &Anchor::Center) {
-            if (mOrigin &Anchor::Top 
+            if (mOrigin &Anchor::Top
+            
             ||
             mOrigin &Anchor::Bottom
             ) {

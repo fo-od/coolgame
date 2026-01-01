@@ -1,11 +1,10 @@
 #include <filesystem>
 
-#include "button.hpp"
-#include "menu.hpp"
-#include "physics.hpp"
-#include "types.hpp"
-#include "util.hpp"
-
+#include "engine/ui/button.hpp"
+#include "engine/physics.hpp"
+#include "engine/ui/menu.hpp"
+#include "util/types.hpp"
+#include "util/util.hpp"
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
 

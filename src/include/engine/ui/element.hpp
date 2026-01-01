@@ -1,6 +1,6 @@
 #pragma once
 
-#include "util.hpp"
+#include "util/util.hpp"
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
 
