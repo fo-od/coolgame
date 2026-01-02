@@ -1,5 +1,6 @@
 #include "engine/aabb.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <ostream>
 
@@ -37,10 +38,11 @@ AABB::AABB( const AABB &other )
       mRect(other.mRect)
 {
     if (mVisible) {
-        if (mFilled)
+        if (mFilled) {
             filledRects.push_back(&mRect);
-        else
+        } else {
             rects.push_back(&mRect);
+        }
     }
 }
 
@@ -69,10 +71,10 @@ AABB &AABB::operator=( const AABB &other )
 
 void AABB::removeRect() const
 {
-    if (const auto r = std::find(rects.begin(), rects.end(), &mRect); r != rects.end()) {
+    if (const auto r = std::ranges::find(rects, &mRect); r != rects.end()) {
         rects.erase(r);
     }
-    if (const auto d = std::find(filledRects.begin(), filledRects.end(), &mRect); d != filledRects.end()) {
+    if (const auto d = std::ranges::find(filledRects, &mRect); d != filledRects.end()) {
         filledRects.erase(d);
     }
 }
@@ -171,10 +173,10 @@ Hit AABB::intersects( const Vector2 &pos, const Vector2 &magnitude ) const
         hit.mIsHit = true;
         hit.mTime = last_entry;
 
-        const float dx = hit.position.x - this->mPos.x,
-                dy = hit.position.y - this->mPos.y;
-        const float px = mHalfSize.x - std::abs(dx),
-                py = mHalfSize.y - std::abs(dy);
+        const float dx = hit.position.x - this->mPos.x;
+        const float dy = hit.position.y - this->mPos.y;
+        const float px = mHalfSize.x - std::abs(dx);
+        const float py = mHalfSize.y - std::abs(dy);
 
         if (px < py) {
             hit.normal.x = (dx > 0) - (dx < 0);
@@ -190,8 +192,8 @@ Vector2 AABB::penetration_vector( const AABB &aabb )
 {
     Vector2 result;
 
-    const Vector2 min = aabb.min(),
-            max = aabb.max();
+    const Vector2 min = aabb.min();
+    const Vector2 max = aabb.max();
 
     float min_dist = std::abs(min.x);
     result.x = min.x;

@@ -5,7 +5,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
 include_directories("src/include")
-file(GLOB SOURCE_FILES "src/*.cpp")
+file(GLOB_RECURSE SOURCE_FILES "src/*.cpp")
 
 # App icon
 include(${CMAKE_SOURCE_DIR}/cmake/AddIconToBinary.cmake)

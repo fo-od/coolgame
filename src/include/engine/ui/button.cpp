@@ -12,7 +12,7 @@ Button::Button( TTF_TextEngine *textEngine, TTF_Font *font, const float xOffset,
       mOnClick(onClick)
 {
     const Vector2 textSize = U_GetTextSize(this->mText);
-    mRect = {xOffset, yOffset, textSize.x + 10, textSize.y + 10};
+    mRect = {.x = xOffset, .y = yOffset, .w = textSize.x + 10, .h = textSize.y + 10};
     U_AnchorFRect(&mRect, anchor);
 }
 
@@ -44,5 +44,5 @@ void Button::draw( SDL_Renderer *renderer ) const
         TTF_SetTextColor(mText, 255, 255, 255, 255);
     }
 
-    U_DrawRendererText(mText, mRect.x + 5, mRect.y + 5);
+    U_DrawRendererText(mText, mRect.x + 5, mRect.y + 5, Anchor::Top | Anchor::Left);
 }
