@@ -7,14 +7,12 @@
 #include <ranges>
 #include <string>
 
-std::unordered_map<std::string, Menu> Menu::menus = {};
+std::unordered_map<std::string, Menu> Menu::menus;
 
-void Menu::create( const std::string &name, const std::vector<std::shared_ptr<Element> > &elements )
+void Menu::create( const std::string &name, std::vector<std::unique_ptr<Element> > elements )
 {
     menus[name] = Menu{};
-    for (const auto &element: elements) {
-        menus[name].mElements.emplace_back(element);
-    }
+    menus[name].mElements = std::move(elements);
 }
 
 void Menu::open( const std::string &name )

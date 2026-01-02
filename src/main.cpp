@@ -59,30 +59,36 @@ struct SDLApplication
                          "Couldn't load font: %s")
 
         //menus
-        Menu::create("pauseMenu", {
-                         std::make_shared<Button>(mTextEngine, mFont, 0, 20, Anchor::Center, Anchor::Center, "Resume",
+        Menu::create("pauseMenu", Element::make_vector(
+                         std::make_unique<Button>(mTextEngine, mFont,
+                                                  0, 20,
+                                                  Anchor::Center, Anchor::Center,
+                                                  "Resume",
                                                   [this] {
                                                       CLOSE_MENU(mCurrentMenu)
                                                   }),
-                         std::make_shared<Button>(mTextEngine, mFont, 0, -20, Anchor::Center, Anchor::Center, "Exit",
+                         std::make_unique<Button>(mTextEngine, mFont,
+                                                  0, -20,
+                                                  Anchor::Center, Anchor::Center,
+                                                  "Exit",
                                                   [this] {
                                                       CLOSE_MENU(mCurrentMenu)
                                                       mRunning = false;
                                                   })
-                     });
+                     ));
 
-        Menu::create("mainMenu", {
-                         std::make_shared<Button>(mTextEngine, mFont, 0, 20, Anchor::Center, Anchor::Center,
+        Menu::create("mainMenu", Element::make_vector(
+                         std::make_unique<Button>(mTextEngine, mFont, 0, 20, Anchor::Center, Anchor::Center,
                                                   "Levels",
                                                   [this] {
                                                       CLOSE_MENU(mCurrentMenu)
                                                   }),
-                         std::make_shared<Button>(mTextEngine, mFont, 0, -20, Anchor::Center, Anchor::Center,
+                         std::make_unique<Button>(mTextEngine, mFont, 0, -20, Anchor::Center, Anchor::Center,
                                                   "Create",
                                                   [this] {
                                                       CLOSE_MENU(mCurrentMenu)
                                                   })
-                     });
+                     ));
     }
 
     ~SDLApplication()

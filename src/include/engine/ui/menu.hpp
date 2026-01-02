@@ -10,11 +10,11 @@ class Menu
 {
     static std::unordered_map<std::string, Menu> menus;
 
-    std::vector<std::shared_ptr<Element> > mElements;
+    std::vector<std::unique_ptr<Element> > mElements;
     bool mVisible = false;
 
     public:
-        static void create( const std::string &name, const std::vector<std::shared_ptr<Element> > &elements );
+        static void create( const std::string &name, std::vector<std::unique_ptr<Element> > elements );
 
         static void open( const std::string &name );
 

@@ -12,8 +12,7 @@ class Button final : public Element
 
     public:
         Button( TTF_TextEngine *textEngine, TTF_Font *font, float xOffset, float yOffset, Anchor anchor, Anchor origin,
-                const char *text,
-                const std::function<void()> &onClick );
+                const char *text, const std::function<void()> &onClick );
 
         ~Button() override;
 

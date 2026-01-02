@@ -1,6 +1,8 @@
 #pragma once
 
-#include "util/util.hpp"
+#include "engine/ui/anchor.hpp"
+#include <memory>
+#include <vector>
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
 
@@ -14,6 +16,14 @@ class Element
         float mYOffset;
 
     public:
+        template<class... Elements>
+        static std::vector<std::unique_ptr<Element> > make_vector( Elements... elements )
+        {
+            std::vector<std::unique_ptr<Element> > v;
+            (v.push_back(std::move(elements)), ...);
+            return v;
+        }
+
         Element( float xOffset, float yOffset, float w, float h, Anchor anchor, Anchor origin );
 
         Element( const Element &other ) = default;
