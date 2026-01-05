@@ -10,12 +10,12 @@
 
 struct SDLApplication
 {
-    SDL_Window *mWindow{};
-    SDL_Renderer *mRenderer{};
-    TTF_Font *mFont;
-    TTF_TextEngine *mTextEngine;
+    SDL_Window* mWindow{};
+    SDL_Renderer* mRenderer{};
+    TTF_Font* mFont;
+    TTF_TextEngine* mTextEngine;
 
-    const bool *keyboardState{};
+    const bool* keyboardState{};
     std::string mCurrentMenu;
 
     float deltaTime = 0.0f;
@@ -63,14 +63,16 @@ struct SDLApplication
                                                   0, 20,
                                                   Anchor::Center, Anchor::Center,
                                                   "Resume",
-                                                  [this] {
+                                                  [this]
+                                                  {
                                                       CLOSE_MENU(mCurrentMenu)
                                                   }),
                          std::make_unique<Button>(mTextEngine, mFont,
                                                   0, -20,
                                                   Anchor::Center, Anchor::Center,
                                                   "Exit",
-                                                  [this] {
+                                                  [this]
+                                                  {
                                                       CLOSE_MENU(mCurrentMenu)
                                                       mRunning = false;
                                                   })
@@ -79,12 +81,14 @@ struct SDLApplication
         Menu::create("mainMenu", Element::make_vector(
                          std::make_unique<Button>(mTextEngine, mFont, 0, 20, Anchor::Center, Anchor::Center,
                                                   "Levels",
-                                                  [this] {
+                                                  [this]
+                                                  {
                                                       CLOSE_MENU(mCurrentMenu)
                                                   }),
                          std::make_unique<Button>(mTextEngine, mFont, 0, -20, Anchor::Center, Anchor::Center,
                                                   "Create",
-                                                  [this] {
+                                                  [this]
+                                                  {
                                                       CLOSE_MENU(mCurrentMenu)
                                                   })
                      ));
@@ -116,15 +120,18 @@ struct SDLApplication
                                                         Vector2{25, mHeight / 2});
         const u32 ceiling = Physics::add_static_body(Vector2{mWidth / 2, 25}, Vector2{mWidth / 2, 25});
 
-        while (mRunning) {
+        while (mRunning)
+        {
             const u64 currentTick = SDL_GetTicks();
 
             SDL_Event event;
-            while (SDL_PollEvent(&event)) {
+            while (SDL_PollEvent(&event))
+            {
                 input(&event);
             }
 
-            if (!mInMenu) {
+            if (!mInMenu)
+            {
                 update(Physics::get_body(player));
             }
 
@@ -134,24 +141,31 @@ struct SDLApplication
         }
     }
 
-    void input( SDL_Event *e )
+    void input(SDL_Event* e)
     {
-        if (e->type == SDL_EVENT_QUIT) {
+        if (e->type == SDL_EVENT_QUIT)
+        {
             mRunning = false;
         }
 
-        if (e->type == SDL_EVENT_WINDOW_RESIZED) {
+        if (e->type == SDL_EVENT_WINDOW_RESIZED)
+        {
             SDL_GetWindowSizeInPixels(mWindow, &mWidth, &mHeight);
             Menu::update(mWidth, mHeight);
         }
 
         keyboardState = SDL_GetKeyboardState(nullptr);
 
-        if (e->type == SDL_EVENT_KEY_DOWN) {
-            if (e->key.key == SDLK_ESCAPE) {
-                if (!mInMenu) {
+        if (e->type == SDL_EVENT_KEY_DOWN)
+        {
+            if (e->key.key == SDLK_ESCAPE)
+            {
+                if (!mInMenu)
+                {
                     OPEN_MENU("pauseMenu")
-                } else {
+                }
+                else
+                {
                     CLOSE_MENU(mCurrentMenu)
                 }
             }
@@ -159,29 +173,35 @@ struct SDLApplication
 
         if (e->type == SDL_EVENT_MOUSE_MOTION ||
             e->type == SDL_EVENT_MOUSE_BUTTON_DOWN ||
-            e->type == SDL_EVENT_MOUSE_BUTTON_UP) {
+            e->type == SDL_EVENT_MOUSE_BUTTON_UP)
+        {
             SDL_ConvertEventToRenderCoordinates(mRenderer, e);
 
-            if (mInMenu) {
+            if (mInMenu)
+            {
                 Menu::handle_input(e->motion, e->button);
             }
         }
     }
 
-    void update( Body *player ) const
+    void update(Body* player) const
     {
         Vector2 velocity{0.0, player->mVelocity.y};
 
-        if (keyboardState[SDL_SCANCODE_LEFT]) {
+        if (keyboardState[SDL_SCANCODE_LEFT])
+        {
             velocity.x -= 1000;
         }
-        if (keyboardState[SDL_SCANCODE_RIGHT]) {
+        if (keyboardState[SDL_SCANCODE_RIGHT])
+        {
             velocity.x += 1000;
         }
-        if (keyboardState[SDL_SCANCODE_UP]) {
+        if (keyboardState[SDL_SCANCODE_UP])
+        {
             velocity.y = -2000;
         }
-        if (keyboardState[SDL_SCANCODE_DOWN]) {
+        if (keyboardState[SDL_SCANCODE_DOWN])
+        {
             velocity.y += 800;
         }
 
@@ -195,14 +215,17 @@ struct SDLApplication
         SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
         SDL_RenderClear(mRenderer);
 
-        if (mInMenu) {
+        if (mInMenu)
+        {
             // draw the world in a darker color for better menu visibility
             SDL_SetRenderDrawColor(mRenderer, 127, 127, 127, SDL_ALPHA_OPAQUE);
             AABB::draw(mRenderer);
 
             SDL_SetRenderDrawColor(mRenderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
             Menu::draw(mRenderer);
-        } else {
+        }
+        else
+        {
             SDL_SetRenderDrawColor(mRenderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
             AABB::draw(mRenderer);
         }
