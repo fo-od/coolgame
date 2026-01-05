@@ -12,22 +12,21 @@ struct SDLApplication
 {
     SDL_Window *mWindow{};
     SDL_Renderer *mRenderer{};
-
-    int mWidth = 640;
-    int mHeight = 480;
-
     TTF_Font *mFont;
     TTF_TextEngine *mTextEngine;
 
-    bool mRunning = false;
-    bool mInMenu = false;
+    const bool *keyboardState{};
     std::string mCurrentMenu;
 
     float deltaTime = 0.0f;
-    const bool *keyboardState{};
-
     float camX = 0.0f;
     float camY = 0.0f;
+
+    bool mRunning = false;
+    bool mInMenu = false;
+
+    int mWidth = 640;
+    int mHeight = 480;
 
     SDLApplication()
     {
