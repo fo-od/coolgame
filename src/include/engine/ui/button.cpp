@@ -7,9 +7,10 @@
 
 Button::Button( TTF_TextEngine *textEngine, TTF_Font *font, const float xOffset, const float yOffset,
                 const Anchor anchor,
-                const Anchor origin, const char *text, const std::function<void()> &onClick )
-    : Element(xOffset, yOffset, 0, 0, anchor, origin), mText(TTF_CreateText(textEngine, font, text, 0)),
-      mOnClick(onClick)
+                const Anchor origin, const char *text,
+                const std::function< void() >& onClick ) : Element(xOffset, yOffset, 0, 0, anchor, origin),
+                                                           mText(TTF_CreateText(textEngine, font, text, 0)),
+                                                           mOnClick(onClick)
 {
     const Vector2 textSize = U_GetTextSize(this->mText);
     mRect = {.x = xOffset, .y = yOffset, .w = textSize.x + 10, .h = textSize.y + 10};
@@ -21,28 +22,33 @@ Button::~Button()
     TTF_DestroyText(mText);
 }
 
-void Button::handle_input( const SDL_MouseMotionEvent &motion, const SDL_MouseButtonEvent &button )
-{
-    if (U_PointInRectFloat(motion.x, motion.y, &mRect)) {
-        mHovered = true;
-
-        if (button.type == SDL_EVENT_MOUSE_BUTTON_DOWN && button.button == SDL_BUTTON_LEFT) {
-            this->mOnClick();
-        }
-    } else {
-        mHovered = false;
-    }
-}
-
 void Button::draw( SDL_Renderer *renderer ) const
 {
-    if (mHovered) {
+    if ( mHovered )
+    {
         SDL_RenderFillRect(renderer, &mRect);
         TTF_SetTextColor(mText, 0, 0, 0, 255);
-    } else {
+    } else
+    {
         SDL_RenderRect(renderer, &mRect);
         TTF_SetTextColor(mText, 255, 255, 255, 255);
     }
 
     U_DrawRendererText(mText, mRect.x + 5, mRect.y + 5, Anchor::Top | Anchor::Left);
+}
+
+void Button::handle_input( const SDL_MouseMotionEvent& motion, const SDL_MouseButtonEvent& button )
+{
+    if ( U_PointInRectFloat(motion.x, motion.y, &mRect) )
+    {
+        mHovered = true;
+
+        if ( button.type == SDL_EVENT_MOUSE_BUTTON_DOWN && button.button == SDL_BUTTON_LEFT )
+        {
+            this->mOnClick();
+        }
+    } else
+    {
+        mHovered = false;
+    }
 }

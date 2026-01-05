@@ -34,7 +34,8 @@ class Timer
 
         void pause()
         {
-            if (mStarted && !mPaused) {
+            if ( mStarted && !mPaused )
+            {
                 mPaused = true;
                 mPausedTicks = SDL_GetTicks() - mStartTicks;
                 mStartTicks = 0;
@@ -43,7 +44,8 @@ class Timer
 
         void resume()
         {
-            if (mPaused && !mStarted) {
+            if ( mPaused && !mStarted )
+            {
                 mPaused = false;
                 mStartTicks = SDL_GetTicks() - mPausedTicks;
                 mPausedTicks = 0;
@@ -57,8 +59,10 @@ class Timer
          */
         [[nodiscard]] u64 get_ticks() const
         {
-            if (mStarted) {
-                if (mPaused) {
+            if ( mStarted )
+            {
+                if ( mPaused )
+                {
                     return mPausedTicks;
                 }
                 return SDL_GetTicks() - mStartTicks;

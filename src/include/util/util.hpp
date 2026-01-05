@@ -23,17 +23,22 @@ inline void U_DrawRendererText( TTF_Text *text, float x, float y, const Anchor a
     int h = -1;
     HANDLE_SDL_ERROR(TTF_GetTextSize(text, &w, &h), "Failed to render text: %s");
     // if the anchor is only center (so that we can also have bottom and top center)
-    if (anchor == Anchor::Center) {
+    if ( anchor == Anchor::Center )
+    {
         x -= w / 2;
         y -= h / 2;
-    } else {
-        if (anchor & Anchor::Center) {
+    } else
+    {
+        if ( anchor & Anchor::Center )
+        {
             y -= h / 2;
         }
-        if (anchor & Anchor::Right) {
+        if ( anchor & Anchor::Right )
+        {
             x -= w;
         }
-        if (anchor & Anchor::Bottom) {
+        if ( anchor & Anchor::Bottom )
+        {
             y -= h;
         }
     }
@@ -51,17 +56,22 @@ inline Vector2 U_GetTextSize( TTF_Text *text )
 inline void U_AnchorFRect( SDL_FRect *rect, const Anchor anchor )
 {
     // if the anchor is only center (so that we can also have bottom and top center)
-    if (anchor == Anchor::Center) {
+    if ( anchor == Anchor::Center )
+    {
         rect->x -= rect->w / 2;
         rect->y -= rect->h / 2;
-    } else {
-        if (anchor & Anchor::Center) {
+    } else
+    {
+        if ( anchor & Anchor::Center )
+        {
             rect->y -= rect->h / 2;
         }
-        if (anchor & Anchor::Right) {
+        if ( anchor & Anchor::Right )
+        {
             rect->x -= rect->w;
         }
-        if (anchor & Anchor::Bottom) {
+        if ( anchor & Anchor::Bottom )
+        {
             rect->y -= rect->h;
         }
     }

@@ -16,8 +16,8 @@ class Hit
 
 class AABB
 {
-    static std::vector<SDL_FRect *> rects;
-    static std::vector<SDL_FRect *> filledRects;
+    static std::vector< SDL_FRect* > rects;
+    static std::vector< SDL_FRect* > filledRects;
 
     bool mVisible = false;
     bool mFilled = false;
@@ -31,15 +31,15 @@ class AABB
 
         AABB() = default;
 
-        AABB( const Vector2 &position, const Vector2 &half_size, bool visible = true, bool filled = false );
+        AABB( const Vector2& position, const Vector2& half_size, bool visible = true, bool filled = false );
 
         AABB( float x, float y, float half_width, float half_height );
 
-        AABB( const AABB &other );
+        AABB( const AABB& other );
 
         ~AABB();
 
-        AABB &operator=( const AABB &other );
+        AABB &operator=( const AABB& other );
 
         static void draw( SDL_Renderer *renderer );
 
@@ -53,11 +53,11 @@ class AABB
 
         [[nodiscard]] Vector2 max() const;
 
-        static AABB minkowski_difference( const AABB &a, const AABB &b );
+        static AABB minkowski_difference( const AABB& a, const AABB& b );
 
-        [[nodiscard]] bool intersects( const AABB &other ) const;
+        [[nodiscard]] bool intersects( const AABB& other ) const;
 
-        [[nodiscard]] Hit intersects( const Vector2 &pos, const Vector2 &magnitude ) const;
+        [[nodiscard]] Hit intersects( const Vector2& pos, const Vector2& magnitude ) const;
 
-        static Vector2 penetration_vector( const AABB &aabb );
+        static Vector2 penetration_vector( const AABB& aabb );
 };

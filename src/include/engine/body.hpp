@@ -11,11 +11,11 @@ class Body
 
         Body() = default;
 
-        explicit Body( const AABB &aabb, const Vector2 &acceleration = Vector2{}, const Vector2 &velocity = Vector2{} );
+        explicit Body( const AABB& aabb, const Vector2& acceleration = Vector2{}, const Vector2& velocity = Vector2{} );
 
-        Body( const Vector2 &pos, const Vector2 &half_size, bool filled = false );
+        Body( const Vector2& pos, const Vector2& half_size, bool filled = false );
 
-        Body( const Body &other ) = default;
+        Body( const Body& other ) = default;
 
         ~Body() = default;
 };
@@ -28,11 +28,11 @@ class StaticBody
 
         StaticBody() = default;
 
-        explicit StaticBody( const AABB &aabb );
+        explicit StaticBody( const AABB& aabb );
 
-        StaticBody( const Vector2 &pos, const Vector2 &half_size, bool filled = false );
+        StaticBody( const Vector2& pos, const Vector2& half_size, bool filled = false );
 
-        StaticBody( const StaticBody &other ) = default;
+        StaticBody( const StaticBody& other ) = default;
 
         ~StaticBody() = default;
 };
