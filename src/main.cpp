@@ -1,7 +1,7 @@
 #include <filesystem>
 
 #include "engine/physics/physics.hpp"
-#include "engine/level/creator.hpp"
+#include "engine/game_state.hpp"
 #include "engine/ui/button.hpp"
 #include "engine/ui/menu.hpp"
 #include "util/types.hpp"
@@ -24,7 +24,7 @@ struct SDLApplication
     float camY = 0.0f;
 
     bool mRunning = false;
-    bool mInMenu = false;
+    GameState mGameState = GameState::InMenu;
 
     int mWidth = 640;
     int mHeight = 480;
@@ -89,13 +89,15 @@ struct SDLApplication
                                                                    CLOSE_MENU(mCurrentMenu)
                                                                    OPEN_MENU("pauseMenu")
                                                                    // todo: make a level select menu
+                                                                   mGameState = mGameState | GameState::Playing;
                                                                }),
                                                       std::make_unique< Button >(mTextEngine, mFont, 0, -20,
                                                                Anchor::Center, Anchor::Center,
                                                                "Create",
                                                                [this]
                                                                {
-                                                                   openLevel(mWindow);
+                                                                   mGameState = mGameState | GameState::Editing;
+                                                                   // todo: wait until file dialog works on macOS 26 (might just have to develop this part on linux)
                                                                    CLOSE_MENU(mCurrentMenu)
                                                                })
                                                      ));
@@ -129,6 +131,7 @@ struct SDLApplication
 
         while ( mRunning )
         {
+            // todo: let player add and edit platforms (in game loop)
             const u64 currentTick = SDL_GetTicks();
 
             SDL_Event event;
@@ -137,7 +140,7 @@ struct SDLApplication
                 input(&event);
             }
 
-            if ( !mInMenu )
+            if ( !(mGameState & GameState::InMenu) )
             {
                 update(Physics::get_body(player));
             }
@@ -167,7 +170,7 @@ struct SDLApplication
         {
             if ( e->key.key == SDLK_ESCAPE )
             {
-                if ( !mInMenu )
+                if ( !(mGameState & GameState::InMenu) )
                 {
                     OPEN_MENU("pauseMenu")
                 } else
@@ -183,7 +186,7 @@ struct SDLApplication
         {
             SDL_ConvertEventToRenderCoordinates(mRenderer, e);
 
-            if ( mInMenu )
+            if ( mGameState & GameState::InMenu )
             {
                 Menu::handle_input(e->motion, e->button);
             }
@@ -221,7 +224,7 @@ struct SDLApplication
         SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
         SDL_RenderClear(mRenderer);
 
-        if ( mInMenu )
+        if ( mGameState & GameState::InMenu )
         {
             // draw the world in a darker color for better menu visibility
             SDL_SetRenderDrawColor(mRenderer, 127, 127, 127, SDL_ALPHA_OPAQUE);

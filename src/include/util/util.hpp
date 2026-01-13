@@ -14,8 +14,8 @@
 
 #define HANDLE_SDL_ERROR(F, S) { if (!(F)) {SDL_Log(S, SDL_GetError());} }
 
-#define OPEN_MENU(menu) {Menu::open(menu); mInMenu=true; mCurrentMenu=menu; Menu::update(mWidth, mHeight);}
-#define CLOSE_MENU(menu) {if (!mCurrentMenu.empty()) {Menu::close(menu); mInMenu=false; mCurrentMenu.clear();}}
+#define OPEN_MENU(menu) {Menu::open(menu); mGameState = mGameState | GameState::InMenu; mCurrentMenu=menu; Menu::update(mWidth, mHeight);}
+#define CLOSE_MENU(menu) {if (!mCurrentMenu.empty()) {Menu::close(menu); mGameState = mGameState ^ GameState::InMenu; mCurrentMenu.clear();}}
 
 inline void U_DrawRendererText( TTF_Text *text, float x, float y, const Anchor anchor )
 {
