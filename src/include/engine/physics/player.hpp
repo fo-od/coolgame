@@ -1,6 +1,6 @@
 #pragma once
 
-#include "engine/body.hpp"
+#include "engine/physics/body.hpp"
 
 class Player
 {

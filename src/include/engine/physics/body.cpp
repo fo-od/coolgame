@@ -1,4 +1,4 @@
-#include "engine/body.hpp"
+#include "engine/physics/body.hpp"
 
 Body::Body( const AABB& aabb, const Vector2& acceleration, const Vector2& velocity ) : mAABB(aabb),
     mVelocity(velocity),

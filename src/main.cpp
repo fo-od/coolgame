@@ -1,6 +1,6 @@
 #include <filesystem>
 
-#include "engine/physics.hpp"
+#include "engine/physics/physics.hpp"
 #include "engine/ui/button.hpp"
 #include "engine/ui/menu.hpp"
 #include "util/types.hpp"

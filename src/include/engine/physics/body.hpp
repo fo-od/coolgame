@@ -1,6 +1,6 @@
 #pragma once
 
-#include "engine/aabb.hpp"
+#include "engine/physics/aabb.hpp"
 
 class Body
 {
