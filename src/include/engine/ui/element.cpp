@@ -6,9 +6,7 @@
 Element::Element( const float xOffset, const float yOffset, const float w, const float h,
                   const Anchor anchor, const Anchor origin ) : mRect(SDL_FRect(-w, -h, w, h)),
                                                                mAnchor(anchor),
-                                                               mOrigin(origin),
-                                                               mXOffset(xOffset),
-                                                               mYOffset(yOffset)
+                                                               mOrigin(origin)
 {
     if ( origin == Anchor::None )
     {
@@ -34,12 +32,7 @@ void Element::update_position( const float canvasWidth, const float canvasHeight
         {
             if ( mAnchor& Anchor::Center )
             {
-                if ( mAnchor& Anchor::Top
-
-                     
-                ||
-                mAnchor& Anchor::Bottom
-                )
+                if ( mAnchor& Anchor::Top || mAnchor& Anchor::Bottom )
                 {
                     mRect.x = (canvasWidth / 2) + mXOffset;
                 }
@@ -68,12 +61,7 @@ void Element::update_position( const float canvasWidth, const float canvasHeight
     {
         if ( mOrigin& Anchor::Center )
         {
-            if ( mOrigin& Anchor::Top
-
-                 
-            ||
-            mOrigin& Anchor::Bottom
-            )
+            if ( mOrigin& Anchor::Top || mOrigin& Anchor::Bottom )
             {
                 mRect.x -= mRect.w / 2;
             }

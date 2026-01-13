@@ -1,6 +1,7 @@
 #include <filesystem>
 
 #include "engine/physics/physics.hpp"
+#include "engine/level/creator.hpp"
 #include "engine/ui/button.hpp"
 #include "engine/ui/menu.hpp"
 #include "util/types.hpp"
@@ -86,12 +87,15 @@ struct SDLApplication
                                                                [this]
                                                                {
                                                                    CLOSE_MENU(mCurrentMenu)
+                                                                   OPEN_MENU("pauseMenu")
+                                                                   // todo: make a level select menu
                                                                }),
                                                       std::make_unique< Button >(mTextEngine, mFont, 0, -20,
                                                                Anchor::Center, Anchor::Center,
                                                                "Create",
                                                                [this]
                                                                {
+                                                                   openLevel(mWindow);
                                                                    CLOSE_MENU(mCurrentMenu)
                                                                })
                                                      ));
