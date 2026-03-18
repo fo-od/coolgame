@@ -32,32 +32,25 @@ struct SDLApplication
     SDLApplication()
     {
         // sdl setup stuff
-        HANDLE_SDL_ERROR(SDL_SetAppMetadata("cool game", "0.1", "com.food.coolgame"),
-                         "Couldn't set app metadata: %s")
+        SDL_SetAppMetadata("cool game", "0.1", "com.food.coolgame");
+        SDL_Init(SDL_INIT_VIDEO);
 
-        HANDLE_SDL_ERROR(SDL_Init(SDL_INIT_VIDEO), "Couldn't initialize SDL: %s")
-
-        HANDLE_SDL_ERROR(
-                         (mWindow = SDL_CreateWindow("cool game", mWidth, mHeight, SDL_WINDOW_RESIZABLE |
-                             SDL_WINDOW_BORDERLESS)),
-                         "Couldn't create window: %s")
-        HANDLE_SDL_ERROR((mRenderer = SDL_CreateRenderer(mWindow, nullptr)), "Couldn't create renderer: %s")
+        mWindow = SDL_CreateWindow("cool game", mWidth, mHeight, SDL_WINDOW_RESIZABLE |
+                                                                 SDL_WINDOW_BORDERLESS);
+        mRenderer = SDL_CreateRenderer(mWindow, nullptr);
 
         // enable vsync
-        HANDLE_SDL_ERROR(SDL_SetRenderVSync(mRenderer, 1), "Couldn't enable VSync: %s")
+        SDL_SetRenderVSync(mRenderer, 1);
 
         // blend alpha channel
-        HANDLE_SDL_ERROR(SDL_SetRenderDrawBlendMode(mRenderer, SDL_BLENDMODE_BLEND), "Couldn't set blend mode: %s")
+        SDL_SetRenderDrawBlendMode(mRenderer, SDL_BLENDMODE_BLEND);
 
-        // setup ttf things
-        HANDLE_SDL_ERROR(TTF_Init(), "Couldn't initialize text renderer: %s")
-
-        HANDLE_SDL_ERROR((mTextEngine = TTF_CreateRendererTextEngine(mRenderer)), "Couldn't create text engine: %s")
+        TTF_Init();
+        mTextEngine = TTF_CreateRendererTextEngine(mRenderer);
 
         const std::filesystem::path basePath = SDL_GetBasePath();
         const auto fontPath = basePath / "assets/cozette.fnt";
-        HANDLE_SDL_ERROR((mFont = TTF_OpenFont(fontPath.string().c_str(), 13)),
-                         "Couldn't load font: %s")
+        mFont = TTF_OpenFont(fontPath.string().c_str(), 13);
 
         //menus
         Menu::create("pauseMenu", Element::make_vector(
@@ -97,7 +90,7 @@ struct SDLApplication
                                                                [this]
                                                                {
                                                                    mGameState = mGameState | GameState::Editing;
-                                                                   // todo: wait until file dialog works on macOS 26 (might just have to develop this part on linux)
+
                                                                    CLOSE_MENU(mCurrentMenu)
                                                                })
                                                      ));

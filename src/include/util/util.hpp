@@ -10,10 +10,6 @@
 
 #define ERROR_LOG(...) { std::print(stderr, __VA_ARGS__); }
 
-#define HANDLE_SDL_ERROR_RETURN(F, S) { if (!(F)) {SDL_Log(S, SDL_GetError()); return false;} }
-
-#define HANDLE_SDL_ERROR(F, S) { if (!(F)) {SDL_Log(S, SDL_GetError());} }
-
 #define OPEN_MENU(menu) {Menu::open(menu); mGameState = mGameState | GameState::InMenu; mCurrentMenu=menu; Menu::update(mWidth, mHeight);}
 #define CLOSE_MENU(menu) {if (!mCurrentMenu.empty()) {Menu::close(menu); mGameState = mGameState ^ GameState::InMenu; mCurrentMenu.clear();}}
 
@@ -21,7 +17,7 @@ inline void U_DrawRendererText( TTF_Text *text, float x, float y, const Anchor a
 {
     int w = -1;
     int h = -1;
-    HANDLE_SDL_ERROR(TTF_GetTextSize(text, &w, &h), "Failed to render text: %s");
+    TTF_GetTextSize(text, &w, &h);
     // if the anchor is only center (so that we can also have bottom and top center)
     if ( anchor == Anchor::Center )
     {
