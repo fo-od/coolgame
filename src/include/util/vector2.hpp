@@ -32,69 +32,92 @@ class Vector2
             {
                 return y;
             }
-            throw std::invalid_argument("Invalid index");
+            throw std::out_of_range("Invalid index");
         }
 
 
-        Vector2 &operator=( const SDL_FPoint o )
+        constexpr Vector2 &operator =( const SDL_FPoint& rhs )
         {
-            x = o.x;
-            y = o.y;
+            x = rhs.x;
+            y = rhs.y;
             return *this;
         }
 
+        constexpr bool operator ==( const Vector2& rhs ) const
+        {
+            return x == rhs.x && y == rhs.y;
+        }
 
         // --- Multiplication ---
 
-        Vector2 &operator*=( const float o )
+        constexpr Vector2 &operator *=( const Vector2& rhs )
         {
-            x *= o;
-            y *= o;
+            x *= rhs.x;
+            y *= rhs.y;
             return *this;
         }
 
-        Vector2 operator*( const float o ) const
+        constexpr Vector2 &operator *=( const float& rhs )
         {
-            return Vector2{x * o, y * o};
+            x *= rhs;
+            y *= rhs;
+            return *this;
         }
 
+        constexpr Vector2 operator *( const float& rhs ) const
+        {
+            return Vector2{x * rhs, y * rhs};
+        }
 
         // --- Addition ---
 
-        Vector2 &operator+=( const Vector2& o )
+        constexpr Vector2 &operator +=( const Vector2& rhs )
         {
-            x += o.x;
-            y += o.y;
+            x += rhs.x;
+            y += rhs.y;
             return *this;
         }
 
-        Vector2 operator+( const Vector2& o ) const
+        constexpr Vector2 &operator +=( const float& rhs )
         {
-            return Vector2{x + o.x, y + o.y};
+            x += rhs;
+            y += rhs;
+            return *this;
         }
 
-        Vector2 operator+( const float o ) const
+        constexpr Vector2 operator +( const Vector2& rhs ) const
         {
-            return Vector2{x + o, y + o};
+            return Vector2{x + rhs.x, y + rhs.y};
         }
 
+        constexpr Vector2 operator +( const float& rhs ) const
+        {
+            return Vector2{x + rhs, y + rhs};
+        }
 
         // --- Subtraction ---
 
-        Vector2 operator-( const Vector2& o ) const
+        constexpr Vector2 &operator -=( const Vector2& rhs )
         {
-            return Vector2{x - o.x, y - o.y};
-        }
-
-        Vector2 operator-( const float o ) const
-        {
-            return Vector2{x - o, y - o};
-        }
-
-        Vector2 &operator-=( const Vector2& o )
-        {
-            x -= o.x;
-            y -= o.y;
+            x -= rhs.x;
+            y -= rhs.y;
             return *this;
+        }
+
+        constexpr Vector2 &operator -=( const float& rhs )
+        {
+            x -= rhs;
+            y -= rhs;
+            return *this;
+        }
+
+        constexpr Vector2 operator -( const Vector2& rhs ) const
+        {
+            return Vector2{x - rhs.x, y - rhs.y};
+        }
+
+        constexpr Vector2 operator -( const float& rhs ) const
+        {
+            return Vector2{x - rhs, y - rhs};
         }
 };
