@@ -27,7 +27,7 @@ find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3-shared)
 find_package(SDL3_ttf REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC SDL3_ttf::SDL3_ttf SDL3::SDL3)
 
-# On Windows, copy SDL3.dll to the build directory
+# On Windows, copy libraries to the build directory
 if(WIN32)
     add_custom_command(
             TARGET ${PROJECT_NAME} POST_BUILD
