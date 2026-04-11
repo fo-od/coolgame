@@ -4,6 +4,7 @@ import "core:fmt"
 import "core:os"
 import "core:strings"
 import "engine/render/queue"
+import "engine/render"
 import "engine/util/timer"
 import "engine/physics"
 import SDL "vendor:sdl3"
@@ -34,6 +35,37 @@ Mouse :: struct {
 windowWidth, windowHeight: i32 = 640, 480
 
 // TODO: when loading a level, generate a quadtree for that level
+
+main :: proc() {
+	if !init() do return
+	defer exit()
+	
+	when ODIN_DEBUG {
+		debug_stuff()
+	}
+
+	for gameRunning {
+		timer.start(&fpsTimer)
+		currentTick := SDL.GetTicks()
+		defer deltaTime = f32(SDL.GetTicks() - currentTick) / 1000.0
+
+		event: SDL.Event
+		for SDL.PollEvent(&event) {
+			input(&event)
+		}
+		
+		tick()
+
+		draw()
+		renderingNS = timer.getTicksNS(&fpsTimer)
+		if !vsyncEnabled {
+			if renderingNS < nsPerFrame {
+				SDL.DelayNS(nsPerFrame - renderingNS)
+				renderingNS = timer.getTicksNS(&fpsTimer)
+			}
+		}
+	}
+}
 
 init :: proc() -> bool {
 	// sdl stuff
@@ -67,11 +99,12 @@ exit :: proc() {
 	SDL.Quit()
 }
 
-render :: proc() {
-	SDL.SetRenderDrawColor(renderer, 0, 0, 0, SDL.ALPHA_OPAQUE)
+draw :: proc() {
+	render.setDrawColor({0, 0, 0, 255}, renderer)
 	SDL.RenderClear(renderer)
 
 	queue.render(renderer)
+	physics.draw(renderer)
 
 	SDL.RenderPresent(renderer)
 }
@@ -93,36 +126,12 @@ input :: proc(event: ^SDL.Event) {
 }
 
 tick :: proc() {
-	physics.tick(deltaTime)
+	physics.update(deltaTime)
 }
 
 fpsTimer: timer.TimerNS
 renderingNS: u64
 
-main :: proc() {
-	if !init() do return
-	defer exit()
-
-	for gameRunning {
-		timer.start(&fpsTimer)
-		currentTick := SDL.GetTicks()
-		defer deltaTime = f32(SDL.GetTicks() - currentTick) / 1000.0
-
-		event: SDL.Event
-		for SDL.PollEvent(&event) {
-			input(&event)
-		}
-		
-		tick()
-
-		render()
-		renderingNS = timer.getTicksNS(&fpsTimer)
-		if !vsyncEnabled {
-			if renderingNS < nsPerFrame {
-				SDL.DelayNS(nsPerFrame - renderingNS)
-				renderingNS = timer.getTicksNS(&fpsTimer)
-			}
-		}
-	}
+debug_stuff :: proc() {
+	physics.add_static_body({100, 100}, {20, 5})
 }
-
