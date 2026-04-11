@@ -1,6 +1,8 @@
 package physics
 
 import "core:math"
+import SDL "vendor:sdl3"
+import "../render"
 
 Body :: struct {
 	aabb:                   AABB,
@@ -11,15 +13,21 @@ StaticBody :: struct {
 	aabb: AABB,
 }
 
+@(private)
 bodies: [dynamic]Body
+@(private)
 staticBodies: [dynamic]StaticBody
-bodyCount: u32 = 0
 
+@(private)
 iterations: u32 = 2
+@(private)
 tickRate: f32 = 1.0 / f32(iterations)
+@(private)
 gravity: f32 = 100
+@(private)
 terminalVelocity: f32 = 10000
 
+@(private)
 sweep_static_bodies :: proc(aabb: ^AABB, velocity: [2]f32) -> Hit {
 	result: Hit
 	result.time = math.F32_MAX
@@ -47,6 +55,7 @@ sweep_static_bodies :: proc(aabb: ^AABB, velocity: [2]f32) -> Hit {
 	return result
 }
 
+@(private)
 sweep_response :: proc(body: ^Body, velocity: [2]f32) {
 	if hit := sweep_static_bodies(&body.aabb, velocity); hit.isHit {
 		body.aabb.pos = hit.position
@@ -63,6 +72,7 @@ sweep_response :: proc(body: ^Body, velocity: [2]f32) {
 	}
 }
 
+@(private)
 stationary_response :: proc(body: ^Body) {
 	for staticBody in staticBodies {
 		aabb := minkowski_difference(staticBody.aabb, body.aabb)
@@ -76,7 +86,7 @@ stationary_response :: proc(body: ^Body) {
 	}
 }
 
-tick :: proc(deltaTime: f32) {
+update :: proc(deltaTime: f32) {
 	for &body in bodies {
 		body.velocity.y += gravity
 		if body.velocity.y > terminalVelocity {
@@ -105,17 +115,40 @@ get_static_body :: proc(id: int) -> ^StaticBody {
 
 add_body :: proc(
 	pos, half_size: [2]f32,
+	visible := true,
 	filled := false,
 	velocity: [2]f32 = {0, 0},
 	acceleration: [2]f32 = {0, 0},
 ) -> int {
 	return append(
 		&bodies,
-		Body{create_AABB(pos, half_size, filled = filled), velocity, acceleration},
+		Body{create_AABB(pos, half_size, visible, filled), velocity, acceleration},
 	)
 }
 
-add_static_body :: proc(pos, half_size: [2]f32, filled := false) -> int {
-	return append(&staticBodies, StaticBody{create_AABB(pos, half_size, filled = filled)})
+add_static_body :: proc(pos, half_size: [2]f32, visible := true, filled := false) -> int {
+	return append(&staticBodies, StaticBody{create_AABB(pos, half_size, visible, filled)})
 }
 
+draw :: proc(renderer: ^SDL.Renderer) {
+	for &body in bodies {
+		if !body.aabb.rect.visible do continue
+
+		render.setDrawColor(body.aabb.rect.color, renderer)
+		if body.aabb.rect.filled {
+			SDL.RenderFillRect(renderer, &body.aabb.rect.rect)
+		} else {
+			SDL.RenderRect(renderer, &body.aabb.rect.rect)
+		}
+	}
+	for &static_body in staticBodies {
+		if !static_body.aabb.rect.visible do continue
+
+		render.setDrawColor(static_body.aabb.rect.color, renderer)
+		if static_body.aabb.rect.filled {
+			SDL.RenderFillRect(renderer, &static_body.aabb.rect.rect)
+		} else {
+			SDL.RenderRect(renderer, &static_body.aabb.rect.rect)
+		}
+	}
+}

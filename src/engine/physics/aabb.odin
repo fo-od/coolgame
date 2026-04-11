@@ -1,60 +1,40 @@
 package physics
 
+import "../render"
 import "core:math"
 import SDL "vendor:sdl3"
 
+@(private)
 Hit :: struct {
 	isHit:            bool,
 	time:             f32,
 	position, normal: [2]f32,
 }
 
-Rect :: struct {
-	rect:            SDL.FRect,
-	visible, filled: bool,
-}
-
-@(private)
-rects: [dynamic]^Rect
-filledRects: [dynamic]^Rect
-
 AABB :: struct {
 	pos, halfSize: [2]f32,
-	rect:          Rect,
+	rect:          render.Rect,
 }
 
-create_AABB :: proc(position, half_size: [2]f32, visible := false, filled := false) -> AABB {
-	rect := Rect {
+create_AABB :: proc(
+	position, half_size: [2]f32,
+	visible := false,
+	filled := false,
+	color := SDL.Color{255, 255, 255, 255},
+) -> AABB {
+	rect := render.Rect {
 		{position.x - half_size.x, position.y - half_size.y, half_size.x * 2, half_size.y * 2},
+		color,
 		visible,
 		filled,
 	}
 	aabb := AABB{position, half_size, rect}
-	if visible {
-		if filled {
-			append(&filledRects, &aabb.rect)
-		} else {
-			append(&rects, &aabb.rect)
-		}
-	}
 	return aabb
 }
 
 update_rect :: proc(aabb: ^AABB) {
 	aabb.rect.rect.x = aabb.pos.x - aabb.halfSize.x
 	aabb.rect.rect.y = aabb.pos.y - aabb.halfSize.y
-}
-
-draw :: proc(renderer: ^SDL.Renderer) {
-	for rect in rects {
-		if !rect.visible do continue
-
-		if rect.filled {
-			SDL.RenderRect(renderer, &rect.rect)
-		} else {
-			SDL.RenderFillRect(renderer, &rect.rect)
-		}
-	}
 }
 
 min :: proc(aabb: AABB) -> [2]f32 {
@@ -65,10 +45,12 @@ max :: proc(aabb: AABB) -> [2]f32 {
 	return aabb.pos + aabb.halfSize
 }
 
+@(private)
 minkowski_difference :: proc(a, b: AABB) -> AABB {
 	return create_AABB(a.pos - b.pos, a.halfSize + b.halfSize)
 }
 
+@(private)
 intersects_aabb :: proc(a, b: AABB) -> bool {
 	diff := minkowski_difference(a, b)
 	min := min(diff)
@@ -77,6 +59,7 @@ intersects_aabb :: proc(a, b: AABB) -> bool {
 	return min.x <= 0 && max.x >= 0 && min.y <= 0 && max.y >= 0
 }
 
+@(private)
 intersects_pm :: proc(aabb: ^AABB, pos, magnitude: [2]f32) -> Hit {
 	hit: Hit
 	min := min(aabb^)
@@ -119,6 +102,7 @@ intersects_pm :: proc(aabb: ^AABB, pos, magnitude: [2]f32) -> Hit {
 	return hit
 }
 
+@(private)
 penetration_vector :: proc(aabb: AABB) -> [2]f32 {
 	result: [2]f32
 
