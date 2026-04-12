@@ -3,10 +3,10 @@ package main
 import "core:fmt"
 import "core:os"
 import "core:strings"
-import "engine/render/queue"
-import "engine/render"
-import "engine/util/timer"
-import "engine/physics"
+import "engine:physics"
+import "engine:render"
+import "engine:render/queue"
+import "engine:util/timer"
 import SDL "vendor:sdl3"
 import TTF "vendor:sdl3/ttf"
 
@@ -34,13 +34,13 @@ Mouse :: struct {
 
 windowWidth, windowHeight: i32 = 640, 480
 
-// TODO: when loading a level, generate a quadtree for that level
+DEBUG :: #config(GAME_DEBUG, false)
 
 main :: proc() {
 	if !init() do return
 	defer exit()
-	
-	when ODIN_DEBUG {
+
+	when DEBUG {
 		debug_stuff()
 	}
 
@@ -53,7 +53,7 @@ main :: proc() {
 		for SDL.PollEvent(&event) {
 			input(&event)
 		}
-		
+
 		tick()
 
 		draw()
@@ -82,7 +82,7 @@ init :: proc() -> bool {
 		context.temp_allocator,
 	)
 	font = TTF.OpenFont(strings.clone_to_cstring(fontPath), 13)
-	
+
 	// game config
 	SDL.SetRenderVSync(renderer, i32(vsyncEnabled))
 
@@ -135,3 +135,4 @@ renderingNS: u64
 debug_stuff :: proc() {
 	physics.add_static_body({100, 100}, {20, 5})
 }
+

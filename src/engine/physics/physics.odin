@@ -2,7 +2,7 @@ package physics
 
 import "core:math"
 import SDL "vendor:sdl3"
-import "../render"
+import "engine:render"
 
 Body :: struct {
 	aabb:                   AABB,
