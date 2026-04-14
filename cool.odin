@@ -38,15 +38,18 @@ main :: proc() {
 			append(&args, arg)
 		}
 
-		if strings.contains(arg, "-target:windows") {
-			windows = true
-		}
+		if strings.contains(arg, "-target:") {
+			if strings.contains(arg, "windows") do windows = true
+		} else if ODIN_OS == .Windows do windows = true
 	}
 
 
 	build_args := []string {
+		// horrible line of code that basically just adds .exe if the target platform is windows
 		"-out:.build" + os.Path_Separator_String + PROJECT_NAME + ".exe" if windows else "-out:.build" + os.Path_Separator_String + PROJECT_NAME,
-		"-collection:engine=src" + os.Path_Separator_String + "engine",
+		"-collection:engine=src" +
+		os.Path_Separator_String +
+		"engine",
 		"-show-timings",
 	}
 
