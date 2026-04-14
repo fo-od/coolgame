@@ -1,7 +1,7 @@
 package main
 
 import "core:fmt"
-import "core:os"
+import "core:path/filepath"
 import "core:strings"
 import "engine:physics"
 import "engine:render"
@@ -77,9 +77,9 @@ init :: proc() -> bool {
 	// ttf stuff
 	TTF.Init()
 	textEngine = TTF.CreateRendererTextEngine(renderer)
-	fontPath, err := os.join_path(
+	fontPath, _ := filepath.join(
 		{string(SDL.GetBasePath()), "assets/cozette.fnt"},
-		context.temp_allocator,
+		context.allocator,
 	)
 	font = TTF.OpenFont(strings.clone_to_cstring(fontPath), 13)
 

@@ -1,4 +1,4 @@
 {
   "$schema": "https://raw.githubusercontent.com/DanielGavin/ols/master/misc/ols.schema.json",
-  "collections": [{ "name": "engine", "path": "src/engine" }]
+  "collections": [{ "name": "engine", "path": "./src/engine" }]
 }
