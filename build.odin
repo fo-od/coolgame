@@ -9,27 +9,15 @@ PROJECT_NAME :: "coolgame"
 main :: proc() {
 	args: [dynamic]string
 	windows := false
-	build := false
-
-	if len(os.args) == 1 {
-		print_help()
-	}
+	build := true
 
 	for arg, i in os.args[1:] {
 		switch arg {
 		case "help":
+			build = false
 			if i == 0 do print_help()
-		case "build":
-			if i == 0 {
-				if len(os.args) > 2 && os.args[2] == "run" {
-					append(&args, "odin", "run", "src", "-keep-executable")
-				} else {
-					append(&args, "odin", "build", "src")
-				}
-				build = true
-			}
 		case "run":
-			if i == 0 do append(&args, "odin", "run")
+			if i == 0 do append(&args, "odin", "run", "src", "-keep-executable")
 		case "-debug":
 			append(&args, "-define:GAME_DEBUG=true")
 		case "-odin-debug":
@@ -44,6 +32,7 @@ main :: proc() {
 	}
 
 
+	if len(args) == 0 do append(&args, "odin", "build", "src")
 	build_args := []string {
 		// horrible line of code that basically just adds .exe if the target platform is windows
 		"-out:.build" + os.Path_Separator_String + PROJECT_NAME + ".exe" if windows else "-out:.build" + os.Path_Separator_String + PROJECT_NAME,
@@ -55,6 +44,10 @@ main :: proc() {
 
 	if build {
 		append(&args, ..build_args)
+
+		fmt.println(exec("git rev-parse --short HEAD"))
+		fmt.println(exec("git rev-parse HEAD"))
+
 		os.mkdir(".build")
 
 		fmt.println(strings.join(args[:], " ")) // print full command
@@ -72,9 +65,9 @@ print_help :: proc() {
 	fmt.println(
 		"cool build tool",
 		"Usage:",
-		"    cool build [arguments]      Builds the project.",
-		"    cool run [arguments]        Builds the project then runs the executable.",
-		"    cool build run [arguments]  Same as run, but keeps the executable.",
+		"    bulid [arguments]            Builds the project.",
+		"    build run [arguments]        Builds the project then runs the executable.",
+		"    build help                   Displays this message",
 		"",
 		"Flags:",
 		"    -debug",
@@ -95,5 +88,20 @@ build_project :: proc(args: []string) -> int {
 	state, _ := os.process_wait(process)
 
 	return state.exit_code
+}
+
+exec :: proc(cmd: string) -> (exit_code: int, stdout: string) {
+	out_r, out_w, _ := os.pipe()
+
+	process, _ := os.process_start(
+		{command = strings.split(cmd, " "), stdin = os.stdin, stdout = out_w, stderr = os.stderr},
+	)
+	state, _ := os.process_wait(process)
+	os.close(out_w)
+
+	out, _ := os.read_entire_file(out_r, context.allocator)
+	os.close(out_r)
+
+	return state.exit_code, strings.clone_from_bytes(out)
 }
 
