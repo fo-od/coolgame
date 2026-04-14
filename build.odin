@@ -14,10 +14,20 @@ main :: proc() {
 	for arg, i in os.args[1:] {
 		switch arg {
 		case "help":
-			build = false
-			if i == 0 do print_help()
+			if i == 0 {
+				build = false
+				print_help()
+				break
+			}
 		case "run":
 			if i == 0 do append(&args, "odin", "run", "src", "-keep-executable")
+		case "clean":
+			if i == 0 {
+				build = false
+				os.remove_all(".build/")
+				os.mkdir(".build")
+				break
+			}
 		case "-debug":
 			append(&args, "-define:GAME_DEBUG=true")
 		case "-odin-debug":
@@ -45,8 +55,13 @@ main :: proc() {
 	if build {
 		append(&args, ..build_args)
 
-		fmt.println(exec("git rev-parse --short HEAD"))
-		fmt.println(exec("git rev-parse HEAD"))
+		_, git_hash := exec("git rev-parse HEAD")
+		_, short_git_hash := exec("git rev-parse --short HEAD")
+		append(
+			&args,
+			strings.join({"-define:GIT_HASH=", git_hash}, ""),
+			strings.join({"-define:GIT_HASH_SHORT=", short_git_hash}, ""),
+		)
 
 		os.mkdir(".build")
 
@@ -58,6 +73,8 @@ main :: proc() {
 			print_help()
 			os.exit(1)
 		}
+
+		os.copy_directory_all(".build/assets", "src/assets")
 	}
 }
 
@@ -65,9 +82,10 @@ print_help :: proc() {
 	fmt.println(
 		"cool build tool",
 		"Usage:",
-		"    bulid [arguments]            Builds the project.",
-		"    build run [arguments]        Builds the project then runs the executable.",
-		"    build help                   Displays this message",
+		"    bulid [arguments]        Builds the project.",
+		"    build run [arguments]    Builds the project then runs the executable.",
+		"    build help               Displays this message",
+		"    build clean              Cleans the build directory",
 		"",
 		"Flags:",
 		"    -debug",
