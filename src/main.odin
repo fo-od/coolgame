@@ -41,7 +41,7 @@ main :: proc() {
 	defer exit()
 
 	when DEBUG {
-		debug_stuff()
+		debug_init()
 	}
 
 	for gameRunning {
@@ -132,7 +132,7 @@ tick :: proc() {
 fpsTimer: timer.TimerNS
 renderingNS: u64
 
-debug_stuff :: proc() {
+debug_init :: proc() {
 	physics.add_static_body({100, 100}, {20, 5})
 }
 
