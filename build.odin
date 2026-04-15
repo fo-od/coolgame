@@ -8,7 +8,7 @@ PROJECT_NAME :: "coolgame"
 
 main :: proc() {
 	args: [dynamic]string
-	windows := false
+	target_os := ODIN_OS
 	build := true
 
 	for arg, i in os.args[1:] {
@@ -37,15 +37,16 @@ main :: proc() {
 		}
 
 		if strings.contains(arg, "-target:") {
-			if strings.contains(arg, "windows") do windows = true
-		} else if ODIN_OS == .Windows do windows = true
+			if strings.contains(arg, "windows") do target_os = .Windows
+			if strings.contains(arg, "darwin") do target_os = .Darwin
+		}
 	}
 
 
 	if len(args) == 0 do append(&args, "odin", "build", "src")
 	build_args := []string {
 		// horrible line of code that basically just adds .exe if the target platform is windows
-		"-out:.build" + os.Path_Separator_String + PROJECT_NAME + ".exe" if windows else "-out:.build" + os.Path_Separator_String + PROJECT_NAME,
+		"-out:.build" + os.Path_Separator_String + PROJECT_NAME + ".exe" if target_os == .Windows else "-out:.build" + os.Path_Separator_String + PROJECT_NAME,
 		"-collection:engine=src" +
 		os.Path_Separator_String +
 		"engine",
@@ -53,28 +54,37 @@ main :: proc() {
 	}
 
 	if build {
+		// add default build args
 		append(&args, ..build_args)
 
-		_, git_hash := exec("git rev-parse HEAD")
-		_, short_git_hash := exec("git rev-parse --short HEAD")
+		// add git hash to project constants
+		_, git_hash := exec("git rev-parse HEAD", false)
+		_, short_git_hash := exec("git rev-parse --short HEAD", false)
 		append(
 			&args,
-			strings.join({"-define:GIT_HASH=", git_hash}, ""),
-			strings.join({"-define:GIT_HASH_SHORT=", short_git_hash}, ""),
+			strings.join({"-define:GIT_HASH=", git_hash.(string)}, ""),
+			strings.join({"-define:GIT_HASH_SHORT=", short_git_hash.(string)}, ""),
 		)
 
+		// make build dir if it doesnt exist
 		os.mkdir(".build")
+		// copy assets to build dir if not on macOS
+		if target_os != .Darwin do os.copy_directory_all(".build/assets", "src/assets")
 
-		fmt.println(strings.join(args[:], " ")) // print full command
+		// print then run build command
+		fmt.println(strings.join(args[:], " "))
 
-		exit_code := build_project(args[:])
+		exit_code, _ := exec(args[:])
 		if exit_code != 0 {
 			fmt.printfln("Build exited with code %i", exit_code)
 			print_help()
 			os.exit(1)
 		}
 
-		os.copy_directory_all(".build/assets", "src/assets")
+		// macOS bundling
+		if target_os == .Darwin {
+			// TODO: bundle project in a .app
+		}
 	}
 }
 
@@ -99,27 +109,36 @@ print_help :: proc() {
 	)
 }
 
-build_project :: proc(args: []string) -> int {
-	process, _ := os.process_start(
-		{command = args, stdin = os.stdin, stdout = os.stdout, stderr = os.stderr},
-	)
-	state, _ := os.process_wait(process)
-
-	return state.exit_code
+exec :: proc {
+	exec_args,
+	exec_string,
 }
 
-exec :: proc(cmd: string) -> (exit_code: int, stdout: string) {
-	out_r, out_w, _ := os.pipe()
+exec_args :: proc(args: []string, stdout := true) -> (exit_code: int, out: Maybe(string)) {
+	if stdout {
+		process, _ := os.process_start(
+			{command = args, stdin = os.stdin, stdout = os.stdout, stderr = os.stderr},
+		)
+		state, _ := os.process_wait(process)
 
-	process, _ := os.process_start(
-		{command = strings.split(cmd, " "), stdin = os.stdin, stdout = out_w, stderr = os.stderr},
-	)
-	state, _ := os.process_wait(process)
-	os.close(out_w)
+		return state.exit_code, nil
+	} else {
+		out_r, out_w, _ := os.pipe()
 
-	out, _ := os.read_entire_file(out_r, context.allocator)
-	os.close(out_r)
+		process, _ := os.process_start(
+			{command = args, stdin = os.stdin, stdout = out_w, stderr = os.stderr},
+		)
+		state, _ := os.process_wait(process)
+		os.close(out_w)
 
-	return state.exit_code, strings.clone_from_bytes(out)
+		out, _ := os.read_entire_file(out_r, context.allocator)
+		os.close(out_r)
+
+		return state.exit_code, strings.clone_from_bytes(out)
+	}
+}
+
+exec_string :: proc(cmd: string, stdout := true) -> (exit_code: int, out: Maybe(string)) {
+	return exec_args(strings.split(cmd, " "), stdout)
 }
 
