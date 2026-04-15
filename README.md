@@ -24,22 +24,13 @@ i will try my best to make it feel smooth though.
 
 ### building
 
-required things (need to have installed on your system):
-
-- [SDL3](https://github.com/libsdl-org/SDL)
-- [SDL3_ttf](https://github.com/libsdl-org/SDL_ttf)
-- [CMake](https://cmake.org)
-
-and then you can just do
+i made a build tool :3
 
 ```bash
-git clone https://github.com/fo-od/coolgame.git
-cd coolgame
-cmake -S . -B build
-cmake --build build
+> odin build bulid.odin -file
+> ./build
 ```
 
-and the executable will be somewhere in `build/` along with the assets
-***
-if youre on windows you should use mingw to build it but im not making a guide for that here because its honestly
-annoying
+(look at `./build help` for more options)
+
+the executable will be somewhere in `.build/` along with the assets.

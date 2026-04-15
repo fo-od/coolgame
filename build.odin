@@ -6,23 +6,40 @@ import "core:strings"
 
 PROJECT_NAME :: "coolgame"
 
+Action :: enum {
+	Build,
+	Run,
+	Debug,
+	Odin_Debug,
+}
+
+Actions :: bit_set[Action]
+
 main :: proc() {
 	args: [dynamic]string
 	target_os := ODIN_OS
-	build := true
+	actions: Actions = {.Build}
 
 	for arg, i in os.args[1:] {
 		switch arg {
 		case "help":
-			if i == 0 {build = false; print_help(); break}
-		case "run":
-			if i == 0 do append(&args, "odin", "run", "src", "-keep-executable")
+			if i == 0 {
+				actions = {}
+				print_help()
+				break
+			}
 		case "clean":
-			if i == 0 {build = false; os.remove_all(".build/"); os.mkdir(".build"); break}
+			if i == 0 {
+				actions = {}
+				os.remove_all(".build/"); os.mkdir(".build")
+				break
+			}
+		case "run":
+			actions += {.Run}
 		case "debug":
-			append(&args, "-define:GAME_DEBUG=true")
+			actions += {.Debug}
 		case "odin-debug":
-			append(&args, "-debug")
+			actions += {.Odin_Debug}
 		case:
 			append(&args, arg)
 		}
@@ -34,7 +51,11 @@ main :: proc() {
 	}
 
 
-	if len(args) == 0 do append(&args, "odin", "build", "src")
+	if len(args) == 0 do inject_at(&args, 0, "odin", "build", "src")
+	if .Run in actions do assign_at(&args, 1, "run"); append(&args, "-keep-executable")
+	if .Debug in actions do append(&args, "-define:GAME_DEBUG=true")
+	if .Odin_Debug in actions do append(&args, "-debug")
+
 	build_args := []string {
 		// horrible line of code that basically just adds .exe if the target platform is windows
 		"-out:.build" + os.Path_Separator_String + PROJECT_NAME + ".exe" if target_os == .Windows else "-out:.build" + os.Path_Separator_String + PROJECT_NAME,
@@ -44,7 +65,7 @@ main :: proc() {
 		"-show-timings",
 	}
 
-	if build {
+	if .Build in actions {
 		if args[0] != "odin" {fmt.println("Invalid argument(s)"); print_help(); os.exit(1)}
 		// add default build args
 		append(&args, ..build_args)
@@ -84,22 +105,20 @@ print_help :: proc() {
 	fmt.println(
 		"cool build tool",
 		"Usage:",
-		"    bulid [arguments]        Builds the project.",
-		"    build run [arguments]    Builds the project then runs the executable.",
-		"    build help               Displays this message",
-		"    build clean              Cleans the build directory",
+		"    bulid [arguments]               Builds the project.",
+		"    build run [arguments]           Builds the project then runs the executable.",
+		"    build debug [arguments]         Builds the project and enables debug mode in the game",
+		"    build odin-debug [arguments]    Builds the project and enables Odin's debugging information",
+		"    build help                      Displays this message",
+		"    build clean                     Cleans the build directory",
 		"",
+		"You can use a combination of run, debug, and odin-debug, in any order.",
 		"Example usage:",
-		"    build run debug          Builds the project with debug enabled, then runs it.",
+		"    build run debug                 Builds the project with debug enabled, then runs it.",
+		"    build debug run                 Does the same thing.",
 		"",
 		"Flags:",
-		"    debug",
-		"        Enables debug mode in the game.",
-		"",
-		"    odin-debug",
-		"        Enables Odin's debugging information.",
-		"",
-		"    Look at 'odin help build' for other flags.",
+		"    Look at 'odin help build' or 'odin build -help' for bulid flags.",
 		sep = "\n",
 	)
 }
