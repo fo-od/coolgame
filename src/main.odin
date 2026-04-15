@@ -3,17 +3,13 @@ package main
 import "core:fmt"
 import "core:path/filepath"
 import "core:strings"
+import "engine:app"
 import "engine:physics"
 import "engine:render"
 import "engine:render/queue"
 import "engine:util/timer"
 import SDL "vendor:sdl3"
 import TTF "vendor:sdl3/ttf"
-
-window: ^SDL.Window
-renderer: ^SDL.Renderer
-font: ^TTF.Font
-textEngine: ^TTF.TextEngine
 
 deltaTime: f32
 targetFPS :: 60
@@ -32,15 +28,11 @@ Mouse :: struct {
 	button: SDL.MouseButtonFlags,
 }
 
-windowWidth, windowHeight: i32 = 640, 480
-
-DEBUG :: #config(GAME_DEBUG, false)
-
 main :: proc() {
 	if !init() do return
 	defer exit()
 
-	when DEBUG {
+	when app.DEBUG {
 		debug_init()
 	}
 
@@ -71,42 +63,47 @@ init :: proc() -> bool {
 	// sdl stuff
 	if !(SDL.SetAppMetadata("cool game", "0.1", "com.food.coolgame") && SDL.Init(SDL.INIT_VIDEO)) do return false
 
-	window = SDL.CreateWindow("cool game", windowWidth, windowHeight, SDL.WINDOW_RESIZABLE)
-	renderer = SDL.CreateRenderer(window, nil)
+	app.window = SDL.CreateWindow(
+		"cool game",
+		app.windowSize.x,
+		app.windowSize.y,
+		SDL.WINDOW_RESIZABLE,
+	)
+	app.renderer = SDL.CreateRenderer(app.window, nil)
 
 	// ttf stuff
 	TTF.Init()
-	textEngine = TTF.CreateRendererTextEngine(renderer)
+	app.textEngine = TTF.CreateRendererTextEngine(app.renderer)
 	fontPath, _ := filepath.join(
 		{string(SDL.GetBasePath()), "assets/cozette.fnt"},
 		context.allocator,
 	)
-	font = TTF.OpenFont(strings.clone_to_cstring(fontPath), 13)
+	app.font = TTF.OpenFont(strings.clone_to_cstring(fontPath), 13)
 
 	// game config
-	SDL.SetRenderVSync(renderer, i32(vsyncEnabled))
+	SDL.SetRenderVSync(app.renderer, i32(vsyncEnabled))
 
 	gameRunning = true
 	return true
 }
 
 exit :: proc() {
-	TTF.CloseFont(font)
+	TTF.CloseFont(app.font)
 	TTF.Quit()
 
-	SDL.DestroyRenderer(renderer)
-	SDL.DestroyWindow(window)
+	SDL.DestroyRenderer(app.renderer)
+	SDL.DestroyWindow(app.window)
 	SDL.Quit()
 }
 
 draw :: proc() {
-	render.setDrawColor({0, 0, 0, 255}, renderer)
-	SDL.RenderClear(renderer)
+	render.setDrawColor({0, 0, 0, 255}, app.renderer)
+	SDL.RenderClear(app.renderer)
 
-	queue.render(renderer)
-	physics.draw(renderer)
+	queue.render(app.renderer)
+	physics.draw(app.renderer)
 
-	SDL.RenderPresent(renderer)
+	SDL.RenderPresent(app.renderer)
 }
 
 input :: proc(event: ^SDL.Event) {
@@ -115,7 +112,7 @@ input :: proc(event: ^SDL.Event) {
 		gameRunning = false
 
 	case .WINDOW_RESIZED:
-		SDL.GetWindowSizeInPixels(window, &windowWidth, &windowHeight)
+		SDL.GetWindowSizeInPixels(app.window, &app.windowSize.x, &app.windowSize.y)
 
 	case .KEY_DOWN, .KEY_UP:
 		keyboardState = SDL.GetKeyboardState(nil)
