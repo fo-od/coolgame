@@ -14,23 +14,14 @@ main :: proc() {
 	for arg, i in os.args[1:] {
 		switch arg {
 		case "help":
-			if i == 0 {
-				build = false
-				print_help()
-				break
-			}
+			if i == 0 {build = false; print_help(); break}
 		case "run":
 			if i == 0 do append(&args, "odin", "run", "src", "-keep-executable")
 		case "clean":
-			if i == 0 {
-				build = false
-				os.remove_all(".build/")
-				os.mkdir(".build")
-				break
-			}
-		case "-debug":
+			if i == 0 {build = false; os.remove_all(".build/"); os.mkdir(".build"); break}
+		case "debug":
 			append(&args, "-define:GAME_DEBUG=true")
-		case "-odin-debug":
+		case "odin-debug":
 			append(&args, "-debug")
 		case:
 			append(&args, arg)
@@ -54,6 +45,7 @@ main :: proc() {
 	}
 
 	if build {
+		if args[0] != "odin" {fmt.println("Invalid argument(s)"); print_help(); os.exit(1)}
 		// add default build args
 		append(&args, ..build_args)
 
@@ -97,11 +89,14 @@ print_help :: proc() {
 		"    build help               Displays this message",
 		"    build clean              Cleans the build directory",
 		"",
+		"Example usage:",
+		"    build run debug          Builds the project with debug enabled, then runs it.",
+		"",
 		"Flags:",
-		"    -debug",
+		"    debug",
 		"        Enables debug mode in the game.",
 		"",
-		"    -odin-debug",
+		"    odin-debug",
 		"        Enables Odin's debugging information.",
 		"",
 		"    Look at 'odin help build' for other flags.",
