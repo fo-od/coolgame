@@ -130,6 +130,7 @@ fpsTimer: timer.TimerNS
 renderingNS: u64
 
 debug_init :: proc() {
-	physics.add_static_body({100, 100}, {20, 5})
+	physics.add_static_body({300, 300}, {200, 5})
+	physics.add_body({300, 100}, {10, 10})
 }
 
