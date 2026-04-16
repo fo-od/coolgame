@@ -87,7 +87,9 @@ stationary_response :: proc(body: ^Body) {
 }
 
 update :: proc(deltaTime: f32) {
+	if deltaTime == 0 do return
 	for &body in bodies {
+		defer update_rect(&body.aabb)
 		body.velocity.y += gravity
 		if body.velocity.y > terminalVelocity {
 			body.velocity.y = terminalVelocity
@@ -101,7 +103,12 @@ update :: proc(deltaTime: f32) {
 			sweep_response(&body, scaled_velocity)
 			stationary_response(&body)
 		}
-		update_rect(&body.aabb)
+
+		if body.velocity.y == 0 {
+			// friction
+			body.velocity.x *= 0.9
+			if abs(body.velocity.x) < 10 do body.velocity.x = 0
+		}
 	}
 }
 

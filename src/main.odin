@@ -20,13 +20,6 @@ camX, camY: f32
 
 gameRunning := false
 
-keyboardState: [^]bool
-mouse: Mouse
-
-Mouse :: struct {
-	x, y:   f32,
-	button: SDL.MouseButtonFlags,
-}
 
 fpsTimer: timer.TimerNS
 renderingNS: u64
@@ -35,9 +28,7 @@ main :: proc() {
 	if !init() do return
 	defer exit()
 
-	when app.DEBUG {
-		debug_init()
-	}
+	when app.DEBUG do debug_init()
 
 	for gameRunning {
 		timer.start(&fpsTimer)
@@ -50,6 +41,7 @@ main :: proc() {
 		}
 
 		tick()
+		when app.DEBUG do debug_tick()
 
 		draw()
 		renderingNS = timer.getTicksNS(&fpsTimer)
@@ -86,6 +78,8 @@ init :: proc() -> bool {
 	// game config
 	SDL.SetRenderVSync(app.renderer, i32(vsyncEnabled))
 
+	SDL.SetRenderDrawBlendMode(app.renderer, SDL.BLENDMODE_BLEND)
+
 	gameRunning = true
 	return true
 }
@@ -118,10 +112,10 @@ input :: proc(event: ^SDL.Event) {
 		SDL.GetWindowSizeInPixels(app.window, &app.windowSize.x, &app.windowSize.y)
 
 	case .KEY_DOWN, .KEY_UP:
-		keyboardState = SDL.GetKeyboardState(nil)
+		app.keyboardState = SDL.GetKeyboardState(nil)
 
 	case .MOUSE_MOTION, .MOUSE_BUTTON_DOWN, .MOUSE_BUTTON_UP:
-		mouse.button = SDL.GetMouseState(&mouse.x, &mouse.y)
+		app.mouse.button = SDL.GetMouseState(&app.mouse.pos.x, &app.mouse.pos.y)
 	}
 }
 
@@ -133,5 +127,17 @@ debug_init :: proc() {
 	physics.add_static_body({300, 300}, {320, 10})
 	physics.add_body({300, 100}, {10, 10})
 	physics.add_body({300, 100}, {10, 10}, velocity = {100, -1000})
+}
+
+debug_tick :: proc() {
+	if app.keyboardState[SDL.Scancode.LEFT] {
+		physics.get_body(1).acceleration.x = -100
+	}
+
+	if app.keyboardState[SDL.Scancode.RIGHT] {
+		physics.get_body(1).acceleration.x = 100
+	}
+
+	queue.drawDebugTextFormat(0, 0, "%w", physics.get_body(1).velocity.x)
 }
 
