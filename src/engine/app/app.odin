@@ -15,3 +15,11 @@ renderer: ^SDL.Renderer
 font: ^TTF.Font
 textEngine: ^TTF.TextEngine
 
+keyboardState: [^]bool
+mouse: Mouse
+
+Mouse :: struct {
+	pos:    [2]f32,
+	button: SDL.MouseButtonFlags,
+}
+
