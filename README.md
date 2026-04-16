@@ -4,7 +4,7 @@
 > -_food_
 ***
 
-so basically this game is a 2d platformer (very original) made with SDL in C++
+so basically this game is a 2d platformer (very original) made with SDL in odin
 
 # gameplay
 
