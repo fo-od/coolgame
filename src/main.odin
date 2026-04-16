@@ -12,6 +12,8 @@ import SDL "vendor:sdl3"
 import TTF "vendor:sdl3/ttf"
 
 deltaTime: f32
+fpsTimer: timer.TimerNS
+renderingNS: u64
 targetFPS :: 60
 nsPerFrame: u64 : 1000000000 / targetFPS
 vsyncEnabled :: false
@@ -19,10 +21,6 @@ vsyncEnabled :: false
 camX, camY: f32
 
 gameRunning := false
-
-
-fpsTimer: timer.TimerNS
-renderingNS: u64
 
 main :: proc() {
 	if !init() do return
@@ -131,11 +129,11 @@ debug_init :: proc() {
 
 debug_tick :: proc() {
 	if app.keyboardState[SDL.Scancode.LEFT] {
-		physics.get_body(1).acceleration.x = -100
+		physics.get_body(1).velocity.x += -1000
 	}
 
 	if app.keyboardState[SDL.Scancode.RIGHT] {
-		physics.get_body(1).acceleration.x = 100
+		physics.get_body(1).velocity.x += 1000
 	}
 
 	queue.drawDebugTextFormat(0, 0, "%w", physics.get_body(1).velocity.x)
