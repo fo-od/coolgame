@@ -1,8 +1,8 @@
 package physics
 
 import "core:math"
-import SDL "vendor:sdl3"
 import "engine:render"
+import SDL "vendor:sdl3"
 
 Body :: struct {
 	aabb:                   AABB,
@@ -41,7 +41,7 @@ sweep_static_bodies :: proc(aabb: ^AABB, velocity: [2]f32) -> Hit {
 			continue
 		}
 
-		if hit.time > result.time {
+		if hit.time < result.time {
 			result = hit
 		} else if hit.time == result.time {
 			if abs(velocity.x) > abs(velocity.y) && hit.normal.x != 0 {
@@ -152,3 +152,4 @@ draw :: proc(renderer: ^SDL.Renderer) {
 		}
 	}
 }
+
