@@ -1,5 +1,7 @@
 package physics
 
+import "engine:physics"
+import "core:fmt"
 import "core:math"
 import "engine:render"
 import SDL "vendor:sdl3"
@@ -7,11 +9,36 @@ import SDL "vendor:sdl3"
 Body :: struct {
 	aabb:                   AABB,
 	velocity, acceleration: [2]f32,
+	collisionMask:          Collision_Mask,
+	collisionLayer:         Collision_Layer,
+	on_hit:                 proc(self, other: ^Body, hit: Hit),
+	on_hit_static:          proc(self: ^Body, other: ^StaticBody, hit: Hit),
 }
 
 StaticBody :: struct {
-	aabb: AABB,
+	aabb:           AABB,
+	collisionLayer: Collision_Layer,
 }
+
+Hit :: struct {
+	isHit:            bool,
+	otherID:          int,
+	time:             f32,
+	position, normal: [2]f32,
+}
+
+Collision_Layer :: enum {
+	Player  = 1,
+	Terrain = 1 << 1,
+	Layer_3 = 1 << 2,
+	Layer_4 = 1 << 3,
+	Layer_5 = 1 << 4,
+	Layer_6 = 1 << 5,
+	Layer_7 = 1 << 6,
+	Layer_8 = 1 << 7,
+}
+
+Collision_Mask :: bit_set[Collision_Layer]
 
 @(private)
 bodies: [dynamic]Body
@@ -56,28 +83,73 @@ update :: proc(deltaTime: f32) {
 }
 
 @(private)
-sweep_static_bodies :: proc(aabb: ^AABB, velocity: [2]f32) -> Hit {
-	result: Hit
-	result.time = math.F32_MAX
+update_sweep_result :: proc(
+	result: ^Hit,
+	other_id: int,
+	a, b: AABB,
+	velocity: [2]f32,
+	a_collision_mask: Collision_Mask,
+	b_collision_layer: Collision_Layer,
+) {
+	if b_collision_layer not_in a_collision_mask do return
 
-	for staticBody in staticBodies {
-		sum_aabb := staticBody.aabb
-		sum_aabb.halfSize += aabb.halfSize
+	sum_aabb := b
+	sum_aabb.halfSize += a.halfSize
 
-		hit := intersects_pm(&sum_aabb, aabb.pos, velocity)
-		if !hit.isHit {
-			continue
-		}
-
+	hit := intersects_ray(&sum_aabb, a.pos, velocity)
+	if hit.isHit {
 		if hit.time < result.time {
-			result = hit
+			result^ = hit
 		} else if hit.time == result.time {
 			if abs(velocity.x) > abs(velocity.y) && hit.normal.x != 0 {
-				result = hit
+				result^ = hit
 			} else if abs(velocity.y) > abs(velocity.x) && hit.normal.y != 0 {
-				result = hit
+				result^ = hit
 			}
 		}
+		result.otherID = other_id
+	}
+}
+
+@(private)
+sweep_static_bodies :: proc(body: ^Body, velocity: [2]f32) -> Hit {
+	result := Hit {
+		time = math.F32_MAX,
+	}
+
+	for staticBody, i in staticBodies {
+		update_sweep_result(
+			&result,
+			i,
+			body.aabb,
+			staticBody.aabb,
+			velocity,
+			body.collisionMask,
+			staticBody.collisionLayer,
+		)
+	}
+
+	return result
+}
+
+@(private)
+sweep_bodies :: proc(body: ^Body, velocity: [2]f32) -> Hit {
+	result := Hit {
+		time = math.F32_MAX,
+	}
+
+	for &other, i in bodies {
+		if &other == body do continue
+
+		update_sweep_result(
+			&result,
+			i,
+			body.aabb,
+			other.aabb,
+			velocity,
+			body.collisionMask,
+			other.collisionLayer,
+		)
 	}
 
 	return result
@@ -85,7 +157,15 @@ sweep_static_bodies :: proc(aabb: ^AABB, velocity: [2]f32) -> Hit {
 
 @(private)
 sweep_response :: proc(body: ^Body, velocity: [2]f32) {
-	if hit := sweep_static_bodies(&body.aabb, velocity); hit.isHit {
+	// moving response
+	if hit := sweep_bodies(body, velocity); hit.isHit {
+		if body.on_hit != nil {
+			body.on_hit(body, get_body(hit.otherID), hit)
+		}
+	}
+
+	// static response
+	if hit := sweep_static_bodies(body, velocity); hit.isHit {
 		body.aabb.pos = hit.position
 
 		if hit.normal.x != 0 {
@@ -94,6 +174,10 @@ sweep_response :: proc(body: ^Body, velocity: [2]f32) {
 		} else if hit.normal.y != 0 {
 			body.aabb.pos.x += velocity.x
 			body.velocity.y = 0
+		}
+
+		if body.on_hit_static != nil {
+			body.on_hit_static(body, get_static_body(hit.otherID), hit)
 		}
 	} else {
 		body.aabb.pos += velocity
@@ -123,20 +207,42 @@ get_static_body :: proc(id: int) -> ^StaticBody {
 }
 
 add_body :: proc(
-	pos, half_size: [2]f32,
+	pos, halfSize: [2]f32,
 	visible := true,
 	filled := false,
 	velocity: [2]f32 = {0, 0},
 	acceleration: [2]f32 = {0, 0},
+	collisionMask := Collision_Mask{.Terrain},
+	collisionLayer := Collision_Layer.Terrain,
+	on_hit: proc(self, other: ^Body, hit: Hit) = nil,
+	on_hit_static: proc(self: ^Body, other: ^StaticBody, hit: Hit) = nil,
 ) -> int {
-	return append(
+	append(
 		&bodies,
-		Body{create_AABB(pos, half_size, visible, filled), velocity, acceleration},
+		Body {
+			create_AABB(pos, halfSize, visible, filled),
+			velocity,
+			acceleration,
+			collisionMask,
+			collisionLayer,
+			on_hit,
+			on_hit_static,
+		},
 	)
+	return len(bodies) - 1
 }
 
-add_static_body :: proc(pos, half_size: [2]f32, visible := true, filled := false) -> int {
-	return append(&staticBodies, StaticBody{create_AABB(pos, half_size, visible, filled)})
+add_static_body :: proc(
+	pos, half_size: [2]f32,
+	visible := true,
+	filled := false,
+	collision_layer := Collision_Layer.Terrain,
+) -> int {
+	append(
+		&staticBodies,
+		StaticBody{create_AABB(pos, half_size, visible, filled), collision_layer},
+	)
+	return len(staticBodies) - 1
 }
 
 draw :: proc(renderer: ^SDL.Renderer) {

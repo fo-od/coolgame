@@ -1,16 +1,10 @@
 package physics
 
+import "core:fmt"
 import "../render"
 import "core:math"
 import "engine:app"
 import SDL "vendor:sdl3"
-
-@(private)
-Hit :: struct {
-	isHit:            bool,
-	time:             f32,
-	position, normal: [2]f32,
-}
 
 AABB :: struct {
 	pos, halfSize: [2]f32,
@@ -61,7 +55,7 @@ intersects_aabb :: proc(a, b: AABB) -> bool {
 }
 
 @(private)
-intersects_pm :: proc(aabb: ^AABB, pos, magnitude: [2]f32) -> Hit {
+intersects_ray :: proc(aabb: ^AABB, pos, magnitude: [2]f32) -> Hit {
 	hit: Hit
 	min := min(aabb^)
 	max := max(aabb^)
@@ -88,15 +82,14 @@ intersects_pm :: proc(aabb: ^AABB, pos, magnitude: [2]f32) -> Hit {
 		hit.isHit = true
 		hit.time = last_entry
 
-		dx: f32 = hit.position.x - aabb.pos.x
-		dy: f32 = hit.position.y - aabb.pos.y
-		px: f32 = aabb.halfSize.x - abs(dx)
-		py: f32 = aabb.halfSize.y - abs(dy)
+		d := hit.position - aabb.pos
+		px: f32 = aabb.halfSize.x - abs(d.x)
+		py: f32 = aabb.halfSize.y - abs(d.y)
 
 		if (px < py) {
-			hit.normal.x = f32(int(dx > 0) - int(dx < 0))
+			hit.normal.x = math.sign(d.x)
 		} else {
-			hit.normal.y = f32(int(dy > 0) - int(dy < 0))
+			hit.normal.y = math.sign(d.y)
 		}
 	}
 
