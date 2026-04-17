@@ -1,10 +1,10 @@
 package main
 
-import "core:fmt"
 import "core:path/filepath"
 import "core:strings"
 import "engine:app"
 import "engine:physics"
+import "engine:physics/player"
 import "engine:render"
 import "engine:render/queue"
 import "engine:util/timer"
@@ -121,29 +121,14 @@ tick :: proc() {
 
 debug_init :: proc() {
 	physics.add_static_body({300, 300}, {5000, 10})
-	physics.add_body({300, 100}, {10, 10})
+	player.init({0, 0})
 	physics.add_body({300, 100}, {10, 10}, velocity = {100, -1000})
 }
 
 debug_tick :: proc() {
-	player := physics.get_body(0)
-	if app.keyboardState[SDL.Scancode.LEFT] {
-		player.velocity.x += -100
-	}
+	player.input()
 
-	if app.keyboardState[SDL.Scancode.RIGHT] {
-		player.velocity.x += 100
-	}
-
-	if app.keyboardState[SDL.Scancode.UP] {
-		player.velocity.y = -1000
-	}
-
-	if app.keyboardState[SDL.Scancode.DOWN] {
-		player.aabb.pos = {0, 0}
-	}
-
-	app.cameraPos = -player.aabb.pos
+	app.cameraPos = -player.body.aabb.pos
 	app.cameraPos.x += f32(app.windowSize.x) / 2
 	app.cameraPos.y += f32(app.windowSize.y) / 2
 
