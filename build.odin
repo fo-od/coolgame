@@ -71,12 +71,10 @@ main :: proc() {
 		append(&args, ..build_args)
 
 		// add git hash to project constants
-		_, git_hash := exec("git rev-parse HEAD", false)
-		_, short_git_hash := exec("git rev-parse --short HEAD", false)
+		_, git_hash := exec("git rev-parse --short HEAD", false)
 		append(
 			&args,
 			strings.join({"-define:GIT_HASH=", git_hash.(string)}, ""),
-			strings.join({"-define:GIT_HASH_SHORT=", short_git_hash.(string)}, ""),
 		)
 
 		// make build dir if it doesnt exist
