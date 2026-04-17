@@ -141,7 +141,7 @@ draw :: proc(renderer: ^SDL.Renderer) {
 	for &body in bodies {
 		if !body.aabb.rect.visible do continue
 
-		render.setDrawColor(body.aabb.rect.color, renderer)
+		render.setDrawColor(renderer, body.aabb.rect.color)
 		if body.aabb.rect.filled {
 			SDL.RenderFillRect(renderer, &body.aabb.rect.rect)
 		} else {
@@ -151,7 +151,7 @@ draw :: proc(renderer: ^SDL.Renderer) {
 	for &static_body in staticBodies {
 		if !static_body.aabb.rect.visible do continue
 
-		render.setDrawColor(static_body.aabb.rect.color, renderer)
+		render.setDrawColor(renderer, static_body.aabb.rect.color)
 		if static_body.aabb.rect.filled {
 			SDL.RenderFillRect(renderer, &static_body.aabb.rect.rect)
 		} else {

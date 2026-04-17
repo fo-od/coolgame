@@ -1,11 +1,14 @@
 package queue
 
 import "core:fmt"
+import "engine:render"
 import SDL "vendor:sdl3"
 import TTF "vendor:sdl3/ttf"
 
 @(private)
-renderQ: [dynamic]Command
+commandQueue: [dynamic]Command
+@(private)
+queueRects: [dynamic]SDL.FRect
 
 @(private)
 CommandType :: enum u8 {
@@ -17,68 +20,131 @@ CommandType :: enum u8 {
 
 @(private)
 Command :: struct {
-	type:     CommandType,
-	color:    SDL.Color,
-	rectOrXY: union {
+	type:      CommandType,
+	color:     SDL.Color,
+	rectOrPos: union {
 		^SDL.FRect,
 		[2]f32,
 	},
-	text:     union {
+	text:      union {
 		cstring,
 		^TTF.Text,
 	},
 }
 
-drawFilledRect :: proc(rect: ^SDL.FRect, color := SDL.Color{255, 255, 255, 255}) {
-	append(&renderQ, Command{.FILLED_RECT, color, rect, nil})
+drawRect :: proc {
+	_drawRect_sdl,
+	_drawRect_vec4,
 }
 
-drawRect :: proc(rect: ^SDL.FRect, color := SDL.Color{255, 255, 255, 255}) {
-	append(&renderQ, Command{.RECT, color, rect, nil})
+@(private)
+_drawRect_sdl :: proc(rect: ^SDL.FRect, color := SDL.Color{255, 255, 255, 255}) {
+	cmd := Command {
+		type      = .RECT,
+		color     = color,
+		rectOrPos = rect,
+	}
+	append(&commandQueue, cmd)
 }
 
-drawText :: proc(x, y: f32, text: ^TTF.Text, color := SDL.Color{255, 255, 255, 255}) {
-	TTF.SetTextColor(text, color.r, color.g, color.b, color.a)
-	append(&renderQ, Command{.TEXT, color, [2]f32{x, y}, text})
+@(private)
+_drawRect_vec4 :: proc(rect: [4]f32, color := SDL.Color{255, 255, 255, 255}) {
+	append(&queueRects, SDL.FRect{rect.x, rect.y, rect.z, rect.w})
+	cmd := Command {
+		type      = .RECT,
+		color     = color,
+		rectOrPos = &queueRects[len(queueRects) - 1],
+	}
+	append(&commandQueue, cmd)
 }
 
-drawDebugText :: proc(x, y: f32, text: cstring, color := SDL.Color{255, 255, 255, 255}) {
-	append(&renderQ, Command{.DEBUG_TEXT, color, [2]f32{x, y}, text})
+drawFilledRect :: proc {
+	_drawFilledRect_sdl,
+	_drawFilledRect_vec4,
+}
+
+@(private)
+_drawFilledRect_sdl :: proc(rect: ^SDL.FRect, color := SDL.Color{255, 255, 255, 255}) {
+	cmd := Command {
+		type      = .FILLED_RECT,
+		color     = color,
+		rectOrPos = rect,
+	}
+	append(&commandQueue, cmd)
+}
+
+@(private)
+_drawFilledRect_vec4 :: proc(rect: [4]f32, color := SDL.Color{255, 255, 255, 255}) {
+	append(&queueRects, SDL.FRect{rect.x, rect.y, rect.z, rect.w})
+	cmd := Command {
+		type      = .FILLED_RECT,
+		color     = color,
+		rectOrPos = &queueRects[len(queueRects) - 1],
+	}
+	append(&commandQueue, cmd)
+}
+
+drawText :: proc(pos: [2]f32, text: ^TTF.Text, color := SDL.Color{255, 255, 255, 255}) {
+	cmd := Command {
+		type      = .TEXT,
+		color     = color,
+		rectOrPos = pos,
+		text      = text,
+	}
+	append(&commandQueue, cmd)
+}
+
+drawDebugText :: proc(pos: [2]f32, text: cstring, color := SDL.Color{255, 255, 255, 255}) {
+	cmd := Command {
+		type      = .DEBUG_TEXT,
+		color     = color,
+		rectOrPos = pos,
+		text      = text,
+	}
+	append(&commandQueue, cmd)
 }
 
 drawDebugTextFormat :: proc(
-	x, y: f32,
+	pos: [2]f32,
 	format: string,
 	args: ..any,
 	color := SDL.Color{255, 255, 255, 255},
 ) {
-	drawDebugText(x, y, fmt.ctprintf(format, args), color)
+	drawDebugText(pos, fmt.ctprintf(format, args), color)
 }
 
 render :: proc(renderer: ^SDL.Renderer) {
-	for cmd in renderQ {
-		if cmd.type != .TEXT do SDL.SetRenderDrawColor(renderer, cmd.color.r, cmd.color.g, cmd.color.b, cmd.color.a)
-		
+	for cmd in commandQueue {
+		if cmd.type != .TEXT do render.setDrawColor(renderer, cmd.color)
+
 		switch cmd.type {
 		case .RECT:
-			SDL.RenderRect(renderer, cmd.rectOrXY.(^SDL.FRect))
+			SDL.RenderRect(renderer, cmd.rectOrPos.(^SDL.FRect))
 		case .FILLED_RECT:
-			SDL.RenderFillRect(renderer, cmd.rectOrXY.(^SDL.FRect))
+			SDL.RenderFillRect(renderer, cmd.rectOrPos.(^SDL.FRect))
 		case .TEXT:
+			TTF.SetTextColor(
+				cmd.text.(^TTF.Text),
+				cmd.color.r,
+				cmd.color.g,
+				cmd.color.b,
+				cmd.color.a,
+			)
 			TTF.DrawRendererText(
 				cmd.text.(^TTF.Text),
-				cmd.rectOrXY.([2]f32).x,
-				cmd.rectOrXY.([2]f32).y,
+				cmd.rectOrPos.([2]f32).x,
+				cmd.rectOrPos.([2]f32).y,
 			)
 		case .DEBUG_TEXT:
 			SDL.RenderDebugText(
 				renderer,
-				cmd.rectOrXY.([2]f32).x,
-				cmd.rectOrXY.([2]f32).y,
+				cmd.rectOrPos.([2]f32).x,
+				cmd.rectOrPos.([2]f32).y,
 				cmd.text.(cstring),
 			)
 		}
 	}
-	clear(&renderQ)
+	clear(&commandQueue)
+	clear(&queueRects)
 }
 
