@@ -12,7 +12,9 @@ import SDL "vendor:sdl3"
 import TTF "vendor:sdl3/ttf"
 
 deltaTime: f32
-fpsTimer: timer.TimerNS
+fpsTimer: timer.Timer = {
+	type = .NS,
+}
 renderingNS: u64
 targetFPS :: 60
 nsPerFrame: u64 : 1000000000 / targetFPS
@@ -42,11 +44,11 @@ main :: proc() {
 		when app.DEBUG do debug_tick()
 
 		draw()
-		renderingNS = timer.getTicksNS(&fpsTimer)
+		renderingNS = timer.getTicks(&fpsTimer)
 		if !vsyncEnabled {
 			if renderingNS < nsPerFrame {
 				SDL.DelayNS(nsPerFrame - renderingNS)
-				renderingNS = timer.getTicksNS(&fpsTimer)
+				renderingNS = timer.getTicks(&fpsTimer)
 			}
 		}
 	}
