@@ -14,6 +14,8 @@ renderer: ^SDL.Renderer
 font: ^TTF.Font
 textEngine: ^TTF.TextEngine
 
+cameraPos: [2]f32
+
 keyboardState: [^]bool
 mouse: Mouse
 

@@ -27,6 +27,34 @@ gravity: f32 = 100
 @(private)
 terminalVelocity: f32 = 10000
 
+update :: proc(deltaTime: f32) {
+	if deltaTime == 0 do return
+	for &body in bodies {
+		body.velocity.y += gravity
+
+		body.velocity.x = clamp(body.velocity.x, -terminalVelocity, terminalVelocity)
+		body.velocity.y = clamp(body.velocity.y, -terminalVelocity, terminalVelocity)
+
+		body.velocity += body.acceleration
+
+		scaled_velocity := body.velocity * (deltaTime * tickRate)
+
+		for i: u32; i < iterations; i += 1 {
+			sweep_response(&body, scaled_velocity)
+			stationary_response(&body)
+		}
+
+		if body.velocity.y == 0 {
+			// friction
+			body.velocity.x *= 0.9
+		} else {
+			// air resistance
+			body.velocity.x *= 0.99
+		}
+		if body.velocity.x < 10 && body.velocity.x > -10 do body.velocity.x = 0
+	}
+}
+
 @(private)
 sweep_static_bodies :: proc(aabb: ^AABB, velocity: [2]f32) -> Hit {
 	result: Hit
@@ -86,32 +114,6 @@ stationary_response :: proc(body: ^Body) {
 	}
 }
 
-update :: proc(deltaTime: f32) {
-	if deltaTime == 0 do return
-	for &body in bodies {
-		defer update_rect(&body.aabb)
-		body.velocity.y += gravity
-		if body.velocity.y > terminalVelocity {
-			body.velocity.y = terminalVelocity
-		}
-
-		body.velocity += body.acceleration
-
-		scaled_velocity := body.velocity * (deltaTime * tickRate)
-
-		for i: u32; i < iterations; i += 1 {
-			sweep_response(&body, scaled_velocity)
-			stationary_response(&body)
-		}
-
-		if body.velocity.y == 0 {
-			// friction
-			body.velocity.x *= 0.9
-			if abs(body.velocity.x) < 10 do body.velocity.x = 0
-		}
-	}
-}
-
 get_body :: proc(id: int) -> ^Body {
 	return &bodies[id]
 }
@@ -139,6 +141,7 @@ add_static_body :: proc(pos, half_size: [2]f32, visible := true, filled := false
 
 draw :: proc(renderer: ^SDL.Renderer) {
 	for &body in bodies {
+		update_rect(&body.aabb)
 		if !body.aabb.rect.visible do continue
 
 		render.setDrawColor(renderer, body.aabb.rect.color)
@@ -149,6 +152,7 @@ draw :: proc(renderer: ^SDL.Renderer) {
 		}
 	}
 	for &static_body in staticBodies {
+		update_rect(&static_body.aabb)
 		if !static_body.aabb.rect.visible do continue
 
 		render.setDrawColor(renderer, static_body.aabb.rect.color)

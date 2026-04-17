@@ -2,6 +2,7 @@ package physics
 
 import "../render"
 import "core:math"
+import "engine:app"
 import SDL "vendor:sdl3"
 
 @(private)
@@ -33,8 +34,8 @@ create_AABB :: proc(
 }
 
 update_rect :: proc(aabb: ^AABB) {
-	aabb.rect.rect.x = aabb.pos.x - aabb.halfSize.x
-	aabb.rect.rect.y = aabb.pos.y - aabb.halfSize.y
+	aabb.rect.rect.x = aabb.pos.x - aabb.halfSize.x + app.cameraPos.x
+	aabb.rect.rect.y = aabb.pos.y - aabb.halfSize.y + app.cameraPos.y
 }
 
 min :: proc(aabb: AABB) -> [2]f32 {

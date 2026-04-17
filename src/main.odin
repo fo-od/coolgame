@@ -20,8 +20,6 @@ targetFPS :: 60
 nsPerFrame: u64 : 1000000000 / targetFPS
 vsyncEnabled :: false
 
-camX, camY: f32
-
 gameRunning := false
 
 main :: proc() {
@@ -39,6 +37,7 @@ main :: proc() {
 		for SDL.PollEvent(&event) {
 			input(&event)
 		}
+		app.keyboardState = SDL.GetKeyboardState(nil)
 
 		tick()
 		when app.DEBUG do debug_tick()
@@ -111,9 +110,6 @@ input :: proc(event: ^SDL.Event) {
 	case .WINDOW_RESIZED:
 		SDL.GetWindowSizeInPixels(app.window, &app.windowSize.x, &app.windowSize.y)
 
-	case .KEY_DOWN, .KEY_UP:
-		app.keyboardState = SDL.GetKeyboardState(nil)
-
 	case .MOUSE_MOTION, .MOUSE_BUTTON_DOWN, .MOUSE_BUTTON_UP:
 		app.mouse.button = SDL.GetMouseState(&app.mouse.pos.x, &app.mouse.pos.y)
 	}
@@ -124,20 +120,33 @@ tick :: proc() {
 }
 
 debug_init :: proc() {
-	physics.add_static_body({300, 300}, {320, 10})
+	physics.add_static_body({300, 300}, {5000, 10})
 	physics.add_body({300, 100}, {10, 10})
 	physics.add_body({300, 100}, {10, 10}, velocity = {100, -1000})
 }
 
 debug_tick :: proc() {
+	player := physics.get_body(0)
 	if app.keyboardState[SDL.Scancode.LEFT] {
-		physics.get_body(1).velocity.x += -1000
+		player.velocity.x += -100
 	}
 
 	if app.keyboardState[SDL.Scancode.RIGHT] {
-		physics.get_body(1).velocity.x += 1000
+		player.velocity.x += 100
 	}
 
-	queue.drawDebugTextFormat(0, 0, "%w", physics.get_body(1).velocity.x)
+	if app.keyboardState[SDL.Scancode.UP] {
+		player.velocity.y = -1000
+	}
+
+	if app.keyboardState[SDL.Scancode.DOWN] {
+		player.aabb.pos = {0, 0}
+	}
+
+	app.cameraPos = -player.aabb.pos
+	app.cameraPos.x += f32(app.windowSize.x) / 2
+	app.cameraPos.y += f32(app.windowSize.y) / 2
+
+	queue.drawFilledRect([4]f32{app.cameraPos.x, app.cameraPos.y, 5, 5})
 }
 
