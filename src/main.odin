@@ -94,7 +94,7 @@ exit :: proc() {
 }
 
 draw :: proc() {
-	render.setDrawColor({0, 0, 0, 255}, app.renderer)
+	render.setDrawColor(app.renderer, {0, 0, 0, 255})
 	SDL.RenderClear(app.renderer)
 
 	queue.render(app.renderer)
