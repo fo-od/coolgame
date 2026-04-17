@@ -96,7 +96,7 @@ update_sweep_result :: proc(
 	sum_aabb := b
 	sum_aabb.halfSize += a.halfSize
 
-	hit := intersects_ray(&sum_aabb, a.pos, velocity)
+	hit := aabb_intersects_ray(&sum_aabb, a.pos, velocity)
 	if hit.isHit {
 		if hit.time < result.time {
 			result^ = hit
@@ -189,11 +189,11 @@ stationary_response :: proc(body: ^Body) {
 	for staticBody in staticBodies {
 		aabb := minkowski_difference(staticBody.aabb, body.aabb)
 
-		min := min(aabb)
-		max := max(aabb)
+		min := aabb_min(aabb)
+		max := aabb_max(aabb)
 
 		if min.x <= 0 && max.x >= 0 && min.y <= 0 && max.y >= 0 {
-			body.aabb.pos += penetration_vector(aabb)
+			body.aabb.pos += aabb_penetration_vector(aabb)
 		}
 	}
 }
@@ -247,7 +247,7 @@ add_static_body :: proc(
 
 draw :: proc(renderer: ^SDL.Renderer) {
 	for &body in bodies {
-		update_rect(&body.aabb)
+		aabb_update_rect(&body.aabb)
 		if !body.aabb.rect.visible do continue
 
 		render.setDrawColor(renderer, body.aabb.rect.color)
@@ -258,7 +258,7 @@ draw :: proc(renderer: ^SDL.Renderer) {
 		}
 	}
 	for &static_body in staticBodies {
-		update_rect(&static_body.aabb)
+		aabb_update_rect(&static_body.aabb)
 		if !static_body.aabb.rect.visible do continue
 
 		render.setDrawColor(renderer, static_body.aabb.rect.color)

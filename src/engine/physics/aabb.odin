@@ -1,7 +1,6 @@
 package physics
 
-import "core:fmt"
-import "../render"
+import "engine:render"
 import "core:math"
 import "engine:app"
 import SDL "vendor:sdl3"
@@ -27,16 +26,16 @@ create_AABB :: proc(
 	return aabb
 }
 
-update_rect :: proc(aabb: ^AABB) {
+aabb_update_rect :: proc(aabb: ^AABB) {
 	aabb.rect.rect.x = aabb.pos.x - aabb.halfSize.x + app.cameraPos.x
 	aabb.rect.rect.y = aabb.pos.y - aabb.halfSize.y + app.cameraPos.y
 }
 
-min :: proc(aabb: AABB) -> [2]f32 {
+aabb_min :: proc(aabb: AABB) -> [2]f32 {
 	return aabb.pos - aabb.halfSize
 }
 
-max :: proc(aabb: AABB) -> [2]f32 {
+aabb_max :: proc(aabb: AABB) -> [2]f32 {
 	return aabb.pos + aabb.halfSize
 }
 
@@ -46,19 +45,19 @@ minkowski_difference :: proc(a, b: AABB) -> AABB {
 }
 
 @(private)
-intersects_aabb :: proc(a, b: AABB) -> bool {
+aabb_intersects_aabb :: proc(a, b: AABB) -> bool {
 	diff := minkowski_difference(a, b)
-	min := min(diff)
-	max := max(diff)
+	min := aabb_min(diff)
+	max := aabb_max(diff)
 
 	return min.x <= 0 && max.x >= 0 && min.y <= 0 && max.y >= 0
 }
 
 @(private)
-intersects_ray :: proc(aabb: ^AABB, pos, magnitude: [2]f32) -> Hit {
+aabb_intersects_ray :: proc(aabb: ^AABB, pos, magnitude: [2]f32) -> Hit {
 	hit: Hit
-	min := min(aabb^)
-	max := max(aabb^)
+	min := aabb_min(aabb^)
+	max := aabb_max(aabb^)
 
 	last_entry: f32 = math.F32_MIN
 	first_exit: f32 = math.F32_MAX
@@ -97,11 +96,11 @@ intersects_ray :: proc(aabb: ^AABB, pos, magnitude: [2]f32) -> Hit {
 }
 
 @(private)
-penetration_vector :: proc(aabb: AABB) -> [2]f32 {
+aabb_penetration_vector :: proc(aabb: AABB) -> [2]f32 {
 	result: [2]f32
 
-	min := min(aabb)
-	max := max(aabb)
+	min := aabb_min(aabb)
+	max := aabb_max(aabb)
 
 	min_dist := abs(min.x)
 	result.x = min.x
