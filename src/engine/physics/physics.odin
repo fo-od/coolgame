@@ -76,7 +76,7 @@ update :: proc(deltaTime: f32) {
 			body.velocity.x *= 0.9
 		} else {
 			// air resistance
-			body.velocity.x *= 0.99
+			body.velocity.x *= 0.95
 		}
 		if body.velocity.x < 10 && body.velocity.x > -10 do body.velocity.x = 0
 	}
