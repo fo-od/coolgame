@@ -80,9 +80,9 @@ aabb_intersects_ray :: proc(aabb: ^AABB, pos, magnitude: [2]f32) -> Hit {
 		p := aabb.halfSize - umath.abs(d)
 
 		if (p.x < p.y) {
-			hit.normal.x = math.sign(d.x)
+			hit.normal.x = -math.sign(d.x)
 		} else {
-			hit.normal.y = math.sign(d.y)
+			hit.normal.y = -math.sign(d.y)
 		}
 	}
 
