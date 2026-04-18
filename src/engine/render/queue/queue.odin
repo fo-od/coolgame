@@ -71,14 +71,14 @@ _drawRect_world_sdl :: proc(rect: ^SDL.FRect, filled := false, color := SDL.Colo
 	newRect := rect
 	newRect.x += app.cameraPos.x
 	newRect.y += app.cameraPos.y
-	drawRect(newRect, filled, color)
+	drawRect_screen(newRect, filled, color)
 }
 
 @(private)
 _drawRect_world_vec4 :: proc(rect: [4]f32, filled := false, color := SDL.Color{255, 255, 255, 255}) {
 	newRect := rect
 	newRect.xy += app.cameraPos
-	drawRect(newRect, filled, color)
+	drawRect_screen(newRect, filled, color)
 }
 
 drawText :: proc(pos: [2]f32, text: ^TTF.Text, color := SDL.Color{255, 255, 255, 255}) {
