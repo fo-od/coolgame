@@ -34,7 +34,7 @@ input :: proc() {
 	if app.keyboardState[SDL.Scancode.UP] {
 		if isGrounded {
 			isGrounded = false
-			body.velocity.y = -1000
+			body.velocity.y = -2000
 		}
 	}
 
