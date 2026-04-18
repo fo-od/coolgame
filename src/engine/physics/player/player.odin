@@ -32,11 +32,10 @@ input :: proc() {
 	body.acceleration.x = 100 * f32(joyX)
 
 	if app.keyboardState[SDL.Scancode.UP] {
-		// if isGrounded {
-		// 	isGrounded = false
-		// 	body.velocity.y = -1000
-		// }
-		body.velocity.y = -1000
+		if isGrounded {
+			isGrounded = false
+			body.velocity.y = -1000
+		}
 	}
 
 	if app.keyboardState[SDL.Scancode.DOWN] {
