@@ -32,12 +32,8 @@ aabb_update_rect :: proc(aabb: ^AABB) {
 	aabb.rect.rect.y = aabb.pos.y - aabb.halfSize.y + app.cameraPos.y
 }
 
-aabb_min :: proc(aabb: AABB) -> [2]f32 {
-	return aabb.pos - aabb.halfSize
-}
-
-aabb_max :: proc(aabb: AABB) -> [2]f32 {
-	return aabb.pos + aabb.halfSize
+aabb_min_max :: proc(aabb: AABB) -> (min: [2]f32, max: [2]f32) {
+	return aabb.pos - aabb.halfSize, aabb.pos + aabb.halfSize
 }
 
 @(private)
@@ -48,8 +44,7 @@ minkowski_difference :: proc(a, b: AABB) -> AABB {
 @(private)
 aabb_intersects_aabb :: proc(a, b: AABB) -> bool {
 	diff := minkowski_difference(a, b)
-	min := aabb_min(diff)
-	max := aabb_max(diff)
+	min, max := aabb_min_max(diff)
 
 	return min.x <= 0 && max.x >= 0 && min.y <= 0 && max.y >= 0
 }
@@ -57,8 +52,7 @@ aabb_intersects_aabb :: proc(a, b: AABB) -> bool {
 @(private)
 aabb_intersects_ray :: proc(aabb: ^AABB, pos, magnitude: [2]f32) -> Hit {
 	hit: Hit
-	min := aabb_min(aabb^)
-	max := aabb_max(aabb^)
+	min, max := aabb_min_max(aabb^)
 
 	last_entry := -math.INF_F32
 	first_exit := math.INF_F32
@@ -99,8 +93,7 @@ aabb_intersects_ray :: proc(aabb: ^AABB, pos, magnitude: [2]f32) -> Hit {
 aabb_penetration_vector :: proc(aabb: AABB) -> [2]f32 {
 	result: [2]f32
 
-	min := aabb_min(aabb)
-	max := aabb_max(aabb)
+	min, max := aabb_min_max(aabb)
 
 	min_dist := abs(min.x)
 	result.x = min.x

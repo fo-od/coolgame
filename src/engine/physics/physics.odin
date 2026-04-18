@@ -1,8 +1,8 @@
 package physics
 
-import "engine:physics"
 import "core:fmt"
 import "core:math"
+import "engine:physics"
 import "engine:render"
 import SDL "vendor:sdl3"
 
@@ -46,7 +46,7 @@ bodies: [dynamic]Body
 staticBodies: [dynamic]StaticBody
 
 @(private)
-iterations: u32 = 2
+iterations: u32 = 4
 @(private)
 tickRate: f32 = 1.0 / f32(iterations)
 @(private)
@@ -189,8 +189,7 @@ stationary_response :: proc(body: ^Body) {
 	for staticBody in staticBodies {
 		aabb := minkowski_difference(staticBody.aabb, body.aabb)
 
-		min := aabb_min(aabb)
-		max := aabb_max(aabb)
+		min, max := aabb_min_max(aabb)
 
 		if min.x <= 0 && max.x >= 0 && min.y <= 0 && max.y >= 0 {
 			body.aabb.pos += aabb_penetration_vector(aabb)
