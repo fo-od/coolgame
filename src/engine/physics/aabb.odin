@@ -1,8 +1,9 @@
 package physics
 
-import "engine:render"
 import "core:math"
 import "engine:app"
+import "engine:render"
+import "engine:util/umath"
 import SDL "vendor:sdl3"
 
 AABB :: struct {
@@ -59,8 +60,8 @@ aabb_intersects_ray :: proc(aabb: ^AABB, pos, magnitude: [2]f32) -> Hit {
 	min := aabb_min(aabb^)
 	max := aabb_max(aabb^)
 
-	last_entry: f32 = math.F32_MIN
-	first_exit: f32 = math.F32_MAX
+	last_entry := -math.INF_F32
+	first_exit := math.INF_F32
 
 	// repeat for 2 dimensions
 	for i := 0; i < 2; i += 1 {
@@ -82,10 +83,9 @@ aabb_intersects_ray :: proc(aabb: ^AABB, pos, magnitude: [2]f32) -> Hit {
 		hit.time = last_entry
 
 		d := hit.position - aabb.pos
-		px: f32 = aabb.halfSize.x - abs(d.x)
-		py: f32 = aabb.halfSize.y - abs(d.y)
+		p := aabb.halfSize - umath.abs(d)
 
-		if (px < py) {
+		if (p.x < p.y) {
 			hit.normal.x = math.sign(d.x)
 		} else {
 			hit.normal.y = math.sign(d.y)
