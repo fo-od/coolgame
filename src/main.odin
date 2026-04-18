@@ -117,6 +117,14 @@ input :: proc(event: ^SDL.Event) {
 
 tick :: proc() {
 	physics.update(deltaTime)
+	
+	player.input()
+	
+	// center camera over player
+	app.cameraPos = -player.body.aabb.pos
+	// put camera origin at center of window
+	app.cameraPos.x += f32(app.windowSize.x) / 2
+	app.cameraPos.y += f32(app.windowSize.y) / 2
 }
 
 debug_init :: proc() {
@@ -126,12 +134,6 @@ debug_init :: proc() {
 }
 
 debug_tick :: proc() {
-	player.input()
-
-	app.cameraPos = -player.body.aabb.pos
-	app.cameraPos.x += f32(app.windowSize.x) / 2
-	app.cameraPos.y += f32(app.windowSize.y) / 2
-
-	queue.drawFilledRect([4]f32{app.cameraPos.x, app.cameraPos.y, 5, 5})
+	queue.drawRect_world([4]f32{app.cameraPos.x, app.cameraPos.y, 5, 5}, true)
 }
 
