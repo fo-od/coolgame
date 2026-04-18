@@ -1,6 +1,7 @@
 package queue
 
 import "core:fmt"
+import "engine:app"
 import "engine:render"
 import SDL "vendor:sdl3"
 import TTF "vendor:sdl3/ttf"
@@ -32,15 +33,16 @@ Command :: struct {
 	},
 }
 
-drawRect :: proc {
-	_drawRect_sdl,
-	_drawRect_vec4,
+// draw a rectangle in screen space
+drawRect_screen :: proc {
+	_drawRect_screen_sdl,
+	_drawRect_screen_vec4,
 }
 
 @(private)
-_drawRect_sdl :: proc(rect: ^SDL.FRect, color := SDL.Color{255, 255, 255, 255}) {
+_drawRect_screen_sdl :: proc(rect: ^SDL.FRect, filled := false, color := SDL.Color{255, 255, 255, 255}) {
 	cmd := Command {
-		type      = .RECT,
+		type      = .FILLED_RECT if filled else .RECT,
 		color     = color,
 		rectOrPos = rect,
 	}
@@ -48,40 +50,35 @@ _drawRect_sdl :: proc(rect: ^SDL.FRect, color := SDL.Color{255, 255, 255, 255}) 
 }
 
 @(private)
-_drawRect_vec4 :: proc(rect: [4]f32, color := SDL.Color{255, 255, 255, 255}) {
+_drawRect_screen_vec4 :: proc(rect: [4]f32, filled := false, color := SDL.Color{255, 255, 255, 255}) {
 	append(&queueRects, SDL.FRect{rect.x, rect.y, rect.z, rect.w})
 	cmd := Command {
-		type      = .RECT,
+		type      = .FILLED_RECT if filled else .RECT,
 		color     = color,
 		rectOrPos = &queueRects[len(queueRects) - 1],
 	}
 	append(&commandQueue, cmd)
 }
 
-drawFilledRect :: proc {
-	_drawFilledRect_sdl,
-	_drawFilledRect_vec4,
+// draw a rectangle in world space
+drawRect_world :: proc {
+	_drawRect_world_sdl,
+	_drawRect_world_vec4,
 }
 
 @(private)
-_drawFilledRect_sdl :: proc(rect: ^SDL.FRect, color := SDL.Color{255, 255, 255, 255}) {
-	cmd := Command {
-		type      = .FILLED_RECT,
-		color     = color,
-		rectOrPos = rect,
-	}
-	append(&commandQueue, cmd)
+_drawRect_world_sdl :: proc(rect: ^SDL.FRect, filled := false, color := SDL.Color{255, 255, 255, 255}) {
+	newRect := rect
+	newRect.x += app.cameraPos.x
+	newRect.y += app.cameraPos.y
+	drawRect(newRect, filled, color)
 }
 
 @(private)
-_drawFilledRect_vec4 :: proc(rect: [4]f32, color := SDL.Color{255, 255, 255, 255}) {
-	append(&queueRects, SDL.FRect{rect.x, rect.y, rect.z, rect.w})
-	cmd := Command {
-		type      = .FILLED_RECT,
-		color     = color,
-		rectOrPos = &queueRects[len(queueRects) - 1],
-	}
-	append(&commandQueue, cmd)
+_drawRect_world_vec4 :: proc(rect: [4]f32, filled := false, color := SDL.Color{255, 255, 255, 255}) {
+	newRect := rect
+	newRect.xy += app.cameraPos
+	drawRect(newRect, filled, color)
 }
 
 drawText :: proc(pos: [2]f32, text: ^TTF.Text, color := SDL.Color{255, 255, 255, 255}) {

@@ -134,6 +134,6 @@ debug_init :: proc() {
 }
 
 debug_tick :: proc() {
-	queue.drawRect_world([4]f32{app.cameraPos.x, app.cameraPos.y, 5, 5}, true)
+	queue.drawRect_world([4]f32{0, 0, 5, 5}, true)
 }
 
