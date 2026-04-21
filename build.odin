@@ -1,4 +1,4 @@
-package build
+package main
 
 import "core:fmt"
 import "core:os"
