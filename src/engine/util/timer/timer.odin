@@ -3,17 +3,18 @@ package timer
 import SDL "vendor:sdl3"
 
 Timer :: struct {
-	type:            enum {
+	type:        enum {
 		// Millisecond precision
 		MS,
 		// Nanosecond precision
 		NS,
 	},
 	//The clock time when the timer started
-	startTicks:      u64,
+	startTicks:  u64,
+	started:     bool,
 	//The ticks stored when the timer was paused
-	pausedTicks:     u64,
-	paused, started: bool,
+	pausedTicks: u64,
+	paused:      bool,
 }
 
 getTicks :: proc(timer: ^Timer) -> u64 {
@@ -46,7 +47,8 @@ pause :: proc(timer: ^Timer) {
 	if timer.started && !timer.paused {
 		timer.paused = true
 
-		timer.pausedTicks = (SDL.GetTicks() if timer.type == .MS else SDL.GetTicksNS()) - timer.startTicks
+		timer.pausedTicks =
+			(SDL.GetTicks() if timer.type == .MS else SDL.GetTicksNS()) - timer.startTicks
 		timer.startTicks = 0
 	}
 }
@@ -55,7 +57,8 @@ unpause :: proc(timer: ^Timer) {
 	if timer.started && timer.paused {
 		timer.paused = false
 
-		timer.startTicks = (SDL.GetTicks() if timer.type == .MS else SDL.GetTicksNS()) - timer.pausedTicks
+		timer.startTicks =
+			(SDL.GetTicks() if timer.type == .MS else SDL.GetTicksNS()) - timer.pausedTicks
 		timer.pausedTicks = 0
 	}
 }
