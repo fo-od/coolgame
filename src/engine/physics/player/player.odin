@@ -16,6 +16,7 @@ init :: proc(pos: [2]f32, velocity: [2]f32 = {0, 0}) {
 		velocity = velocity,
 		collisionLayer = .Player,
 		on_hit_static = player_on_hit_static,
+		filled = true,
 	)
 	body = physics.get_body(i)
 }
