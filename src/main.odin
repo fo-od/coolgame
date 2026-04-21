@@ -18,7 +18,7 @@ fpsTimer: timer.Timer = {
 renderingNS: u64
 targetFPS :: 60
 nsPerFrame: u64 : 1000000000 / targetFPS
-vsyncEnabled :: false
+vsyncEnabled :: true
 
 gameRunning := false
 

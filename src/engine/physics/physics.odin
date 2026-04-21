@@ -46,18 +46,18 @@ bodies: [dynamic]Body
 staticBodies: [dynamic]StaticBody
 
 @(private)
-iterations: u32 = 4
+iterations: u32 : 4
 @(private)
-tickRate: f32 = 1.0 / f32(iterations)
+tickRate: f32 : 1.0 / f32(iterations)
 @(private)
-gravity: f32 = 100
+gravity: f32 : 10000*0.75
 @(private)
-terminalVelocity: f32 = 10000
+terminalVelocity: f32 : 10000
 
 update :: proc(deltaTime: f32) {
 	if deltaTime == 0 do return
 	for &body in bodies {
-		body.velocity.y += gravity
+		body.velocity.y += gravity * deltaTime
 
 		body.velocity.x = clamp(body.velocity.x, -terminalVelocity, terminalVelocity)
 		body.velocity.y = clamp(body.velocity.y, -terminalVelocity, terminalVelocity)
