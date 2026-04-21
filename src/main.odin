@@ -128,9 +128,9 @@ tick :: proc() {
 }
 
 debug_init :: proc() {
-	physics.add_static_body({300, 300}, {5000, 10})
 	player.init({0, 0})
-	physics.add_body({300, 100}, {10, 10}, velocity = {100, -1000})
+	physics.add_static_body({300, 300}, {5000, 10})
+	physics.add_static_body({200, 0}, {20, 300}, collision_layer = .Layer_3)
 }
 
 debug_tick :: proc() {
