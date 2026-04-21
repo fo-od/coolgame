@@ -96,8 +96,7 @@ update_sweep_result :: proc(
 	sum_aabb := b
 	sum_aabb.halfSize += a.halfSize
 
-	hit := aabb_intersects_ray(&sum_aabb, a.pos, velocity)
-	if hit.isHit {
+	if hit := aabb_intersects_ray(&sum_aabb, a.pos, velocity); hit.isHit {
 		if hit.time < result.time {
 			result^ = hit
 		} else if hit.time == result.time {
@@ -187,6 +186,8 @@ sweep_response :: proc(body: ^Body, velocity: [2]f32) {
 @(private)
 stationary_response :: proc(body: ^Body) {
 	for staticBody in staticBodies {
+		if staticBody.collisionLayer not_in body.collisionMask do continue
+
 		aabb := minkowski_difference(staticBody.aabb, body.aabb)
 
 		min, max := aabb_min_max(aabb)
