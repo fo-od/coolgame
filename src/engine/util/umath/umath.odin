@@ -6,11 +6,11 @@ expDecay :: proc(a, b, decay, deltaTime: f32) -> f32 {
 	return b + (a - b) * math.exp(-decay * deltaTime)
 }
 
-abs :: proc {
-	abs_vec2_f32,
+abs :: proc(value: [2]f32) -> [2]f32 {
+	return {math.abs(value.x), math.abs(value.y)}
 }
 
-abs_vec2_f32 :: proc(value: [2]f32) -> [2]f32 {
-	return {math.abs(value.x), math.abs(value.y)}
+clamp :: proc(value: [2]f32, min, max: f32) -> [2]f32 {
+	return {math.clamp(value.x, min, max), math.clamp(value.y, min, max)}
 }
 

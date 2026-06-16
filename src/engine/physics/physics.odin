@@ -1,5 +1,6 @@
 package physics
 
+import "engine:util/umath"
 import "core:fmt"
 import "core:math"
 import "engine:physics"
@@ -59,10 +60,9 @@ update :: proc(deltaTime: f32) {
 	for &body in bodies {
 		body.velocity.y += gravity * deltaTime
 
-		body.velocity.x = clamp(body.velocity.x, -terminalVelocity, terminalVelocity)
-		body.velocity.y = clamp(body.velocity.y, -terminalVelocity, terminalVelocity)
-
-		body.velocity += body.acceleration
+		body.velocity += body.acceleration * deltaTime
+		
+		body.velocity = umath.clamp(body.velocity, -terminalVelocity, terminalVelocity)
 
 		scaled_velocity := body.velocity * (deltaTime * tickRate)
 
