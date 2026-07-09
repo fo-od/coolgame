@@ -5,7 +5,6 @@ import "core:strings"
 import "engine:app"
 import "engine:physics"
 import "engine:physics/player"
-import "engine:render"
 import "engine:render/queue"
 import "engine:util/timer"
 import SDL "vendor:sdl3"
@@ -78,6 +77,7 @@ init :: proc() -> bool {
 	SDL.SetRenderVSync(app.renderer, i32(vsyncEnabled))
 
 	SDL.SetRenderDrawBlendMode(app.renderer, SDL.BLENDMODE_BLEND)
+	player.init({300, 280})
 
 	gameRunning = true
 	return true
@@ -93,7 +93,7 @@ exit :: proc() {
 }
 
 draw :: proc() {
-	render.setDrawColor(app.renderer, {0, 0, 0, 255})
+	SDL.SetRenderDrawColor(app.renderer, 0, 0, 0, 255)
 	SDL.RenderClear(app.renderer)
 
 	queue.render(app.renderer)
@@ -117,9 +117,9 @@ input :: proc(event: ^SDL.Event) {
 
 tick :: proc() {
 	physics.update(deltaTime)
-	
+
 	player.input()
-	
+
 	// center camera over player
 	app.cameraPos = -player.body.aabb.pos
 	// put camera origin at center of window
@@ -128,7 +128,6 @@ tick :: proc() {
 }
 
 debug_init :: proc() {
-	player.init({0, 0})
 	physics.add_static_body({300, 300}, {5000, 10})
 	physics.add_static_body({200, 0}, {20, 300}, collision_layer = .Layer_3)
 }
