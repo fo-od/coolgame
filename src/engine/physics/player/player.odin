@@ -1,6 +1,5 @@
 package player
 
-import "core:fmt"
 import "engine:app"
 import "engine:physics"
 import SDL "vendor:sdl3"
@@ -30,7 +29,7 @@ player_on_hit_static :: proc(self: ^physics.Body, other: ^physics.StaticBody, hi
 input :: proc() {
 	joyX = -i8(app.keyboardState[SDL.Scancode.LEFT]) + i8(app.keyboardState[SDL.Scancode.RIGHT])
 
-	body.acceleration.x = 100 * f32(joyX)
+	body.acceleration.x = 20000 * f32(joyX)
 
 	if app.keyboardState[SDL.Scancode.UP] {
 		if isGrounded {
