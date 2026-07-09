@@ -1,0 +1,8 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fo-od/obt/refs/heads/main/schema/obt.schema.json",
+  "name": "coolgame",
+  "build": {
+    "out": ".build",
+    "useOlsCollections": true
+  }
+}
