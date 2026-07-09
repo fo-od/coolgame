@@ -1,11 +1,13 @@
 package main
 
+import "core:fmt"
 import "core:path/filepath"
 import "core:strings"
 import "engine:app"
 import "engine:physics"
 import "engine:physics/player"
 import "engine:render/queue"
+import "engine:render/ui"
 import "engine:util/timer"
 import SDL "vendor:sdl3"
 import TTF "vendor:sdl3/ttf"
@@ -134,5 +136,8 @@ debug_init :: proc() {
 
 debug_tick :: proc() {
 	queue.drawRect_world([4]f32{0, 0, 5, 5}, true)
+	test := ui.Element{{50, 100}, {10, 10, 100, 50}, {.Top, .Center}, {.Top, .Center}}
+	ui.calculate_position(&test, {640, 480})
+	queue.drawRect_screen(test.rect)
 }
 
