@@ -1,10 +1,10 @@
 package physics
 
-import "engine:util/umath"
 import "core:fmt"
 import "core:math"
 import "engine:physics"
 import "engine:render"
+import "engine:util/umath"
 import SDL "vendor:sdl3"
 
 Body :: struct {
@@ -51,7 +51,7 @@ iterations: u32 : 4
 @(private)
 tickRate: f32 : 1.0 / f32(iterations)
 @(private)
-gravity: f32 : 10000*0.75
+gravity: f32 : 10000 * 0.75
 @(private)
 terminalVelocity: f32 : 10000
 
@@ -61,7 +61,7 @@ update :: proc(deltaTime: f32) {
 		body.velocity.y += gravity * deltaTime
 
 		body.velocity += body.acceleration * deltaTime
-		
+
 		body.velocity = umath.clamp(body.velocity, -terminalVelocity, terminalVelocity)
 
 		scaled_velocity := body.velocity * (deltaTime * tickRate)
@@ -245,12 +245,19 @@ add_static_body :: proc(
 	return len(staticBodies) - 1
 }
 
+// TODO: refactor
 draw :: proc(renderer: ^SDL.Renderer) {
 	for &body in bodies {
 		aabb_update_rect(&body.aabb)
 		if !body.aabb.rect.visible do continue
 
-		render.setDrawColor(renderer, body.aabb.rect.color)
+		SDL.SetRenderDrawColor(
+			renderer,
+			body.aabb.rect.color.r,
+			body.aabb.rect.color.g,
+			body.aabb.rect.color.b,
+			body.aabb.rect.color.a,
+		)
 		if body.aabb.rect.filled {
 			SDL.RenderFillRect(renderer, &body.aabb.rect.rect)
 		} else {
@@ -261,7 +268,13 @@ draw :: proc(renderer: ^SDL.Renderer) {
 		aabb_update_rect(&static_body.aabb)
 		if !static_body.aabb.rect.visible do continue
 
-		render.setDrawColor(renderer, static_body.aabb.rect.color)
+		SDL.SetRenderDrawColor(
+			renderer,
+			static_body.aabb.rect.color.r,
+			static_body.aabb.rect.color.g,
+			static_body.aabb.rect.color.b,
+			static_body.aabb.rect.color.a,
+		)
 		if static_body.aabb.rect.filled {
 			SDL.RenderFillRect(renderer, &static_body.aabb.rect.rect)
 		} else {
