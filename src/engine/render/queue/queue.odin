@@ -2,7 +2,6 @@ package queue
 
 import "core:fmt"
 import "engine:app"
-import "engine:render"
 import SDL "vendor:sdl3"
 import TTF "vendor:sdl3/ttf"
 
@@ -36,11 +35,15 @@ Command :: struct {
 // draw a rectangle in screen space
 drawRect_screen :: proc {
 	_drawRect_screen_sdl,
-	_drawRect_screen_vec4,
+	_drawRect_screen_vec,
 }
 
 @(private)
-_drawRect_screen_sdl :: proc(rect: ^SDL.FRect, filled := false, color := SDL.Color{255, 255, 255, 255}) {
+_drawRect_screen_sdl :: proc(
+	rect: ^SDL.FRect,
+	filled := false,
+	color := SDL.Color{255, 255, 255, 255},
+) {
 	cmd := Command {
 		type      = .FILLED_RECT if filled else .RECT,
 		color     = color,
@@ -50,11 +53,11 @@ _drawRect_screen_sdl :: proc(rect: ^SDL.FRect, filled := false, color := SDL.Col
 }
 
 @(private)
-_drawRect_screen_vec4 :: proc(rect: [4]f32, filled := false, color := SDL.Color{255, 255, 255, 255}) {
+_drawRect_screen_vec :: proc(rect: [4]f32, filled := false, color := [4]u8{255, 255, 255, 255}) {
 	append(&queueRects, SDL.FRect{rect.x, rect.y, rect.z, rect.w})
 	cmd := Command {
 		type      = .FILLED_RECT if filled else .RECT,
-		color     = color,
+		color     = {color.r, color.g, color.b, color.a},
 		rectOrPos = &queueRects[len(queueRects) - 1],
 	}
 	append(&commandQueue, cmd)
@@ -63,11 +66,15 @@ _drawRect_screen_vec4 :: proc(rect: [4]f32, filled := false, color := SDL.Color{
 // draw a rectangle in world space
 drawRect_world :: proc {
 	_drawRect_world_sdl,
-	_drawRect_world_vec4,
+	_drawRect_world_vec,
 }
 
 @(private)
-_drawRect_world_sdl :: proc(rect: ^SDL.FRect, filled := false, color := SDL.Color{255, 255, 255, 255}) {
+_drawRect_world_sdl :: proc(
+	rect: ^SDL.FRect,
+	filled := false,
+	color := SDL.Color{255, 255, 255, 255},
+) {
 	newRect := rect
 	newRect.x += app.cameraPos.x
 	newRect.y += app.cameraPos.y
@@ -75,7 +82,7 @@ _drawRect_world_sdl :: proc(rect: ^SDL.FRect, filled := false, color := SDL.Colo
 }
 
 @(private)
-_drawRect_world_vec4 :: proc(rect: [4]f32, filled := false, color := SDL.Color{255, 255, 255, 255}) {
+_drawRect_world_vec :: proc(rect: [4]f32, filled := false, color := [4]u8{255, 255, 255, 255}) {
 	newRect := rect
 	newRect.xy += app.cameraPos
 	drawRect_screen(newRect, filled, color)
@@ -112,7 +119,7 @@ drawDebugTextFormat :: proc(
 
 render :: proc(renderer: ^SDL.Renderer) {
 	for cmd in commandQueue {
-		if cmd.type != .TEXT do render.setDrawColor(renderer, cmd.color)
+		if cmd.type != .TEXT do SDL.SetRenderDrawColor(app.renderer, cmd.color.r, cmd.color.g, cmd.color.b, cmd.color.a)
 
 		switch cmd.type {
 		case .RECT:
