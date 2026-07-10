@@ -1,6 +1,5 @@
 package main
 
-import "core:fmt"
 import "core:path/filepath"
 import "core:strings"
 import "engine:app"
@@ -100,8 +99,9 @@ draw :: proc() {
 	SDL.SetRenderDrawColor(app.renderer, 0, 0, 0, 255)
 	SDL.RenderClear(app.renderer)
 
-	queue.render(app.renderer)
 	physics.draw(app.renderer)
+	queue.render(app.renderer)
+	ui.draw(app.renderer)
 
 	SDL.RenderPresent(app.renderer)
 }
@@ -137,9 +137,19 @@ debug_init :: proc() {
 }
 
 debug_tick :: proc() {
-	queue.drawRect_world([4]f32{0, 0, 5, 5}, true)
-	test := ui.Element{{50, 100}, {10, 10, 100, 50}, {.Top, .Center}, {.Top, .Center}}
-	ui.calculate_position(&test, {640, 480})
-	queue.drawRect_screen(test.rect)
+	ui.update_pointer_state(app.mouse.pos, SDL.MouseButtonFlag.LEFT in app.mouse.button)
+
+	if ui.make()(
+	{rect = {10, 10, 100, 50}, screenAnchor = {.Top, .Center}, origin = {.Top, .Center}},
+	) {
+		if ui.hovered() {
+			ui.text("Im hovered", {})
+		} else {
+			ui.text("Im not hovered", {})
+			if ui.make()({}) {
+				ui.text("other element", {})
+			}
+		}
+	}
 }
 
