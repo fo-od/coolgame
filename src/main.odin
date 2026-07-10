@@ -30,6 +30,8 @@ main :: proc() {
 	when app.DEBUG do debug_init()
 
 	for gameRunning {
+		defer free_all(context.temp_allocator)
+
 		timer.start(&fpsTimer)
 		currentTick := SDL.GetTicks()
 		defer deltaTime = f32(SDL.GetTicks() - currentTick) / 1000.0
