@@ -81,59 +81,30 @@ Anchor :: enum {
 	Right,
 }
 
-// TODO: make it shorter?
+axis_offset :: proc(anchor: bit_set[Anchor], size: [2]f32) -> [2]f32 {
+	offset := [2]f32{}
+
+	if .Right in anchor {
+		offset.x = size.x
+	} else if .Center in anchor {
+		offset.x = size.x / 2
+	}
+
+	if .Top in anchor {
+		offset.y = 0
+	} else if .Bottom in anchor {
+		offset.y = size.y
+	} else if .Center in anchor {
+		offset.y = size.y / 2
+	}
+
+	return offset
+}
+
 calculate_position :: proc(e: ^Element, container: [4]f32) {
-	// For top and left we do nothing, since thats default.
-
-	// Anchor handling
-	if e.anchor != nil || e.anchor != {.Top, .Left} {
-		// horizontal
-		if .Right in e.anchor {
-			e.rect.x += container.z
-		}
-
-		// vertical
-		if .Top in e.anchor {
-			if .Center in e.anchor { 	// 2
-				e.rect.x += container.z / 2
-			}
-		} else if .Center in e.anchor {
-			e.rect.y += container.w / 2
-			if .Center in e.anchor { 	// 5
-				e.rect.x += container.z / 2
-			}
-		} else if .Bottom in e.anchor {
-			e.rect.y += container.w
-			if .Center in e.anchor { 	// 8
-				e.rect.x += container.z / 2
-			}
-		}
-	}
-
-	// Origin handling
-	if e.origin != nil || e.origin != {.Top, .Left} {
-		// horizontal
-		if .Right in e.origin {
-			e.rect.x -= e.rect.z
-		}
-
-		// vertical
-		if .Top in e.origin {
-			if .Center in e.origin { 	// 2
-				e.rect.x -= e.rect.z / 2
-			}
-		} else if .Center in e.origin {
-			e.rect.y -= e.rect.w / 2
-			if .Center in e.origin { 	// 5
-				e.rect.x -= e.rect.z / 2
-			}
-		} else if .Bottom in e.origin {
-			e.rect.y -= e.rect.w
-			if .Center in e.origin { 	// 8
-				e.rect.x -= e.rect.z / 2
-			}
-		}
-	}
+	e.rect.xy += container.xy
+	e.rect.xy += axis_offset(e.anchor, container.zw)
+	e.rect.xy -= axis_offset(e.origin, e.rect.zw)
 }
 
 @(deferred_none = close_element)
@@ -171,7 +142,6 @@ _open_element :: proc(e: Element) {
 	)
 }
 
-@(deferred_none = close_element)
 text :: proc(str: string, c: TextConfig) {
 	text := TTF.CreateText(app.textEngine, app.font, strings.clone_to_cstring(str), len(str))
 	TTF.SetTextColor(text, c.color.r, c.color.g, c.color.b, c.color.a)
@@ -190,7 +160,6 @@ text :: proc(str: string, c: TextConfig) {
 		e.rect.xy = {0, 0}
 	}
 
-	append(&ctx.elements, e)
 	append(
 		&ctx.renderCommandQueue,
 		RenderCommand{type = .Text, data = TextData{text, e.rect.xy, c}},
