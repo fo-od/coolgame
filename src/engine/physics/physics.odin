@@ -251,13 +251,7 @@ draw :: proc(renderer: ^SDL.Renderer) {
 		aabb_update_rect(&body.aabb)
 		if !body.aabb.rect.visible do continue
 
-		SDL.SetRenderDrawColor(
-			renderer,
-			body.aabb.rect.color.r,
-			body.aabb.rect.color.g,
-			body.aabb.rect.color.b,
-			body.aabb.rect.color.a,
-		)
+		render.set_draw_color(renderer, body.aabb.rect.color)
 		if body.aabb.rect.filled {
 			SDL.RenderFillRect(renderer, &body.aabb.rect.rect)
 		} else {
@@ -268,13 +262,7 @@ draw :: proc(renderer: ^SDL.Renderer) {
 		aabb_update_rect(&static_body.aabb)
 		if !static_body.aabb.rect.visible do continue
 
-		SDL.SetRenderDrawColor(
-			renderer,
-			static_body.aabb.rect.color.r,
-			static_body.aabb.rect.color.g,
-			static_body.aabb.rect.color.b,
-			static_body.aabb.rect.color.a,
-		)
+		render.set_draw_color(renderer, static_body.aabb.rect.color)
 		if static_body.aabb.rect.filled {
 			SDL.RenderFillRect(renderer, &static_body.aabb.rect.rect)
 		} else {
