@@ -81,44 +81,56 @@ Anchor :: enum {
 	Right,
 }
 
-// TODO: refactor
-calculate_position :: proc(e: ^Element, container: [2]f32) {
+// TODO: make it shorter?
+calculate_position :: proc(e: ^Element, container: [4]f32) {
 	// For top and left we do nothing, since thats default.
 
 	// Anchor handling
-	if e.anchor != nil {
-		if e.anchor == {.Center} { 	// center by itself = middle middle
-			e.rect.xy -= container.xy / 2
-		} else {
-			if .Bottom in e.anchor {
-				e.rect.y -= container.x
+	if e.anchor != nil || e.anchor != {.Top, .Left} {
+		// horizontal
+		if .Right in e.anchor {
+			e.rect.x += container.z
+		}
+
+		// vertical
+		if .Top in e.anchor {
+			if .Center in e.anchor { 	// 2
+				e.rect.x += container.z / 2
 			}
-			if .Center in e.anchor {
-				e.rect.x -= container.y / 2
-				if .Left in e.anchor || .Right in e.anchor {
-					e.rect.y -= container.x / 2
-				}
-			} else if .Right in e.anchor {
-				e.rect.x -= container.y
+		} else if .Center in e.anchor {
+			e.rect.y += container.w / 2
+			if .Center in e.anchor { 	// 5
+				e.rect.x += container.z / 2
+			}
+		} else if .Bottom in e.anchor {
+			e.rect.y += container.w
+			if .Center in e.anchor { 	// 8
+				e.rect.x += container.z / 2
 			}
 		}
 	}
 
 	// Origin handling
-	if e.origin != nil {
-		if e.origin == {.Center} { 	// center by itself = middle middle
-			e.rect.xy -= e.rect.zw / 2
-		} else {
-			if .Bottom in e.origin {
-				e.rect.y -= e.rect.w
-			}
-			if .Center in e.origin {
+	if e.origin != nil || e.origin != {.Top, .Left} {
+		// horizontal
+		if .Right in e.origin {
+			e.rect.x -= e.rect.z
+		}
+
+		// vertical
+		if .Top in e.origin {
+			if .Center in e.origin { 	// 2
 				e.rect.x -= e.rect.z / 2
-				if .Left in e.origin || .Right in e.origin {
-					e.rect.y -= e.rect.w / 2
-				}
-			} else if .Right in e.origin {
-				e.rect.x -= e.rect.z
+			}
+		} else if .Center in e.origin {
+			e.rect.y -= e.rect.w / 2
+			if .Center in e.origin { 	// 5
+				e.rect.x -= e.rect.z / 2
+			}
+		} else if .Bottom in e.origin {
+			e.rect.y -= e.rect.w
+			if .Center in e.origin { 	// 8
+				e.rect.x -= e.rect.z / 2
 			}
 		}
 	}
@@ -140,10 +152,9 @@ _open_element :: proc(e: Element) {
 	new := e
 	if len(ctx.elements) > 0 {
 		parentElement := ctx.elements[len(ctx.elements) - 1]
-		new.rect.xy += parentElement.rect.xy
-		calculate_position(&new, parentElement.rect.zw)
+		calculate_position(&new, parentElement.rect)
 	} else {
-		calculate_position(&new, cast([2]f32)app.windowSize.xy)
+		calculate_position(&new, {0, 0, f32(app.windowSize.x), f32(app.windowSize.y)})
 	}
 
 	append(&ctx.elements, new)
