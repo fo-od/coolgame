@@ -1,20 +1,18 @@
 package ui
 
 import "core:fmt"
+import "core:strings"
 import "engine:app"
 import "engine:render"
+import SDL "vendor:sdl3"
+import TTF "vendor:sdl3/ttf"
 
-state: UIState
+ctx: UIContext
 
-UIState :: struct {
-	currentElement:     Maybe(Element),
+UIContext :: struct {
+	elements:           [dynamic]Element,
 	pointer:            PointerState,
 	renderCommandQueue: [dynamic]RenderCommand,
-}
-
-PointerState :: struct {
-	position: [2]f32,
-	pressed:  bool,
 }
 
 RenderCommand :: struct {
@@ -38,33 +36,37 @@ RectangleData :: struct {
 }
 
 RectangleConfig :: struct {
-	color:  Color,
+	color:  [4]u8,
 	filled: bool,
 	anchor: bit_set[Anchor],
 	origin: bit_set[Anchor],
 }
 
 TextData :: struct {
-	text:   string,
+	text:   ^TTF.Text,
+	pos:    [2]f32,
 	config: TextConfig,
 }
 
 TextConfig :: struct {
-	fontSize:  u16,
-	textColor: Color,
-	anchor:    Anchor,
+	color:  [4]u8,
+	anchor: bit_set[Anchor],
+}
+
+PointerState :: struct {
+	position: [2]f32,
+	button:   SDL.MouseButtonFlags,
 }
 
 Element :: struct {
 	// {x, y, width, height}
-	rect:         [4]f32,
-	// anchor on the screen (nil for a floating element)
-	screenAnchor: bit_set[Anchor],
+	rect:   [4]f32,
+	color:  [4]u8,
+	// anchor from the parent element (nil for a floating element)
+	anchor: bit_set[Anchor],
 	// origin of the element
-	origin:       bit_set[Anchor],
+	origin: bit_set[Anchor],
 }
-
-Color :: [4]u8
 
 // 1----2----3    1=Top+Left     2=Top+Center     3=Top+Right
 // |    |    |
@@ -81,43 +83,43 @@ Anchor :: enum {
 
 // TODO: refactor
 calculate_position :: proc(e: ^Element, container: [2]f32) {
+	// For top and left we do nothing, since thats default.
+
 	// Anchor handling
-	if (e.screenAnchor != nil) {
-		if (e.screenAnchor == {.Center}) {
-			e.rect.xy += (container.xy / 2)
+	if e.anchor != nil {
+		if e.anchor == {.Center} { 	// center by itself = middle middle
+			e.rect.xy -= container.xy / 2
 		} else {
-			if .Center in e.screenAnchor {
-				if .Top in e.screenAnchor || .Bottom in e.screenAnchor {
-					e.rect.x += (container.x / 2)
-				} else {
-					e.rect.y -= (container.y / 2)
+			if .Bottom in e.anchor {
+				e.rect.y -= container.x
+			}
+			if .Center in e.anchor {
+				e.rect.x -= container.y / 2
+				if .Left in e.anchor || .Right in e.anchor {
+					e.rect.y -= container.x / 2
 				}
-			}
-			if .Bottom in e.screenAnchor {
-				e.rect.y -= container.y
-			}
-			if .Right in e.screenAnchor {
-				e.rect.x += container.x
+			} else if .Right in e.anchor {
+				e.rect.x -= container.y
 			}
 		}
 	}
 
 	// Origin handling
-	if (e.origin == {.Center}) {
-		e.rect.xy -= e.rect.zw / 2
-	} else {
-		if .Center in e.origin {
-			if .Top in e.origin || .Bottom in e.origin {
-				e.rect.x -= e.rect.z / 2
-			} else {
-				e.rect.y -= e.rect.w / 2
+	if e.origin != nil {
+		if e.origin == {.Center} { 	// center by itself = middle middle
+			e.rect.xy -= e.rect.zw / 2
+		} else {
+			if .Bottom in e.origin {
+				e.rect.y -= e.rect.w
 			}
-		}
-		if .Bottom in e.origin {
-			e.rect.y -= e.rect.w
-		}
-		if .Right in e.origin {
-			e.rect.x += e.rect.z
+			if .Center in e.origin {
+				e.rect.x -= e.rect.z / 2
+				if .Left in e.origin || .Right in e.origin {
+					e.rect.y -= e.rect.w / 2
+				}
+			} else if .Right in e.origin {
+				e.rect.x -= e.rect.z
+			}
 		}
 	}
 }
@@ -135,69 +137,84 @@ open_element :: proc(e: Element) -> bool {
 
 @(private)
 _open_element :: proc(e: Element) {
-	state.currentElement = e
+	new := e
+	if len(ctx.elements) > 0 {
+		parentElement := ctx.elements[len(ctx.elements) - 1]
+		new.rect.xy += parentElement.rect.xy
+		calculate_position(&new, parentElement.rect.zw)
+	} else {
+		calculate_position(&new, cast([2]f32)app.windowSize.xy)
+	}
+
+	append(&ctx.elements, new)
+
 	append(
-		&state.renderCommandQueue,
+		&ctx.renderCommandQueue,
 		RenderCommand {
 			type = .Rectangle,
 			data = RectangleData {
-				e.rect,
-				{
-					color = {255, 0, 0, 255},
-					filled = true,
-					anchor = e.screenAnchor,
-					origin = e.origin,
-				},
+				new.rect,
+				{color = e.color, filled = true, anchor = e.anchor, origin = e.origin},
 			},
 		},
 	)
 }
 
-@(private, deferred_none = close_text_element)
-open_text_element :: proc(str: string, c: TextConfig) {
+@(deferred_none = close_element)
+text :: proc(str: string, c: TextConfig) {
+	text := TTF.CreateText(app.textEngine, app.font, strings.clone_to_cstring(str), len(str))
+	TTF.SetTextColor(text, c.color.r, c.color.g, c.color.b, c.color.a)
+
+	e: Element
+
+	tw, th: i32
+	TTF.GetTextSize(text, &tw, &th)
+	e.rect.zw = {f32(tw), f32(th)}
+
+	// TODO: do cool calculations to get text position :p
+	if len(ctx.elements) > 0 {
+		parentElement := ctx.elements[len(ctx.elements) - 1]
+		e.rect.xy = parentElement.rect.xy
+	} else {
+		e.rect.xy = {0, 0}
+	}
+
+	append(&ctx.elements, e)
+	append(
+		&ctx.renderCommandQueue,
+		RenderCommand{type = .Text, data = TextData{text, e.rect.xy, c}},
+	)
 }
 
 @(private)
 close_element :: proc() {
-	state.currentElement = nil
+	pop_safe(&ctx.elements)
 }
 
-@(private)
-close_text_element :: proc() {
-}
-
-update_pointer_state :: proc(pos: [2]f32, pressed: bool) {
-	state.pointer = {pos, pressed}
+update_pointer_state :: proc(pos: [2]f32, button: SDL.MouseButtonFlags) {
+	ctx.pointer = {pos, button}
 }
 
 hovered :: proc() -> bool {
+	currentElement := ctx.elements[len(ctx.elements) - 1]
 	return(
-		(state.pointer.position.x >= state.currentElement.(Element).rect.x) &&
-		(state.pointer.position.x <
-				(state.currentElement.(Element).rect.x + state.currentElement.(Element).rect.z)) &&
-		(state.pointer.position.y >= state.currentElement.(Element).rect.y) &&
-		(state.pointer.position.y <
-				(state.currentElement.(Element).rect.y + state.currentElement.(Element).rect.w)) \
+		(ctx.pointer.position.x >= currentElement.rect.x) &&
+		(ctx.pointer.position.x < (currentElement.rect.x + currentElement.rect.z)) &&
+		(ctx.pointer.position.y >= currentElement.rect.y) &&
+		(ctx.pointer.position.y < (currentElement.rect.y + currentElement.rect.w)) \
 	)
 }
 
-text :: proc(str: string, c: TextConfig) {
-	// TODO: implement
-	open_text_element(str, c)
-	fmt.println(str)
-}
-
-
 draw :: proc(renderer: ^SDL.Renderer) {
-	defer clear(&state.renderCommandQueue)
-	for cmd in state.renderCommandQueue {
+	defer clear(&ctx.renderCommandQueue)
+	for cmd in ctx.renderCommandQueue {
 		switch cmd.type {
 		case .Rectangle:
 			data := cmd.data.(RectangleData)
 			render.draw_rect_screen(renderer, data.rect, data.config.filled, data.config.color)
 		case .Text:
 			data := cmd.data.(TextData)
-			fmt.printfln(data.text)
+			TTF.DrawRendererText(data.text, data.pos.x, data.pos.y)
 		}
 	}
 }

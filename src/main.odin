@@ -116,6 +116,7 @@ input :: proc(event: ^SDL.Event) {
 
 	case .MOUSE_MOTION, .MOUSE_BUTTON_DOWN, .MOUSE_BUTTON_UP:
 		app.mouse.button = SDL.GetMouseState(&app.mouse.pos.x, &app.mouse.pos.y)
+		ui.update_pointer_state(app.mouse.pos, app.mouse.button)
 	}
 }
 
@@ -137,17 +138,27 @@ debug_init :: proc() {
 }
 
 debug_tick :: proc() {
-	ui.update_pointer_state(app.mouse.pos, SDL.MouseButtonFlag.LEFT in app.mouse.button)
-
 	if ui.make()(
-	{rect = {10, 10, 100, 50}, screenAnchor = {.Top, .Center}, origin = {.Top, .Center}},
+	{
+		rect = {0, 0, 100, 50},
+		anchor = {.Top, .Center},
+		origin = {.Top, .Center},
+		color = {255, 0, 0, 255},
+	},
 	) {
 		if ui.hovered() {
-			ui.text("Im hovered", {})
+			ui.text("Im hovered", {color = {}, anchor = {.Top, .Left}})
 		} else {
-			ui.text("Im not hovered", {})
-			if ui.make()({}) {
-				ui.text("other element", {})
+			ui.text("Im not hovered", {color = {}, anchor = {.Top, .Left}})
+			if ui.make()(
+			{
+				rect = {0, 0, 50, 25},
+				anchor = {.Center},
+				origin = {.Center},
+				color = {0, 0, 255, 255},
+			},
+			) {
+				ui.text("other element", {color = {}, anchor = {.Top, .Left}})
 			}
 		}
 	}

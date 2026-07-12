@@ -16,9 +16,9 @@ draw_rect_screen :: proc(
 	color := [4]u8{255, 255, 255, 255},
 ) {
 	// FIXME: for some reason the color is always white if this print statement isnt here?
-	fmt.println(color)
-
+	fmt.println(color, flush = false)
 	SDL.SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a)
+
 	rect := SDL.FRect{rect.x, rect.y, rect.z, rect.w}
 	if filled {
 		SDL.RenderFillRect(renderer, &rect)
