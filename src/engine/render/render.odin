@@ -1,6 +1,5 @@
 package render
 
-import "core:fmt"
 import SDL "vendor:sdl3"
 
 Rect :: struct {
@@ -9,14 +8,13 @@ Rect :: struct {
 	visible, filled: bool,
 }
 
+@(optimization_mode = "none") // https://github.com/odin-lang/Odin/issues/6809
 draw_rect_screen :: proc(
 	renderer: ^SDL.Renderer,
 	rect: [4]f32,
 	filled := false,
 	color := [4]u8{255, 255, 255, 255},
 ) {
-	// FIXME: for some reason the color is always white if this print statement isnt here?
-	fmt.println(color, flush = false)
 	SDL.SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a)
 
 	rect := SDL.FRect{rect.x, rect.y, rect.z, rect.w}
