@@ -185,6 +185,10 @@ hovered :: proc() -> bool {
 	)
 }
 
+clicked :: proc() -> bool {
+	return hovered() && .LEFT in ctx.pointer.button
+}
+
 draw :: proc(renderer: ^SDL.Renderer) {
 	defer clear(&ctx.renderCommandQueue)
 	for cmd in ctx.renderCommandQueue {
