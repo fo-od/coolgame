@@ -71,10 +71,11 @@ init :: proc() -> bool {
 	TTF.Init()
 	app.textEngine = TTF.CreateRendererTextEngine(app.renderer)
 	fontPath, _ := filepath.join(
-		{string(SDL.GetBasePath()), "assets/cozette.fnt"},
+		{string(SDL.GetBasePath()), "../src/assets/cozette.fnt"},
 		context.allocator,
 	)
 	app.font = TTF.OpenFont(strings.clone_to_cstring(fontPath), 13)
+	if app.textEngine == nil || app.font == nil do return false
 
 	// game config
 	SDL.SetRenderVSync(app.renderer, i32(vsyncEnabled))
@@ -147,9 +148,9 @@ debug_tick :: proc() {
 	},
 	) {
 		if ui.hovered() {
-			ui.text("Im hovered", {color = {}, anchor = {.Top, .Left}})
+			ui.text("Im hovered", {color = {255, 255, 255, 255}, anchor = {.Top, .Left}})
 		} else {
-			ui.text("Im not hovered", {color = {}, anchor = {.Top, .Left}})
+			ui.text("Im not hovered", {color = {255, 255, 255, 255}, anchor = {.Top, .Left}})
 			if ui.make()(
 			{
 				rect = {0, 0, 50, 25},
@@ -158,7 +159,7 @@ debug_tick :: proc() {
 				color = {0, 0, 255, 255},
 			},
 			) {
-				ui.text("other element", {color = {}, anchor = {.Top, .Left}})
+				ui.text("Im also here", {color = {255, 255, 255, 255}, anchor = {.Top, .Left}})
 			}
 		}
 	}
