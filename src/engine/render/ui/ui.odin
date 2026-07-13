@@ -12,6 +12,8 @@ UIContext :: struct {
 	elements:           [dynamic]Element,
 	pointer:            PointerState,
 	renderCommandQueue: [dynamic]RenderCommand,
+	hoveredByIndex:     [dynamic]bool,
+	elementIndex:       int,
 }
 
 RenderCommand :: struct {
@@ -142,6 +144,10 @@ open_element :: proc(e: Element) -> bool {
 
 @(private)
 _open_element :: proc(e: Element) {
+	if len(ctx.elements) == 0 && len(ctx.renderCommandQueue) == 0 {
+		ctx.elementIndex = 0
+	}
+
 	new := e
 	if len(ctx.elements) > 0 {
 		parentElement := ctx.elements[len(ctx.elements) - 1]
@@ -151,6 +157,17 @@ _open_element :: proc(e: Element) {
 		screen := [4]f32{0, 0, f32(app.windowSize.x), f32(app.windowSize.y)}
 		calculate_sizing(&new, screen)
 		calculate_position(&new, screen)
+	}
+
+	isHovered :=
+		((ctx.pointer.position.x >= new.rect.x) &&
+			(ctx.pointer.position.x < (new.rect.x + new.rect.z)) &&
+			(ctx.pointer.position.y >= new.rect.y) &&
+			(ctx.pointer.position.y < (new.rect.y + new.rect.w)))
+	if ctx.elementIndex < len(ctx.hoveredByIndex) {
+		ctx.hoveredByIndex[ctx.elementIndex] = isHovered
+	} else {
+		append(&ctx.hoveredByIndex, isHovered)
 	}
 
 	append(&ctx.elements, new)
@@ -171,6 +188,8 @@ _open_element :: proc(e: Element) {
 			},
 		},
 	)
+
+	ctx.elementIndex += 1
 }
 
 text :: proc(str: string, c: TextConfig) {
@@ -207,13 +226,8 @@ update_pointer_state :: proc(pos: [2]f32, button: SDL.MouseButtonFlags) {
 }
 
 hovered :: proc() -> bool {
-	currentElement := ctx.elements[len(ctx.elements) - 1]
-	return(
-		(ctx.pointer.position.x >= currentElement.rect.x) &&
-		(ctx.pointer.position.x < (currentElement.rect.x + currentElement.rect.z)) &&
-		(ctx.pointer.position.y >= currentElement.rect.y) &&
-		(ctx.pointer.position.y < (currentElement.rect.y + currentElement.rect.w)) \
-	)
+	if ctx.elementIndex >= len(ctx.hoveredByIndex) do return false
+	return ctx.hoveredByIndex[ctx.elementIndex]
 }
 
 pressed :: proc() -> bool {
