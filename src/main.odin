@@ -147,20 +147,12 @@ debug_tick :: proc() {
 		color = {255, 0, 0, 255},
 	},
 	) {
-		if ui.hovered() {
+		if ui.pressed() {
+			ui.text("Im pressed", {color = {255, 255, 255, 255}, anchor = {.Top, .Left}})
+		} else if ui.hovered() {
 			ui.text("Im hovered", {color = {255, 255, 255, 255}, anchor = {.Top, .Left}})
 		} else {
 			ui.text("Im not hovered", {color = {255, 255, 255, 255}, anchor = {.Top, .Left}})
-			if ui.make()(
-			{
-				rect = {0, 0, 50, 25},
-				anchor = {.Center},
-				origin = {.Center},
-				color = {0, 0, 255, 255},
-			},
-			) {
-				ui.text("Im also here", {color = {255, 255, 255, 255}, anchor = {.Top, .Left}})
-			}
 		}
 	}
 }

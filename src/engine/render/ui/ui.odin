@@ -185,7 +185,7 @@ hovered :: proc() -> bool {
 	)
 }
 
-clicked :: proc() -> bool {
+pressed :: proc() -> bool {
 	return hovered() && .LEFT in ctx.pointer.button
 }
 
