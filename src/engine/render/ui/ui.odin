@@ -1,6 +1,5 @@
 package ui
 
-import "core:fmt"
 import "core:strings"
 import "engine:app"
 import "engine:render"
@@ -38,6 +37,7 @@ RectangleData :: struct {
 RectangleConfig :: struct {
 	color:  [4]u8,
 	filled: bool,
+	sizing: Sizing,
 	anchor: bit_set[Anchor],
 	origin: bit_set[Anchor],
 }
@@ -61,8 +61,11 @@ PointerState :: struct {
 Element :: struct {
 	// {x, y, width, height}
 	rect:   [4]f32,
+	// color of the element
 	color:  [4]u8,
-	// anchor from the parent element (nil for a floating element)
+	// sizing of the element
+	sizing: Sizing,
+	// anchor from the parent element (nil/empty for a floating element)
 	anchor: bit_set[Anchor],
 	// origin of the element
 	origin: bit_set[Anchor],
@@ -79,6 +82,16 @@ Anchor :: enum {
 	Center,
 	Bottom,
 	Right,
+}
+
+Sizing :: struct {
+	width:  SizeMode,
+	height: SizeMode,
+}
+
+SizeMode :: enum {
+	Fixed,
+	Grow,
 }
 
 axis_offset :: proc(anchor: bit_set[Anchor], size: [2]f32) -> [2]f32 {
@@ -107,8 +120,17 @@ calculate_position :: proc(e: ^Element, container: [4]f32) {
 	e.rect.xy -= axis_offset(e.origin, e.rect.zw)
 }
 
+calculate_sizing :: proc(e: ^Element, container: [4]f32) {
+	if e.sizing.width == .Grow {
+		e.rect.z = container.z
+	}
+	if e.sizing.height == .Grow {
+		e.rect.w = container.w
+	}
+}
+
 @(deferred_none = close_element)
-make :: proc() -> proc(e: Element) -> bool {
+rectangle :: proc() -> proc(e: Element) -> bool {
 	return open_element
 }
 
@@ -123,9 +145,12 @@ _open_element :: proc(e: Element) {
 	new := e
 	if len(ctx.elements) > 0 {
 		parentElement := ctx.elements[len(ctx.elements) - 1]
+		calculate_sizing(&new, parentElement.rect)
 		calculate_position(&new, parentElement.rect)
 	} else {
-		calculate_position(&new, {0, 0, f32(app.windowSize.x), f32(app.windowSize.y)})
+		screen := [4]f32{0, 0, f32(app.windowSize.x), f32(app.windowSize.y)}
+		calculate_sizing(&new, screen)
+		calculate_position(&new, screen)
 	}
 
 	append(&ctx.elements, new)
@@ -136,7 +161,13 @@ _open_element :: proc(e: Element) {
 			type = .Rectangle,
 			data = RectangleData {
 				new.rect,
-				{color = e.color, filled = true, anchor = e.anchor, origin = e.origin},
+				{
+					color = e.color,
+					filled = true,
+					sizing = e.sizing,
+					anchor = e.anchor,
+					origin = e.origin,
+				},
 			},
 		},
 	)

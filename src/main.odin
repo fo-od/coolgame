@@ -139,21 +139,15 @@ debug_init :: proc() {
 }
 
 debug_tick :: proc() {
-	if ui.make()(
-	{
-		rect = {0, 10, 100, 50},
-		anchor = {.Top, .Center},
-		origin = {.Top, .Center},
-		color = {255, 0, 0, 255},
-	},
-	) {
-		if ui.pressed() {
-			ui.text("Im pressed", {color = {255, 255, 255, 255}, anchor = {.Top, .Left}})
-		} else if ui.hovered() {
-			ui.text("Im hovered", {color = {255, 255, 255, 255}, anchor = {.Top, .Left}})
-		} else {
-			ui.text("Im not hovered", {color = {255, 255, 255, 255}, anchor = {.Top, .Left}})
-		}
+	if ui.rectangle()({sizing = {.Grow, .Grow}, color = {0, 0, 0, 127}}) {
+		ui.rectangle()(
+		{
+			rect = {0, 0, 100, 50},
+			anchor = {.Center},
+			origin = {.Center},
+			color = ui.hovered() ? {255, 0, 0, 255} : {255, 255, 255, 255},
+		},
+		)
 	}
 }
 
