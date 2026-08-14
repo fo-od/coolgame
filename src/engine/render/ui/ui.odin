@@ -92,6 +92,7 @@ SizeMode :: enum {
 	Grow,
 }
 
+@(private)
 axis_offset :: proc(anchor: bit_set[Anchor], size: [2]f32) -> [2]f32 {
 	offset := [2]f32{}
 
@@ -112,12 +113,14 @@ axis_offset :: proc(anchor: bit_set[Anchor], size: [2]f32) -> [2]f32 {
 	return offset
 }
 
+@(private)
 calculate_position :: proc(e: ^Element, container: [4]f32) {
 	e.rect.xy += container.xy
 	e.rect.xy += axis_offset(e.layout.anchor, container.zw)
 	e.rect.xy -= axis_offset(e.layout.origin, e.rect.zw)
 }
 
+@(private)
 calculate_sizing :: proc(e: ^Element, container: [4]f32) {
 	if e.layout.sizing.width == .Grow {
 		e.rect.z = container.z
@@ -224,7 +227,12 @@ draw :: proc(renderer: ^SDL.Renderer) {
 	for cmd in ctx.renderCommandQueue {
 		switch cmd.type {
 		case .Rectangle:
-			render.draw_rect_screen(renderer, cmd.element.rect, cmd.element.style.filled, cmd.element.style.color)
+			render.draw_rect_screen(
+				renderer,
+				cmd.element.rect,
+				cmd.element.style.filled,
+				cmd.element.style.color,
+			)
 		case .Text:
 			data := cmd.data.(TextData)
 			TTF.DrawRendererText(data.text, cmd.element.rect.x, cmd.element.rect.y)
