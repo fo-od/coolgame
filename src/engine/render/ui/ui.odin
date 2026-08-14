@@ -127,11 +127,6 @@ calculate_sizing :: proc(e: ^Element, container: [4]f32) {
 	}
 }
 
-@(deferred_none = close_element)
-rectangle :: proc() -> proc(e: Element) -> bool {
-	return open_element
-}
-
 @(private)
 open_element :: proc(e: Element) -> bool {
 	_open_element(e)
@@ -174,6 +169,16 @@ _open_element :: proc(e: Element) {
 	ctx.elementIndex += 1
 }
 
+@(private)
+close_element :: proc() {
+	pop_safe(&ctx.elements)
+}
+
+@(deferred_none = close_element)
+rectangle :: proc() -> proc(e: Element) -> bool {
+	return open_element
+}
+
 text :: proc(str: string, t: TextElement) {
 	text := TTF.CreateText(app.textEngine, app.font, strings.clone_to_cstring(str), len(str))
 	TTF.SetTextColor(text, t.style.color.r, t.style.color.g, t.style.color.b, t.style.color.a)
@@ -199,11 +204,6 @@ text :: proc(str: string, t: TextElement) {
 		&ctx.renderCommandQueue,
 		RenderCommand{type = .Text, data = TextData{text}, element = e},
 	)
-}
-
-@(private)
-close_element :: proc() {
-	pop_safe(&ctx.elements)
 }
 
 update_pointer_state :: proc(pos: [2]f32, button: SDL.MouseButtonFlags) {
