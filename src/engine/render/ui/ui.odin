@@ -17,8 +17,9 @@ UIContext :: struct {
 }
 
 RenderCommand :: struct {
-	type: CommandType,
-	data: CommandData,
+	type:    CommandType,
+	element: Element,
+	data:    CommandData,
 }
 
 CommandType :: enum {
@@ -27,50 +28,45 @@ CommandType :: enum {
 }
 
 CommandData :: union {
-	RectangleData,
 	TextData,
 }
 
-RectangleData :: struct {
-	rect:   [4]f32,
-	config: RectangleConfig,
-}
-
-RectangleConfig :: struct {
-	color:  [4]u8,
-	filled: bool,
-	sizing: Sizing,
-	anchor: bit_set[Anchor],
-	origin: bit_set[Anchor],
-}
-
-TextData :: struct {
-	text:   ^TTF.Text,
-	pos:    [2]f32,
-	config: TextConfig,
-}
-
-TextConfig :: struct {
-	color:  [4]u8,
-	anchor: bit_set[Anchor],
-}
-
-PointerState :: struct {
-	position: [2]f32,
-	button:   SDL.MouseButtonFlags,
-}
-
-Element :: struct {
-	// {x, y, width, height}
-	rect:   [4]f32,
-	// color of the element
-	color:  [4]u8,
+Layout :: struct {
 	// sizing of the element
 	sizing: Sizing,
 	// anchor from the parent element (nil/empty for a floating element)
 	anchor: bit_set[Anchor],
 	// origin of the element
 	origin: bit_set[Anchor],
+}
+
+Style :: struct {
+	// RGBA
+	color:  [4]u8,
+	// not applicable to text
+	filled: bool,
+}
+
+Element :: struct {
+	// {x, y, width, height}
+	rect:   [4]f32,
+	layout: Layout,
+	style:  Style,
+}
+
+TextElement :: struct {
+	pos:    [2]f32,
+	layout: Layout,
+	style:  Style,
+}
+
+TextData :: struct {
+	text: ^TTF.Text,
+}
+
+PointerState :: struct {
+	position: [2]f32,
+	button:   SDL.MouseButtonFlags,
 }
 
 // 1----2----3    1=Top+Left     2=Top+Center     3=Top+Right
@@ -118,15 +114,15 @@ axis_offset :: proc(anchor: bit_set[Anchor], size: [2]f32) -> [2]f32 {
 
 calculate_position :: proc(e: ^Element, container: [4]f32) {
 	e.rect.xy += container.xy
-	e.rect.xy += axis_offset(e.anchor, container.zw)
-	e.rect.xy -= axis_offset(e.origin, e.rect.zw)
+	e.rect.xy += axis_offset(e.layout.anchor, container.zw)
+	e.rect.xy -= axis_offset(e.layout.origin, e.rect.zw)
 }
 
 calculate_sizing :: proc(e: ^Element, container: [4]f32) {
-	if e.sizing.width == .Grow {
+	if e.layout.sizing.width == .Grow {
 		e.rect.z = container.z
 	}
-	if e.sizing.height == .Grow {
+	if e.layout.sizing.height == .Grow {
 		e.rect.w = container.w
 	}
 }
@@ -172,31 +168,20 @@ _open_element :: proc(e: Element) {
 
 	append(&ctx.elements, new)
 
-	append(
-		&ctx.renderCommandQueue,
-		RenderCommand {
-			type = .Rectangle,
-			data = RectangleData {
-				new.rect,
-				{
-					color = e.color,
-					filled = true,
-					sizing = e.sizing,
-					anchor = e.anchor,
-					origin = e.origin,
-				},
-			},
-		},
-	)
+
+	append(&ctx.renderCommandQueue, RenderCommand{type = .Rectangle, element = new})
 
 	ctx.elementIndex += 1
 }
 
-text :: proc(str: string, c: TextConfig) {
+text :: proc(str: string, t: TextElement) {
 	text := TTF.CreateText(app.textEngine, app.font, strings.clone_to_cstring(str), len(str))
-	TTF.SetTextColor(text, c.color.r, c.color.g, c.color.b, c.color.a)
+	TTF.SetTextColor(text, t.style.color.r, t.style.color.g, t.style.color.b, t.style.color.a)
 
 	e: Element
+	e.layout = t.layout
+	e.style = t.style
+	e.rect.xy = t.pos
 
 	tw, th: i32
 	TTF.GetTextSize(text, &tw, &th)
@@ -212,7 +197,7 @@ text :: proc(str: string, c: TextConfig) {
 
 	append(
 		&ctx.renderCommandQueue,
-		RenderCommand{type = .Text, data = TextData{text, e.rect.xy, c}},
+		RenderCommand{type = .Text, data = TextData{text}, element = e},
 	)
 }
 
@@ -239,11 +224,10 @@ draw :: proc(renderer: ^SDL.Renderer) {
 	for cmd in ctx.renderCommandQueue {
 		switch cmd.type {
 		case .Rectangle:
-			data := cmd.data.(RectangleData)
-			render.draw_rect_screen(renderer, data.rect, data.config.filled, data.config.color)
+			render.draw_rect_screen(renderer, cmd.element.rect, cmd.element.style.filled, cmd.element.style.color)
 		case .Text:
 			data := cmd.data.(TextData)
-			TTF.DrawRendererText(data.text, data.pos.x, data.pos.y)
+			TTF.DrawRendererText(data.text, cmd.element.rect.x, cmd.element.rect.y)
 		}
 	}
 }

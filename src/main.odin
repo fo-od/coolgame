@@ -139,13 +139,12 @@ debug_init :: proc() {
 }
 
 debug_tick :: proc() {
-	if ui.rectangle()({sizing = {.Grow, .Grow}, color = {0, 0, 0, 127}}) {
+	if ui.rectangle()({layout = {sizing = {.Grow, .Grow}}, style = {color = {0, 0, 0, 127}}}) {
 		ui.rectangle()(
 		{
 			rect = {0, 0, 100, 50},
-			anchor = {.Center},
-			origin = {.Center},
-			color = ui.hovered() ? {255, 0, 0, 255} : {255, 255, 255, 255},
+			layout = {anchor = {.Center}, origin = {.Center}},
+			style = {color = ui.hovered() ? {255, 0, 0, 255} : {255, 255, 255, 255}, filled = true},
 		},
 		)
 	}
