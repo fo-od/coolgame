@@ -29,12 +29,12 @@ set_draw_color :: proc {
 	set_draw_color_sdl,
 }
 
-@(private, optimization_mode = "none") // https://github.com/odin-lang/Odin/issues/6809
+@(private)
 set_draw_color_v :: proc(renderer: ^SDL.Renderer, color: [4]u8) {
 	SDL.SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a)
 }
 
-@(private, optimization_mode = "none") // https://github.com/odin-lang/Odin/issues/6809
+@(private)
 set_draw_color_sdl :: proc(renderer: ^SDL.Renderer, color: SDL.Color) {
 	SDL.SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a)
 }
