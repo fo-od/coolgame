@@ -195,12 +195,14 @@ text :: proc(str: string, t: TextElement) {
 	TTF.GetTextSize(text, &tw, &th)
 	e.rect.zw = {f32(tw), f32(th)}
 
-	// TODO: do cool calculations to get text position :p
 	if len(ctx.elements) > 0 {
 		parentElement := ctx.elements[len(ctx.elements) - 1]
-		e.rect.xy = parentElement.rect.xy
+		calculate_sizing(&e, parentElement.rect)
+		calculate_position(&e, parentElement.rect)
 	} else {
-		e.rect.xy = {0, 0}
+		screen := [4]f32{0, 0, f32(app.windowSize.x), f32(app.windowSize.y)}
+		calculate_sizing(&e, screen)
+		calculate_position(&e, screen)
 	}
 
 	append(
