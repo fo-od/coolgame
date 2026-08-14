@@ -140,13 +140,24 @@ debug_init :: proc() {
 
 debug_tick :: proc() {
 	if ui.rectangle()({layout = {sizing = {.Grow, .Grow}}, style = {color = {0, 0, 0, 127}}}) {
-		ui.rectangle()(
+		if ui.rectangle()(
 		{
 			rect = {0, 0, 100, 50},
 			layout = {anchor = {.Center}, origin = {.Center}},
-			style = {color = ui.hovered() ? {255, 0, 0, 255} : {255, 255, 255, 255}, filled = true},
+			style = {
+				color = ui.hovered() ? {255, 0, 0, 255} : {255, 255, 255, 255},
+				filled = true,
+			},
 		},
-		)
+		) {
+			ui.text(
+				"testing",
+				{
+					style = {color = {0, 0, 255, 255}},
+					layout = {anchor = {.Center}, origin = {.Center}},
+				},
+			)
+		}
 	}
 }
 
