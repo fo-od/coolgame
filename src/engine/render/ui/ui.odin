@@ -223,7 +223,7 @@ update_pointer_state :: proc(pos: [2]f32, button: SDL.MouseButtonFlags) {
 }
 
 hovered :: proc() -> bool {
-	if ctx.elementIndex >= len(ctx.hoveredByIndex) do return false
+	if ctx.elementIndex >= len(ctx.hoveredByIndex) do return ctx.hoveredByIndex[ctx.elementIndex-1]
 	return ctx.hoveredByIndex[ctx.elementIndex]
 }
 
