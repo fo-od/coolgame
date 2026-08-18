@@ -6,6 +6,13 @@ import "engine:render"
 import SDL "vendor:sdl3"
 import TTF "vendor:sdl3/ttf"
 
+// colors
+WHITE :: [4]u8{255, 255, 255, 255}
+BLACK :: [4]u8{0, 0, 0, 255}
+RED :: [4]u8{255, 0, 0, 255}
+BLUE :: [4]u8{0, 0, 255, 255}
+GREEN :: [4]u8{0, 255, 0, 255}
+
 ctx: UIContext
 
 UIContext :: struct {
