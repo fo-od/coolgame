@@ -191,7 +191,6 @@ rectangle :: proc() -> proc(e: Element) -> bool {
 
 text :: proc(str: string, t: TextElement) {
 	text := TTF.CreateText(app.textEngine, app.font, strings.clone_to_cstring(str), len(str))
-	TTF.SetTextColor(text, t.style.color.r, t.style.color.g, t.style.color.b, t.style.color.a)
 
 	e: Element
 	e.layout = t.layout
@@ -244,6 +243,7 @@ draw :: proc(renderer: ^SDL.Renderer) {
 			)
 		case .Text:
 			data := cmd.data.(TextData)
+			TTF.SetTextColor(data.text, cmd.element.style.color.r, cmd.element.style.color.g, cmd.element.style.color.b, cmd.element.style.color.a)
 			TTF.DrawRendererText(data.text, cmd.element.rect.x, cmd.element.rect.y)
 		}
 	}
