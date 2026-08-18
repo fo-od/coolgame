@@ -21,6 +21,14 @@ nsPerFrame: u64 : 1000000000 / targetFPS
 vsyncEnabled :: true
 
 gameRunning := false
+gameState := GameState.MainMenu
+
+GameState :: enum {
+	Paused,
+	Playing,
+	MainMenu,
+	LevelCreator,
+}
 
 main :: proc() {
 	if !init() do return
@@ -122,7 +130,7 @@ input :: proc(event: ^SDL.Event) {
 }
 
 tick :: proc() {
-	physics.update(deltaTime)
+	if gameState == GameState.Playing do physics.update(deltaTime)
 
 	player.input()
 
