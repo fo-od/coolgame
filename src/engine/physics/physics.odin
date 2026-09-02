@@ -1,6 +1,5 @@
 package physics
 
-import "core:fmt"
 import "core:math"
 import "engine:physics"
 import "engine:render"
