@@ -1,5 +1,6 @@
 package main
 
+import "core:log"
 import "core:path/filepath"
 import "core:strings"
 import "engine:app"
@@ -29,6 +30,7 @@ GameState :: enum {
 }
 
 main :: proc() {
+	context.logger = log.create_console_logger(app.DEBUG ? .Debug : .Info)
 	if !init() do return
 	defer exit()
 
