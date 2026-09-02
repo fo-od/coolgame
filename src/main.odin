@@ -12,9 +12,7 @@ import SDL "vendor:sdl3"
 import TTF "vendor:sdl3/ttf"
 
 deltaTime: f32
-fpsTimer: timer.Timer = {
-	type = .NS,
-}
+fpsTimer: timer.TimerNS
 renderingNS: u64
 targetFPS :: 60
 nsPerFrame: u64 : 1000000000 / targetFPS

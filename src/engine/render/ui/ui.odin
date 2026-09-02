@@ -3,14 +3,16 @@ package ui
 import "core:strings"
 import "engine:app"
 import "engine:render"
+import "engine:util/timer"
 import SDL "vendor:sdl3"
 import TTF "vendor:sdl3/ttf"
 
 // colors
 WHITE :: [4]u8{255, 255, 255, 255}
+GRAY  :: [4]u8{128, 128, 128, 255}
 BLACK :: [4]u8{0, 0, 0, 255}
-RED :: [4]u8{255, 0, 0, 255}
-BLUE :: [4]u8{0, 0, 255, 255}
+RED   :: [4]u8{255, 0, 0, 255}
+BLUE  :: [4]u8{0, 0, 255, 255}
 GREEN :: [4]u8{0, 255, 0, 255}
 
 ctx: UIContext
@@ -72,8 +74,9 @@ TextData :: struct {
 }
 
 PointerState :: struct {
-	position: [2]f32,
-	button:   SDL.MouseButtonFlags,
+	position:   [2]f32,
+	button:     SDL.MouseButtonFlags,
+	clickTimer: timer.TimerMS,
 }
 
 // 1----2----3    1=Top+Left     2=Top+Center     3=Top+Right
@@ -218,16 +221,21 @@ text :: proc(str: string, t: TextElement) {
 }
 
 update_pointer_state :: proc(pos: [2]f32, button: SDL.MouseButtonFlags) {
-	ctx.pointer = {pos, button}
+	ctx.pointer.position = pos
+	ctx.pointer.button = button
 }
 
 hovered :: proc() -> bool {
-	if ctx.elementIndex >= len(ctx.hoveredByIndex) do return ctx.hoveredByIndex[ctx.elementIndex-1]
+	if ctx.elementIndex >= len(ctx.hoveredByIndex) do return ctx.hoveredByIndex[ctx.elementIndex - 1]
 	return ctx.hoveredByIndex[ctx.elementIndex]
 }
 
 pressed :: proc() -> bool {
 	return hovered() && .LEFT in ctx.pointer.button
+}
+
+clicked :: proc() -> bool {
+	return pressed()
 }
 
 draw :: proc(renderer: ^SDL.Renderer) {
@@ -243,7 +251,13 @@ draw :: proc(renderer: ^SDL.Renderer) {
 			)
 		case .Text:
 			data := cmd.data.(TextData)
-			TTF.SetTextColor(data.text, cmd.element.style.color.r, cmd.element.style.color.g, cmd.element.style.color.b, cmd.element.style.color.a)
+			TTF.SetTextColor(
+				data.text,
+				cmd.element.style.color.r,
+				cmd.element.style.color.g,
+				cmd.element.style.color.b,
+				cmd.element.style.color.a,
+			)
 			TTF.DrawRendererText(data.text, cmd.element.rect.x, cmd.element.rect.y)
 		}
 	}
