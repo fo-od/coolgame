@@ -1,9 +1,11 @@
 package main
 
+import "engine:render/ui/menus"
 import "core:log"
 import "core:path/filepath"
 import "core:strings"
 import "engine:app"
+import "engine:audio"
 import "engine:physics"
 import "engine:physics/player"
 import "engine:render/queue"
@@ -65,7 +67,7 @@ main :: proc() {
 
 init :: proc() -> bool {
 	// sdl stuff
-	if !(SDL.SetAppMetadata("cool game", "0.1", "com.food.coolgame") && SDL.Init(SDL.INIT_VIDEO)) do return false
+	if !(SDL.SetAppMetadata("cool game", "0.1", "com.food.coolgame") && SDL.Init({.VIDEO, .AUDIO})) do return false
 
 	app.window = SDL.CreateWindow(
 		"cool game",
@@ -74,6 +76,9 @@ init :: proc() -> bool {
 		SDL.WINDOW_RESIZABLE,
 	)
 	app.renderer = SDL.CreateRenderer(app.window, nil)
+
+	// audio stuff
+	if !audio.init() do return false
 
 	// ttf stuff
 	TTF.Init()
@@ -147,25 +152,6 @@ debug_init :: proc() {
 }
 
 debug_tick :: proc() {
-	if ui.rectangle()({layout = {sizing = {.Grow, .Grow}}, style = {color = {0, 0, 0, 127}}}) {
-		if ui.rectangle()(
-		{
-			rect = {0, 0, 100, 50},
-			layout = {anchor = {.Center}, origin = {.Center}},
-			style = {
-				color = ui.hovered() ? {255, 0, 0, 255} : {255, 255, 255, 255},
-				filled = true,
-			},
-		},
-		) {
-			ui.text(
-				"testing",
-				{
-					style = {color = {0, 0, 255, 255}},
-					layout = {anchor = {.Center}, origin = {.Center}},
-				},
-			)
-		}
-	}
+	menus.main_menu()
 }
 

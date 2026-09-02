@@ -1,6 +1,7 @@
 package app
 
 import SDL "vendor:sdl3"
+import "vendor:sdl3/mixer"
 import TTF "vendor:sdl3/ttf"
 
 // build constants
@@ -13,6 +14,7 @@ windowSize: [2]i32 = {640, 480}
 renderer: ^SDL.Renderer
 font: ^TTF.Font
 textEngine: ^TTF.TextEngine
+audioMixer: ^mixer.Mixer
 
 cameraPos: [2]f32
 
