@@ -1,6 +1,7 @@
 package audio
 
 import "core:log"
+import "core:path/filepath"
 import "core:strings"
 import "engine:app"
 import "vendor:sdl3"
@@ -9,9 +10,9 @@ import "vendor:sdl3/mixer"
 // sfx
 sfxTrack: ^mixer.Track
 
-uiHover: ^mixer.Audio
-uiPress: ^mixer.Audio
-uiRelease: ^mixer.Audio
+sfx_uiHover: ^mixer.Audio
+sfx_uiPress: ^mixer.Audio
+sfx_uiRelease: ^mixer.Audio
 
 // music, progress not started currently
 musicTrack: ^mixer.Track
@@ -20,8 +21,6 @@ musicTrack: ^mixer.Track
 initialized := false
 
 init :: proc() -> bool {
-
-
 	log.info("Initalizing mixer")
 	mixer.Init() or_return
 
@@ -40,6 +39,26 @@ init :: proc() -> bool {
 	return true
 }
 
+deinit :: proc() {
+	if !initialized {
+		log.error("Audio is already deinitialized")
+		return
+	}
+	initialized = false
+
+	// sfx
+	mixer.DestroyTrack(sfxTrack)
+
+	mixer.DestroyAudio(sfx_uiHover)
+	mixer.DestroyAudio(sfx_uiPress)
+	mixer.DestroyAudio(sfx_uiRelease)
+
+	// music
+	mixer.DestroyTrack(musicTrack)
+
+	mixer.DestroyMixer(app.audioMixer)
+}
+
 loadAudio :: proc() -> bool {
 	log.info("Loading audio assets")
 
@@ -48,17 +67,27 @@ loadAudio :: proc() -> bool {
 		return false
 	}
 
-	uiHover = load("hover.ogg")
-	uiPress = load("press.ogg")
-	uiRelease = load("release.ogg")
+	sfx_uiHover = load("hover.ogg")
+	sfx_uiPress = load("press.ogg")
+	sfx_uiRelease = load("release.ogg")
 
 	return true
 }
 
 @(private)
-load :: proc(name: string) -> ^mixer.Audio {
-	path := strings.concatenate({"../src/assets/audio/", name}, context.temp_allocator)
+load :: proc(name: string) -> (audio: ^mixer.Audio) {
+	path, _ := filepath.join(
+		{string(sdl3.GetBasePath()), "../src/assets/audio/", name},
+		context.temp_allocator,
+	)
+
 	log.infof("Loading audio from \"%v\"", path)
-	return mixer.LoadAudio(app.audioMixer, strings.clone_to_cstring(path), true)
+
+	audio = mixer.LoadAudio(app.audioMixer, strings.clone_to_cstring(path), true)
+
+	if audio == nil {
+		log.errorf("Error loading audio: %v", sdl3.GetError())
+	}
+	return
 }
 

@@ -9,9 +9,9 @@ main_menu :: proc() {
 			log.debug("play")
 		})
 
-		button("Create", {0, 0}, proc() {
-			log.debug("create")
-		})
+		// button("Create", {0, 0}, proc() {
+		// 	log.debug("create")
+		// })
 	}
 }
 

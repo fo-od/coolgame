@@ -9,20 +9,21 @@ import TTF "vendor:sdl3/ttf"
 
 // colors
 WHITE :: [4]u8{255, 255, 255, 255}
-GRAY  :: [4]u8{128, 128, 128, 255}
+GRAY :: [4]u8{128, 128, 128, 255}
 BLACK :: [4]u8{0, 0, 0, 255}
-RED   :: [4]u8{255, 0, 0, 255}
-BLUE  :: [4]u8{0, 0, 255, 255}
+RED :: [4]u8{255, 0, 0, 255}
+BLUE :: [4]u8{0, 0, 255, 255}
 GREEN :: [4]u8{0, 255, 0, 255}
 
 ctx: UIContext
 
 UIContext :: struct {
-	elements:           [dynamic]Element,
-	pointer:            PointerState,
-	renderCommandQueue: [dynamic]RenderCommand,
-	hoveredByIndex:     [dynamic]bool,
-	elementIndex:       int,
+	elements:               [dynamic]Element,
+	pointer:                PointerState,
+	renderCommandQueue:     [dynamic]RenderCommand,
+	hoveredByIndex:         [dynamic]bool,
+	previousHoveredByIndex: [dynamic]bool,
+	elementIndex:           int,
 }
 
 RenderCommand :: struct {
@@ -140,6 +141,19 @@ calculate_sizing :: proc(e: ^Element, container: [4]f32) {
 	}
 }
 
+begin_frame :: proc() {
+	clear(&ctx.elements)
+	clear(&ctx.renderCommandQueue)
+
+	clear(&ctx.previousHoveredByIndex)
+	reserve(&ctx.previousHoveredByIndex, len(ctx.hoveredByIndex))
+	for hovered in ctx.hoveredByIndex {
+		append(&ctx.previousHoveredByIndex, hovered)
+	}
+	clear(&ctx.hoveredByIndex)
+	ctx.elementIndex = 0
+}
+
 @(private)
 open_element :: proc(e: Element) -> bool {
 	_open_element(e)
@@ -225,15 +239,36 @@ update_pointer_state :: proc(pos: [2]f32, button: SDL.MouseButtonFlags) {
 	ctx.pointer.button = button
 }
 
+current_element_index :: proc() -> int {
+	if len(ctx.hoveredByIndex) == 0 do return 0
+
+	index := ctx.elementIndex
+	if index >= len(ctx.hoveredByIndex) do index = len(ctx.hoveredByIndex) - 1
+	if index < 0 do return 0
+	return index
+}
+
+previous_hovered :: proc() -> bool {
+	index := current_element_index()
+	if index >= len(ctx.previousHoveredByIndex) do return false
+	return ctx.previousHoveredByIndex[index]
+}
+
 hovered :: proc() -> bool {
-	if ctx.elementIndex >= len(ctx.hoveredByIndex) do return ctx.hoveredByIndex[ctx.elementIndex - 1]
-	return ctx.hoveredByIndex[ctx.elementIndex]
+	index := current_element_index()
+	if index >= len(ctx.hoveredByIndex) do return false
+	return ctx.hoveredByIndex[index]
+}
+
+entered :: proc() -> bool {
+	return hovered() && !previous_hovered()
 }
 
 pressed :: proc() -> bool {
 	return hovered() && .LEFT in ctx.pointer.button
 }
 
+// TODO: implement click detection (basically just a timer)
 clicked :: proc() -> bool {
 	return pressed()
 }

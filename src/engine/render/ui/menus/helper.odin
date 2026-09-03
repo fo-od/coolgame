@@ -1,6 +1,8 @@
 package menus
 
+import "engine:audio"
 import "engine:render/ui"
+import "vendor:sdl3/mixer"
 
 button :: proc(text: string, pos: [2]f32, callback: proc()) {
 	if ui.rectangle()(
@@ -18,8 +20,13 @@ button :: proc(text: string, pos: [2]f32, callback: proc()) {
 			},
 		)
 
-		if ui.clicked() {
-			callback()
+		// if ui.clicked() {
+		// 	callback()
+		// }
+
+		if ui.entered() {
+			_ = mixer.SetTrackAudio(audio.sfxTrack, audio.sfx_uiHover)
+			_ = mixer.PlayTrack(audio.sfxTrack, 0)
 		}
 	}
 }

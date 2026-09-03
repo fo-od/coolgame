@@ -1,6 +1,5 @@
 package main
 
-import "engine:render/ui/menus"
 import "core:log"
 import "core:path/filepath"
 import "core:strings"
@@ -10,6 +9,7 @@ import "engine:physics"
 import "engine:physics/player"
 import "engine:render/queue"
 import "engine:render/ui"
+import "engine:render/ui/menus"
 import "engine:util/timer"
 import SDL "vendor:sdl3"
 import TTF "vendor:sdl3/ttf"
@@ -101,6 +101,8 @@ init :: proc() -> bool {
 }
 
 exit :: proc() {
+	audio.deinit()
+
 	TTF.CloseFont(app.font)
 	TTF.Quit()
 
@@ -144,6 +146,8 @@ tick :: proc() {
 	// put camera origin at center of window
 	app.cameraPos.x += f32(app.windowSize.x) / 2
 	app.cameraPos.y += f32(app.windowSize.y) / 2
+
+	ui.begin_frame()
 }
 
 debug_init :: proc() {
