@@ -1,8 +1,9 @@
-![coolgame logo](coolgame.svg)
+![coolgame logo](assets/coolgame.svg)
 
 > yeah this game is pretty cool  
 > -_food_
-***
+
+---
 
 so basically this game is a 2d platformer (very original) made with SDL in odin
 
@@ -20,7 +21,7 @@ the game is going to be mainly black and white, with some color to make special 
 the platforms and player arent going to be fancy, theyll just be rectangles/squares.
 i will try my best to make it feel smooth though.
 
-***
+---
 
 ### building
 
