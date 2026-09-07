@@ -50,6 +50,8 @@ main :: proc() {
 			input(&event)
 		}
 		app.keyboardState = SDL.GetKeyboardState(nil)
+		app.mouse.button = SDL.GetMouseState(&app.mouse.pos.x, &app.mouse.pos.y)
+		ui.update_pointer_state(app.mouse.pos, app.mouse.button)
 
 		tick()
 		when app.DEBUG do debug_tick()
@@ -132,7 +134,6 @@ input :: proc(event: ^SDL.Event) {
 
 	case .MOUSE_MOTION, .MOUSE_BUTTON_DOWN, .MOUSE_BUTTON_UP:
 		app.mouse.button = SDL.GetMouseState(&app.mouse.pos.x, &app.mouse.pos.y)
-		ui.update_pointer_state(app.mouse.pos, app.mouse.button)
 	}
 }
 
@@ -158,4 +159,3 @@ debug_init :: proc() {
 debug_tick :: proc() {
 	menus.main_menu()
 }
-

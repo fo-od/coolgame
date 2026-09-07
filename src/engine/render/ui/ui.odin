@@ -20,10 +20,12 @@ ctx: UIContext
 UIContext :: struct {
 	elements:               [dynamic]Element,
 	pointer:                PointerState,
+	previousPointer:        PointerState,
 	renderCommandQueue:     [dynamic]RenderCommand,
 	hoveredByIndex:         [dynamic]bool,
 	previousHoveredByIndex: [dynamic]bool,
 	elementIndex:           int,
+	currentElementIndex:    int,
 }
 
 RenderCommand :: struct {
@@ -77,7 +79,6 @@ TextData :: struct {
 PointerState :: struct {
 	position:   [2]f32,
 	button:     SDL.MouseButtonFlags,
-	clickTimer: timer.TimerMS,
 }
 
 // 1----2----3    1=Top+Left     2=Top+Center     3=Top+Right
@@ -151,7 +152,9 @@ begin_frame :: proc() {
 		append(&ctx.previousHoveredByIndex, hovered)
 	}
 	clear(&ctx.hoveredByIndex)
+	
 	ctx.elementIndex = 0
+	ctx.currentElementIndex = 0
 }
 
 @(private)
@@ -177,11 +180,8 @@ _open_element :: proc(e: Element) {
 		calculate_position(&new, screen)
 	}
 
-	isHovered :=
-		((ctx.pointer.position.x >= new.rect.x) &&
-			(ctx.pointer.position.x < (new.rect.x + new.rect.z)) &&
-			(ctx.pointer.position.y >= new.rect.y) &&
-			(ctx.pointer.position.y < (new.rect.y + new.rect.w)))
+	isHovered := point_in_rect(ctx.pointer.position, new.rect)
+	ctx.currentElementIndex = ctx.elementIndex
 	if ctx.elementIndex < len(ctx.hoveredByIndex) {
 		ctx.hoveredByIndex[ctx.elementIndex] = isHovered
 	} else {
@@ -199,11 +199,48 @@ _open_element :: proc(e: Element) {
 @(private)
 close_element :: proc() {
 	pop_safe(&ctx.elements)
+	if len(ctx.elements) > 0 {
+		ctx.currentElementIndex = len(ctx.elements) - 1
+	}
 }
 
 @(deferred_none = close_element)
 rectangle :: proc() -> proc(e: Element) -> bool {
 	return open_element
+}
+
+@(private)
+point_in_rect :: proc(point: [2]f32, rect: [4]f32) -> bool {
+	return(
+		(point.x >= rect.x) &&
+		(point.x < (rect.x + rect.z)) &&
+		(point.y >= rect.y) &&
+		(point.y < (rect.y + rect.w)) \
+	)
+}
+
+set_current_style :: proc(style: Style) {
+	if len(ctx.elements) == 0 do return
+	if len(ctx.renderCommandQueue) == 0 do return
+
+	ctx.elements[len(ctx.elements) - 1].style = style
+	ctx.renderCommandQueue[len(ctx.renderCommandQueue) - 1].element.style = style
+}
+
+set_color :: proc(color: [4]u8) {
+	if len(ctx.elements) == 0 do return
+	if len(ctx.renderCommandQueue) == 0 do return
+
+	ctx.elements[len(ctx.elements) - 1].style.color = color
+	ctx.renderCommandQueue[len(ctx.renderCommandQueue) - 1].element.style.color = color
+}
+
+set_filled :: proc(filled: bool) {
+	if len(ctx.elements) == 0 do return
+	if len(ctx.renderCommandQueue) == 0 do return
+
+	ctx.elements[len(ctx.elements) - 1].style.filled = filled
+	ctx.renderCommandQueue[len(ctx.renderCommandQueue) - 1].element.style.filled = filled
 }
 
 text :: proc(str: string, t: TextElement) {
@@ -235,42 +272,43 @@ text :: proc(str: string, t: TextElement) {
 }
 
 update_pointer_state :: proc(pos: [2]f32, button: SDL.MouseButtonFlags) {
+    ctx.previousPointer = ctx.pointer
 	ctx.pointer.position = pos
 	ctx.pointer.button = button
 }
 
-current_element_index :: proc() -> int {
-	if len(ctx.hoveredByIndex) == 0 do return 0
-
-	index := ctx.elementIndex
-	if index >= len(ctx.hoveredByIndex) do index = len(ctx.hoveredByIndex) - 1
-	if index < 0 do return 0
-	return index
-}
-
 previous_hovered :: proc() -> bool {
-	index := current_element_index()
-	if index >= len(ctx.previousHoveredByIndex) do return false
-	return ctx.previousHoveredByIndex[index]
+	if ctx.currentElementIndex >= len(ctx.previousHoveredByIndex) do return false
+	return ctx.previousHoveredByIndex[ctx.currentElementIndex]
 }
 
 hovered :: proc() -> bool {
-	index := current_element_index()
-	if index >= len(ctx.hoveredByIndex) do return false
-	return ctx.hoveredByIndex[index]
+	if ctx.currentElementIndex >= len(ctx.hoveredByIndex) do return false
+	return ctx.hoveredByIndex[ctx.currentElementIndex]
 }
 
 entered :: proc() -> bool {
 	return hovered() && !previous_hovered()
 }
 
+exited :: proc() -> bool {
+	return !hovered() && previous_hovered()
+}
+
 pressed :: proc() -> bool {
 	return hovered() && .LEFT in ctx.pointer.button
 }
 
-// TODO: implement click detection (basically just a timer)
+previous_pressed :: proc() -> bool {
+	return previous_hovered() && .LEFT in ctx.previousPointer.button
+}
+
+released :: proc() -> bool {
+	return previous_pressed() && .LEFT not_in ctx.pointer.button
+}
+
 clicked :: proc() -> bool {
-	return pressed()
+	return pressed() && !previous_pressed()
 }
 
 draw :: proc(renderer: ^SDL.Renderer) {
@@ -297,4 +335,3 @@ draw :: proc(renderer: ^SDL.Renderer) {
 		}
 	}
 }
-
