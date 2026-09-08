@@ -83,33 +83,51 @@ init :: proc() -> bool {
 	if !audio.init() do return false
 
 	// ttf stuff
+	log.info("Initializing TTF...")
 	TTF.Init()
+
+	log.info("Creating TextEngine...")
 	app.textEngine = TTF.CreateRendererTextEngine(app.renderer)
+
+	if app.textEngine == nil {
+		log.errorf("Error creating TextEngine: %v", SDL.GetError())
+		return false
+	}
+
 	fontPath, _ := filepath.join(
 		{string(SDL.GetBasePath()), "../src/assets/cozette.fnt"},
 		context.allocator,
 	)
+	log.infof("Creating font...")
 	app.font = TTF.OpenFont(strings.clone_to_cstring(fontPath), 13)
-	if app.textEngine == nil || app.font == nil do return false
+
+	if app.font == nil {
+		log.errorf("Error creating font: %v", SDL.GetError())
+		return false
+	}
 
 	// game config
-	SDL.SetRenderVSync(app.renderer, i32(vsyncEnabled))
-
-	SDL.SetRenderDrawBlendMode(app.renderer, SDL.BLENDMODE_BLEND)
-	player.init({300, 280})
+	if !SDL.SetRenderVSync(app.renderer, i32(vsyncEnabled)) do log.warnf("Couldn't enable VSync: %v", SDL.GetError())
+	if !SDL.SetRenderDrawBlendMode(app.renderer, SDL.BLENDMODE_BLEND) do log.warnf("Couldn't set render blend mode: %v", SDL.GetError())
 
 	gameRunning = true
 	return true
 }
 
 exit :: proc() {
+    log.info("Uninitializing audio...")
 	audio.deinit()
 
+	log.info("Closing font...")
 	TTF.CloseFont(app.font)
+	log.info("Uninitializing TTF...")
 	TTF.Quit()
 
+	log.info("Destroying renderer...")
 	SDL.DestroyRenderer(app.renderer)
+	log.info("Destroying window...")
 	SDL.DestroyWindow(app.window)
+	log.info("Quitting...")
 	SDL.Quit()
 }
 
@@ -159,3 +177,4 @@ debug_init :: proc() {
 debug_tick :: proc() {
 	menus.main_menu()
 }
+
