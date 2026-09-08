@@ -69,7 +69,7 @@ main :: proc() {
 
 init :: proc() -> bool {
 	// sdl stuff
-	if !(SDL.SetAppMetadata("cool game", "0.1", "dev.fooduhh.coolgame") && SDL.Init({.VIDEO, .AUDIO})) do return false
+	if !(SDL.SetAppMetadata("coolgame", "0.1", "dev.fooduhh.coolgame") && SDL.Init({.VIDEO, .AUDIO})) do return false
 
 	app.window = SDL.CreateWindow(
 		"cool game",
