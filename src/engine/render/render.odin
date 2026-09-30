@@ -38,4 +38,3 @@ set_draw_color_v :: proc(renderer: ^SDL.Renderer, color: [4]u8) {
 set_draw_color_sdl :: proc(renderer: ^SDL.Renderer, color: SDL.Color) {
 	SDL.SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a)
 }
-

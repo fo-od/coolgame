@@ -46,4 +46,3 @@ button :: proc(text: string, layout: Layout, callback: proc()) {
 		}
 	}
 }
-

@@ -74,4 +74,3 @@ _get_ticks :: proc(timer: $T) -> u64 {
 	}
 	return 0
 }
-

@@ -13,4 +13,3 @@ abs :: proc(value: [2]f32) -> [2]f32 {
 clamp :: proc(value: [2]f32, min, max: f32) -> [2]f32 {
 	return {math.clamp(value.x, min, max), math.clamp(value.y, min, max)}
 }
-

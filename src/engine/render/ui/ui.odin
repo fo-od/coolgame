@@ -77,8 +77,8 @@ TextData :: struct {
 }
 
 PointerState :: struct {
-	position:   [2]f32,
-	button:     SDL.MouseButtonFlags,
+	position: [2]f32,
+	button:   SDL.MouseButtonFlags,
 }
 
 // 1----2----3    1=Top+Left     2=Top+Center     3=Top+Right
@@ -152,7 +152,7 @@ begin_frame :: proc() {
 		append(&ctx.previousHoveredByIndex, hovered)
 	}
 	clear(&ctx.hoveredByIndex)
-	
+
 	ctx.elementIndex = 0
 	ctx.currentElementIndex = 0
 }
@@ -272,7 +272,7 @@ text :: proc(str: string, t: TextElement) {
 }
 
 update_pointer_state :: proc(pos: [2]f32, button: SDL.MouseButtonFlags) {
-    ctx.previousPointer = ctx.pointer
+	ctx.previousPointer = ctx.pointer
 	ctx.pointer.position = pos
 	ctx.pointer.button = button
 }

@@ -117,4 +117,3 @@ aabb_penetration_vector :: proc(aabb: AABB) -> [2]f32 {
 
 	return result
 }
-

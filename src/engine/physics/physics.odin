@@ -269,4 +269,3 @@ draw :: proc(renderer: ^SDL.Renderer) {
 		}
 	}
 }
-

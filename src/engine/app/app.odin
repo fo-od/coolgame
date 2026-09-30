@@ -25,4 +25,3 @@ Mouse :: struct {
 	pos:    [2]f32,
 	button: SDL.MouseButtonFlags,
 }
-

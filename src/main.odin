@@ -115,7 +115,7 @@ init :: proc() -> bool {
 }
 
 exit :: proc() {
-    log.info("Uninitializing audio...")
+	log.info("Uninitializing audio...")
 	audio.deinit()
 
 	log.info("Closing font...")
@@ -177,4 +177,3 @@ debug_init :: proc() {
 debug_tick :: proc() {
 	menus.main_menu()
 }
-

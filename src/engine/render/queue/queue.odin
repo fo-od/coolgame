@@ -151,4 +151,3 @@ render :: proc(renderer: ^SDL.Renderer) {
 	clear(&commandQueue)
 	clear(&queueRects)
 }
-

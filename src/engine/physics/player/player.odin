@@ -42,4 +42,3 @@ input :: proc() {
 		body.aabb.pos = {0, 0}
 	}
 }
-
