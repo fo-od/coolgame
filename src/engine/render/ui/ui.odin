@@ -244,7 +244,7 @@ set_filled :: proc(filled: bool) {
 }
 
 text :: proc(str: string, t: TextElement) {
-	text := TTF.CreateText(app.textEngine, app.font, strings.clone_to_cstring(str), len(str))
+	text := TTF.CreateText(app.textEngine, app.font, raw_data(str), len(str))
 
 	e: Element
 	e.layout = t.layout
