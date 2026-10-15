@@ -68,6 +68,9 @@ main :: proc() {
 }
 
 init :: proc() -> bool {
+	// info logging
+	log.infof("Launching coolgame version ", app.GIT_HASH)
+
 	// sdl stuff
 	if !(SDL.SetAppMetadata("coolgame", "0.1", "dev.fooduhh.coolgame") && SDL.Init({.VIDEO, .AUDIO})) do return false
 
