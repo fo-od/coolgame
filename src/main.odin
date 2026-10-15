@@ -99,7 +99,7 @@ init :: proc() -> bool {
 		context.allocator,
 	)
 	log.infof("Creating font...")
-	app.font = TTF.OpenFont(strings.clone_to_cstring(fontPath), 13)
+	app.font = TTF.OpenFont(strings.unsafe_string_to_cstring(fontPath), 13)
 
 	if app.font == nil {
 		log.errorf("Error creating font: %v", SDL.GetError())
@@ -111,6 +111,7 @@ init :: proc() -> bool {
 	if !SDL.SetRenderDrawBlendMode(app.renderer, SDL.BLENDMODE_BLEND) do log.warnf("Couldn't set render blend mode: %v", SDL.GetError())
 
 	gameRunning = true
+	log.info("Successfully initalized game!")
 	return true
 }
 
@@ -158,18 +159,24 @@ input :: proc(event: ^SDL.Event) {
 tick :: proc() {
 	if gameState == GameState.Playing do physics.update(deltaTime)
 
-	player.input()
+	if player.initalized {
+		player.input()
 
-	// center camera over player
-	app.cameraPos = -player.body.aabb.pos
-	// put camera origin at center of window
-	app.cameraPos.x += f32(app.windowSize.x) / 2
-	app.cameraPos.y += f32(app.windowSize.y) / 2
-
+		// center camera over player
+		app.cameraPos = -player.body.aabb.pos
+		// put camera origin at center of window
+		app.cameraPos.x += f32(app.windowSize.x) / 2
+		app.cameraPos.y += f32(app.windowSize.y) / 2
+	} else {
+		log.warn("Player was not initalized, skipping player tick")
+	}
+	
 	ui.begin_frame()
 }
 
 debug_init :: proc() {
+	log.info("debug init")
+	player.init({0,0})
 	physics.add_static_body({300, 300}, {5000, 10})
 	physics.add_static_body({200, 0}, {20, 300}, collision_layer = .Layer_3)
 }

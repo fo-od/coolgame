@@ -1,5 +1,6 @@
 package player
 
+import "core:log"
 import "engine:app"
 import "engine:physics"
 import SDL "vendor:sdl3"
@@ -7,8 +8,10 @@ import SDL "vendor:sdl3"
 body: ^physics.Body
 isGrounded: bool
 joyX: i8
+initalized: bool
 
 init :: proc(pos: [2]f32, velocity: [2]f32 = {0, 0}) {
+	log.infof("Spawning player at %v with a velocity of %v", pos, velocity)
 	i := physics.add_body(
 		pos,
 		{10, 10},
@@ -18,6 +21,7 @@ init :: proc(pos: [2]f32, velocity: [2]f32 = {0, 0}) {
 		filled = true,
 	)
 	body = physics.get_body(i)
+	initalized = true
 }
 
 player_on_hit_static :: proc(self: ^physics.Body, other: ^physics.StaticBody, hit: physics.Hit) {
