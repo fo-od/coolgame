@@ -167,8 +167,6 @@ tick :: proc() {
 		// put camera origin at center of window
 		app.cameraPos.x += f32(app.windowSize.x) / 2
 		app.cameraPos.y += f32(app.windowSize.y) / 2
-	} else {
-		log.warn("Player was not initalized, skipping player tick")
 	}
 	
 	ui.begin_frame()
