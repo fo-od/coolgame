@@ -1,0 +1,15 @@
+<svg id="coolgame" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1088 224" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <style>
+      .st0{fill:#fff}
+    </style>
+  </defs>
+  <path id="e" class="st0" d="M976 64h112v32h-32v32h32v32H976z"/>
+  <path id="m" class="st0" d="M800 160V64h160v96h-32V96h-32v64h-32V96h-32v64z"/>
+  <path id="a" class="st0" d="M784 64v96H672V96h32v32h48V96h-48V64z"/>
+  <path id="g" class="st0" d="m592 64-48 48v48h80v32h-80v32h112V64zm32 64h-48V96h48z"/>
+  <path id="l" class="st0" d="M480 160h-52L592 0h48z"/>
+  <path id="o" class="st0" d="m384 64-96 96h128l96-96zm16 64h-32l32-32h32z"/>
+  <path id="o1" data-name="o" class="st0" d="m240 64-96 96h128l96-96zm16 64h-32l32-32h32z"/>
+  <path id="c" class="st0" d="m128 96-32 32h64l-32 32H0l96-96h128l-32 32z"/>
+</svg>
