@@ -3,7 +3,13 @@
   "name": "coolgame",
   "build": {
     "out": ".build",
-    "useOlsCollections": true
+    "useOlsCollections": true,
+    "variables": {
+      "GIT_HASH": {
+        "value": "invalid hash",
+        "command": "git rev-parse --short HEAD"
+      }
+    }
   },
   "actions": {
     "run-debug": {
